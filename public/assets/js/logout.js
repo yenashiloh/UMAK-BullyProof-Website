@@ -30,7 +30,7 @@ document.getElementById('logoutButton').addEventListener('click', function (e) {
             })
             .then(data => {
                 if (data.success) {
-                    window.location.href = 'login';
+                    window.location.href = '/';
                 } else {
                     throw new Error('Logout was not successful');
                 }
