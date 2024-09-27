@@ -3,8 +3,8 @@
       <div class="main-header-logo">
         <!-- Logo Header -->
         <div class="logo-header" data-background-color="dark">
-          <a href="{{route ('admin.dashboard')}}" class="logo">
-            <img src="../../assets/img/logo-2.png" alt="navbar brand" class="navbar-brand" height="40" />
+          <a href="{{route ('guidance.dashboard')}}" class="logo">
+            <img src="../../../../assets/img/logo-2.png" alt="navbar brand" class="navbar-brand" height="40" />
             <span class="ms-2" style="font-size: 18px; font-weight: bold; color: white;">BullyProof</span>
           </a>
           <div class="nav-toggle">
@@ -118,7 +118,7 @@
                       <a href="#">
                         <div class="notif-img">
                           <img
-                            src="../../assets/img/profile2.jpg"
+                            src="../../../../assets/img/profile2.jpg"
                             alt="Img Profile"
                           />
                         </div>
@@ -174,7 +174,7 @@
                       <div class="u-text">
                         <h4>{{ $firstName }} {{ $lastName }}</h4>
                         <a
-                          href="{{route ('admin.profile')}}"
+                          href="{{route ('guidance.profile')}}"
                           class="btn btn-xs btn-secondary btn-sm"
                           >View Profile</a
                         >
@@ -183,7 +183,7 @@
                   </li>
                   <li>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#" id="logoutButton" data-logout-url="{{ route('admin.logout') }}">Logout</a>
+                    <a class="dropdown-item" href="#" id="logoutButton" data-logout-url="{{ route('guidance.logout') }}">Logout</a>
                   </li>
                   
                 </div>
@@ -194,6 +194,6 @@
       </nav>
       <!-- End Navbar -->
     </div>
-    <script>
+    {{-- <script>
       const logoutUrl = "{{ route('admin.logout') }}"; 
-  </script>
+  </script> --}}

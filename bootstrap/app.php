@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(PreventBackHistory::class);
         $middleware->alias([
             'discipline' => \App\Http\Middleware\DisciplineAuthenticate::class,
+            'guidance' => \App\Http\Middleware\GuidanceAuthenticate::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

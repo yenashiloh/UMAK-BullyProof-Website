@@ -65,4 +65,14 @@ class AdminAuthController extends Controller
         
         return response()->json(['success' => true, 'message' => 'Logged out successfully']);
     }
+
+    public function logoutGuidance(Request $request)
+    {
+        Session::flush(); 
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        
+        return response()->json(['success' => true, 'message' => 'Logged out successfully']);
+    }
 }

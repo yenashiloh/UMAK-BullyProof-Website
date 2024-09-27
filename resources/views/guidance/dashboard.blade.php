@@ -4,14 +4,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>Dashboard</title>
 
-    @include('partials.admin-link')
+    @include('partials.guidance-link')
   </head>
   <body>
     <div id="loading-overlay">
       <div class="spinner"></div>
   </div>
-    @include('partials.admin-sidebar')
-      @include('partials.admin-header')
+    @include('partials.guidance-sidebar')
+      @include('partials.guidance-header')
         <div class="container">
           <div class="page-inner">
             <div
@@ -66,66 +66,7 @@
                   </div>
                 </div>
               </div>
-              
-              <div class="col-12 col-md-4">
-                <div class="card card-stats card-round">
-                  <div class="card-body">
-                    <div class="row align-items-center">
-                      <div class="col-icon">
-                        <div class="icon-big text-center icon-warning bubble-shadow-small">
-                          <i class="fas fa-file-alt"></i>
-                        </div>
-                      </div>
-                      <div class="col col-stats ms-3 ms-sm-0">
-                        <div class="numbers">
-                          <p class="card-category">Total New Reports</p>
-                          <h4 class="card-title"></h4>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-12 col-md-4">
-                <div class="card card-stats card-round">
-                  <div class="card-body">
-                    <div class="row align-items-center">
-                      <div class="col-icon">
-                        <div class="icon-big text-center icon-secondary bubble-shadow-small">
-                          <i class="fas fa fa-search"></i>
-                        </div>
-                      </div>
-                      <div class="col col-stats ms-3 ms-sm-0">
-                        <div class="numbers">
-                          <p class="card-category">Total Under Investigation</p>
-                          <h4 class="card-title"></h4>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="col-12 col-md-4">
-                <div class="card card-stats card-round">
-                  <div class="card-body">
-                    <div class="row align-items-center">
-                      <div class="col-icon">
-                        <div class="icon-big text-center icon-danger bubble-shadow-small">
-                          <i class="fas fa-exclamation-circle"></i>
-                        </div>
-                      </div>
-                      <div class="col col-stats ms-3 ms-sm-0">
-                        <div class="numbers">
-                          <p class="card-category">Total Unresolved Incidents</p>
-                          <h4 class="card-title"></h4>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+         
             
               <div class="col-12 col-md-4">
                 <div class="card card-stats card-round">
@@ -139,6 +80,26 @@
                       <div class="col col-stats ms-3 ms-sm-0">
                         <div class="numbers">
                           <p class="card-category">Total Resolved Incidents</p>
+                          <h4 class="card-title"></h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <div class="card card-stats card-round">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-icon">
+                        <div class="icon-big text-center icon-warning bubble-shadow-small">
+                          <i class="fas fa-calendar"></i>
+                        </div>
+                      </div>
+                      <div class="col col-stats ms-3 ms-sm-0">
+                        <div class="numbers">
+                          <p class="card-category">Total Appointment</p>
                           <h4 class="card-title"></h4>
                         </div>
                       </div>

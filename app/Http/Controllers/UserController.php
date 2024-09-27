@@ -27,4 +27,25 @@ class UserController extends Controller
             'email',
             'users')); 
     }
+
+    public function showUsersGuidance()
+    {
+        $client = new Client(env('MONGODB_URI'));
+        $userCollection = $client->bullyproof->users;
+        $adminCollection = $client->bullyproof->admins;
+
+        $adminId = session('admin_id');
+        $admin = $adminCollection->findOne(['_id' => new \MongoDB\BSON\ObjectId($adminId)]);
+
+        $firstName = $admin->first_name ?? '';
+        $lastName = $admin->last_name ?? '';
+        $email = $admin->email ?? '';
+
+        $users = $userCollection->find()->toArray();
+        return view ('guidance.users.users', compact(
+            'firstName', 
+            'lastName', 
+            'email',
+            'users')); 
+    }
 }
