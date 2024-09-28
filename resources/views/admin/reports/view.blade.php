@@ -101,7 +101,7 @@
                                         <div class="col-8">{{ $reportData['victimRelationship'] }}</div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-4 mb-2"><strong>Have the incident to anyone else: </strong>
+                                        <div class="col-4 mb-2"><strong>Have Reported the Incident to Anyone Else: </strong>
                                         </div>
                                         <div class="col-8">{{ $reportData['hasReportedBefore'] }}</div>
                                     </div>
