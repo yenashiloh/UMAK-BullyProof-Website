@@ -11,33 +11,39 @@ class DashboardController extends Controller
         $client = new Client(env('MONGODB_URI'));
         $userCollection = $client->bullyproof->users;
         $adminCollection = $client->bullyproof->admins;
-
+        $reportsCollection = $client->bullyproof->reports; 
+    
         $adminId = session('admin_id');
-
+    
         $totalUsers = $userCollection->countDocuments();
-
+        $totalReports = $reportsCollection->countDocuments(); 
+    
         $admin = $adminCollection->findOne(['_id' => new \MongoDB\BSON\ObjectId($adminId)]);
-
+    
         $firstName = $admin->first_name ?? '';
         $lastName = $admin->last_name ?? '';
         $email = $admin->email ?? '';
-
+    
         return view('admin.dashboard', compact(
             'totalUsers', 
+            'totalReports', 
             'firstName', 
             'lastName', 
-            'email')); 
+            'email'
+        )); 
     }
-
+    
     public function showGuidanceDashboard()
     {
         $client = new Client(env('MONGODB_URI'));
         $userCollection = $client->bullyproof->users;
         $adminCollection = $client->bullyproof->admins;
+        $reportsCollection = $client->bullyproof->reports; 
 
         $adminId = session('admin_id');
 
         $totalUsers = $userCollection->countDocuments();
+        $totalReports = $reportsCollection->countDocuments(); 
 
         $admin = $adminCollection->findOne(['_id' => new \MongoDB\BSON\ObjectId($adminId)]);
 
@@ -47,6 +53,7 @@ class DashboardController extends Controller
 
         return view('guidance.dashboard', compact(
             'totalUsers', 
+            'totalReports', 
             'firstName', 
             'lastName', 
             'email')); 
