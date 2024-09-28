@@ -28,7 +28,7 @@ class UserController extends Controller
             'users')); 
     }
 
-    public function showUsersGuidance()
+    public function showCounselling()
     {
         $client = new Client(env('MONGODB_URI'));
         $userCollection = $client->bullyproof->users;
@@ -42,7 +42,7 @@ class UserController extends Controller
         $email = $admin->email ?? '';
 
         $users = $userCollection->find()->toArray();
-        return view ('guidance.users.users', compact(
+        return view ('guidance.counselling.counselling', compact(
             'firstName', 
             'lastName', 
             'email',

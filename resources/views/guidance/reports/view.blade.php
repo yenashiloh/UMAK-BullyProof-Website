@@ -79,39 +79,104 @@
                                 <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
                                     aria-labelledby="pills-home-tab">
                                     <div class="row">
-                                        <div class="col-3 mb-2 mt-3"><strong>Reported Date and Time:</strong></div>
+                                        <div class="col-4 mb-2 mt-3"><strong>Reported Date and Time:</strong></div>
                                         <div class="col-8 mt-3">
                                             {{ \Carbon\Carbon::parse($reportData['reportDate'])->setTimezone('Asia/Manila')->format('F j, Y, g:i A') }}
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-3 mb-2"><strong>Victim's Role:</strong></div>
-                                        <div class="col-8">{{ $reportData['victimType'] }}</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-3 mb-2"><strong>Victim's Name:</strong></div>
+                                        <div class="col-4 mb-2"><strong>Victim's Name:</strong></div>
                                         <div class="col-8">{{ $reportData['victimName'] }}</div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-3 mb-2"><strong>Grade Year Level:</strong></div>
+                                        <div class="col-4 mb-2"><strong>Victim’s Year Level or Position: </strong></div>
                                         <div class="col-8">{{ $reportData['gradeYearLevel'] }}</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4 mb-2"><strong>Victim's Role:</strong></div>
+                                        <div class="col-8">{{ $reportData['victimType'] }}</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4 mb-2"><strong>Relationship to the Victim:</strong></div>
+                                        <div class="col-8">{{ $reportData['victimRelationship'] }}</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4 mb-2"><strong>Have the incident to anyone else: </strong>
+                                        </div>
+                                        <div class="col-8">{{ $reportData['hasReportedBefore'] }}</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4 mb-2"><strong>Reported to: </strong></div>
+                                        <div class="col-8">{{ $reportData['reportedTo'] }}</div>
                                     </div>
                                 </div>
 
 
                                 <div class="tab-pane fade" id="pills-profile" role="tabpanel"
                                     aria-labelledby="pills-incident-details">
-                                    {{-- <p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar.</p>
-                        <p>The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She packed her seven versalia, put her initial into the belt and made herself on the way.
-                        </p> --}}
+                                    <div class="row">
+                                        <div class="col-12 mb-2 mt-3">
+                                            <strong>Platform where cyberbullying occurred:</strong>
+                                        </div>
+                                        <div class="col-12">
+                                            @foreach ($reportData['platformUsed'] as $platform)
+                                                <div>
+                                                    <ul>
+                                                        <li>{{ $platform }}
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 mb-2 mt-3">
+                                            <strong>Type of cyberbullying was involved:</strong>
+                                        </div>
+                                        <div class="col-12">
+                                            @foreach ($reportData['cyberbullyingType'] as $type)
+                                                <div>
+                                                    <ul>
+                                                        <li>{{ $type }}
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 mb-2 mt-3">
+                                            <strong>Incident Details:</strong>
+                                        </div>
+                                        <div class="col-12">
+                                            {!! nl2br(e($reportData['incidentDetails'])) !!}
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="tab-pane fade" id="pills-contact" role="tabpanel"
-                                    aria-labelledby="pills-preperator-information">
-                                    {{-- <p>Pityful a rethoric question ran over her cheek, then she continued her way. On her way she met a copy. The copy warned the Little Blind Text, that where it came from it would have been rewritten a thousand times and everything that was left from its origin would be the word "and" and the Little Blind Text should turn around and return to its own, safe country.</p>
-
-                        <p> But nothing the copy said could convince her and so it didn’t take long until a few insidious Copy Writers ambushed her, made her drunk with Longe and Parole and dragged her into their agency, where they abused her for their</p> --}}
-                                </div>
-                            </div>
+                                aria-labelledby="pills-preperator-information">
+                               <div class="row">
+                                   <div class="col-4 mb-2 mt-3"><strong>Perpetrator’s Fullname:</strong></div>
+                                   <div class="col-8 mt-3">{{ $reportData['perpetratorName'] }}</div>
+                               </div>
+                               <div class="row">
+                                   <div class="col-4 mb-2"><strong>Perpetrator’s Role in the University:</strong></div>
+                                   <div class="col-8">{{ $reportData['perpetratorRole'] }}</div>
+                               </div>
+                               <div class="row">
+                                   <div class="col-4 mb-2"><strong>Perpetrator’s Grade/Year Level or Position:</strong></div>
+                                   <div class="col-8">{{ $reportData['perpetratorGradeYearLevel'] }}</div>
+                               </div>
+                               <div class="row">
+                                   <div class="col-4 mb-2"><strong>Have actions been taken so far: </strong></div>
+                                   <div class="col-8">{{ $reportData['actionsTaken'] }}</div>
+                               </div>
+                               <div class="row">
+                                   <div class="col-4 mb-2"><strong>Describe Actions: </strong></div>
+                                   <div class="col-8">{{ $reportData['describeActions'] }}</div>
+                               </div>
+                           </div>
+                           
                         </div>
                     </div>
                 </div>

@@ -121,16 +121,26 @@ class ReportsController extends Controller
          $reporter = $userCollection->findOne(['_id' => $report->reportedBy]);
  
          $reportData = [
-             'reportDate' => $report->reportDate->toDateTime()->format('Y-m-d H:i:s'),
-             'victimName' => $report->victimName,
-             'victimType' => $report->victimType,
-             'gradeYearLevel' => $report->gradeYearLevel,
-             'reporterFullName' => $reporter->fullname,
-             'reporterEmail' => $reporter->email,
+            'reportDate' => $report->reportDate->toDateTime()->format('Y-m-d H:i:s'),
+            'victimRelationship' => $report->victimRelationship,
+            'victimName' => $report->victimName,
+            'victimType' => $report->victimType,
+            'gradeYearLevel' => $report->gradeYearLevel,
+            'reporterFullName' => $reporter->fullname,
+            'reporterEmail' => $reporter->email,
+            'hasReportedBefore' => $report->hasReportedBefore ?? 'N/A', 
+            'reportedTo' => $report->reportedTo ?? 'N/A', 
+            'platformUsed' => $report->platformUsed instanceof \MongoDB\Model\BSONArray ? $report->platformUsed->getArrayCopy() : [],
+            'cyberbullyingType' => $report->cyberbullyingType instanceof \MongoDB\Model\BSONArray ? $report->cyberbullyingType->getArrayCopy() : [],
+            'incidentDetails' => $report->incidentDetails ?? 'N/A',
+            'perpetratorName' => $report->perpetratorName,
+            'perpetratorRole' => $report->perpetratorRole,
+            'perpetratorGradeYearLevel' => $report->perpetratorGradeYearLevel,
+            'actionsTaken' => $report->actionsTaken ?? 'N/A',
+            'describeActions' => $report->describeActions ?? 'N/A',
+        ];
  
-         ];
- 
-         return view('guidance.reports.view', compact(
+         return view('admin.reports.view', compact(
              'firstName', 
              'lastName', 
              'email',
@@ -157,13 +167,24 @@ class ReportsController extends Controller
 
         $reportData = [
             'reportDate' => $report->reportDate->toDateTime()->format('Y-m-d H:i:s'),
+            'victimRelationship' => $report->victimRelationship,
             'victimName' => $report->victimName,
             'victimType' => $report->victimType,
             'gradeYearLevel' => $report->gradeYearLevel,
             'reporterFullName' => $reporter->fullname,
             'reporterEmail' => $reporter->email,
-
+            'hasReportedBefore' => $report->hasReportedBefore ?? 'N/A', 
+            'reportedTo' => $report->reportedTo ?? 'N/A', 
+            'platformUsed' => $report->platformUsed instanceof \MongoDB\Model\BSONArray ? $report->platformUsed->getArrayCopy() : [],
+            'cyberbullyingType' => $report->cyberbullyingType instanceof \MongoDB\Model\BSONArray ? $report->cyberbullyingType->getArrayCopy() : [],
+            'incidentDetails' => $report->incidentDetails ?? 'N/A',
+            'perpetratorName' => $report->perpetratorName,
+            'perpetratorRole' => $report->perpetratorRole,
+            'perpetratorGradeYearLevel' => $report->perpetratorGradeYearLevel,
+            'actionsTaken' => $report->actionsTaken ?? 'N/A',
+            'describeActions' => $report->describeActions ?? 'N/A',
         ];
+ 
 
         return view('guidance.reports.view', compact(
             'firstName', 

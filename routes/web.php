@@ -26,7 +26,7 @@ Route::middleware([PreventBackHistory::class, 'guidance'])->group(function () {
     Route::get('/guidance/dashboard', [DashboardController::class, 'showGuidanceDashboard'])->name('guidance.dashboard');
     Route::get('/guidance/profile', [ProfileController::class, 'showGuidanceProfile'])->name('guidance.profile');
     Route::post('/guidance/update-profile', [ProfileController::class, 'updateGuidanceProfile'])->name('guidance.update-profile');
-    Route::get('/guidance/users', [UserController::class, 'showUsersGuidance'])->name('guidance.users.users');
+    Route::get('/guidance/counselling', [UserController::class, 'showCounselling'])->name('guidance.counselling.counselling');
     Route::post('/guidance-logout', [AdminAuthController::class, 'logoutGuidance'])->name('guidance.logout');
     Route::get('/guidance/incident-reports', [ReportsController::class, 'showReportsGuidance'])->name('guidance.reports.incident-reports');
     Route::get('/guidance/reports/view/{id}', [ReportsController::class, 'viewReportGuidance'])->name('guidance.reports.view');

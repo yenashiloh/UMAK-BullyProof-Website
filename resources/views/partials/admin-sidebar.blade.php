@@ -5,7 +5,7 @@
             <!-- Logo Header -->
             <div class="logo-header" data-background-color="dark">
                 <a href="{{route ('admin.dashboard')}}" class="logo d-flex align-items-center">
-                    <img src="../../assets/img/logo-2.png" alt="navbar brand" class="navbar-brand" height="40" />
+                    <img src="../../../../assets/img/logo-2.png" alt="navbar brand" class="navbar-brand" height="40" />
                     <span class="ms-2" style="font-size: 18px; font-weight: bold; color: white;">BullyProof</span>
                 </a>
                 <div class="nav-toggle">

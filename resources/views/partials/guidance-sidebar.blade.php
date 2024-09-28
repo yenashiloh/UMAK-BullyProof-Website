@@ -50,8 +50,8 @@
                         </a>
                     </li>
                     
-                    <li class="nav-item">
-                        <a data-bs-toggle="collapse" href="#sidebarLayouts">
+                <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#sidebarLayouts">
                             <i class="fas fa-users"></i>
                             <p>List of Bullies</p>
                         </a>
@@ -62,8 +62,8 @@
                         </span>
                         <h4 class="text-section">Appointment</h4>
                     </li>
-                    <li class="nav-item {{ Route::currentRouteName() === 'guidance.users.users' ? 'active' : '' }}">
-                        <a href="{{ route('guidance.users.users') }}">
+                    <li class="nav-item {{ Route::currentRouteName() === 'guidance.counselling.counselling' ? 'active' : '' }}">
+                        <a href="{{ route('guidance.counselling.counselling') }}">
                             <i class="fas fa-calendar"></i>
                             <p>Counselling Appointment</p>
                         </a>
@@ -75,7 +75,7 @@
                         <h4 class="text-section">Scheduling</h4>
                     </li>
                     <li class="nav-item ">
-                        <a href="{{ route('guidance.users.users') }}">
+                        <a href="{{ route('guidance.counselling.counselling') }}">
                             <i class="fas fa-user"></i>
                             <p>Appointment</p>
                         </a>

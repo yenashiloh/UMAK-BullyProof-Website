@@ -4,7 +4,7 @@
         <!-- Logo Header -->
         <div class="logo-header" data-background-color="dark">
           <a href="{{route ('admin.dashboard')}}" class="logo">
-            <img src="../../assets/img/logo-2.png" alt="navbar brand" class="navbar-brand" height="40" />
+            <img src="../../../../assets/img/logo-2.png" alt="navbar brand" class="navbar-brand" height="40" />
             <span class="ms-2" style="font-size: 18px; font-weight: bold; color: white;">BullyProof</span>
           </a>
           <div class="nav-toggle">
@@ -81,7 +81,7 @@
                 aria-expanded="false"
               >
                 <i class="fa fa-bell"></i>
-                <span class="notification">4</span>
+                <span class="notification">1</span>
               </a>
               <ul
                 class="dropdown-menu notif-box animated fadeIn"
@@ -89,7 +89,7 @@
               >
                 <li>
                   <div class="dropdown-title">
-                    You have 4 new notification
+                    You have 1 new notification
                   </div>
                 </li>
                 <li>
@@ -97,14 +97,14 @@
                     <div class="notif-center">
                       <a href="#">
                         <div class="notif-icon notif-primary">
-                          <i class="fa fa-user-plus"></i>
+                          <i class="fa fa-user"></i>
                         </div>
                         <div class="notif-content">
-                          <span class="block"> New user registered </span>
+                          <span class="block">Shiloh Eugenio sent reports </span>
                           <span class="time">5 minutes ago</span>
                         </div>
                       </a>
-                      <a href="#">
+                      {{-- <a href="#">
                         <div class="notif-icon notif-success">
                           <i class="fa fa-comment"></i>
                         </div>
@@ -118,7 +118,7 @@
                       <a href="#">
                         <div class="notif-img">
                           <img
-                            src="../../assets/img/profile2.jpg"
+                            src="../../../../assets/img/profile2.jpg"
                             alt="Img Profile"
                           />
                         </div>
@@ -137,7 +137,7 @@
                           <span class="block"> Farrah liked Admin </span>
                           <span class="time">17 minutes ago</span>
                         </div>
-                      </a>
+                      </a> --}}
                     </div>
                   </div>
                 </li>

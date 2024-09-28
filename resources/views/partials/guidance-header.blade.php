@@ -81,7 +81,7 @@
                 aria-expanded="false"
               >
                 <i class="fa fa-bell"></i>
-                <span class="notification">4</span>
+                <span class="notification">1</span>
               </a>
               <ul
                 class="dropdown-menu notif-box animated fadeIn"
@@ -89,7 +89,7 @@
               >
                 <li>
                   <div class="dropdown-title">
-                    You have 4 new notification
+                    You have 1 new notification
                   </div>
                 </li>
                 <li>
@@ -100,11 +100,11 @@
                           <i class="fa fa-user-plus"></i>
                         </div>
                         <div class="notif-content">
-                          <span class="block"> New user registered </span>
+                          <span class="block"> Shiloh Eugenio sent reports </span>
                           <span class="time">5 minutes ago</span>
                         </div>
                       </a>
-                      <a href="#">
+                      {{-- <a href="#">
                         <div class="notif-icon notif-success">
                           <i class="fa fa-comment"></i>
                         </div>
@@ -137,7 +137,7 @@
                           <span class="block"> Farrah liked Admin </span>
                           <span class="time">17 minutes ago</span>
                         </div>
-                      </a>
+                      </a> --}}
                     </div>
                   </div>
                 </li>
