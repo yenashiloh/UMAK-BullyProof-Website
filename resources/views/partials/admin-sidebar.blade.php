@@ -52,9 +52,15 @@
                     <li class="nav-item">
                         <a data-bs-toggle="collapse" href="#sidebarLayouts">
                             <i class="fas fa-users"></i>
-                            <p>List of Bullies</p>
+                            <p>List of Complainants</p>
                         </a>
                     </li>
+                    <li class="nav-item {{ Route::currentRouteName() === 'admin.list.list-perpetrators' ? 'active' : '' }}">
+                        <a href="{{ route('admin.list.list-perpetrators') }}">
+                            <i class="fas fa-users"></i>
+                            <p>List of Perpetrators</p>
+                        </a>
+                    </li>                    
                     <li class="nav-section">
                         <span class="sidebar-mini-icon">
                             <i class="fa fa-ellipsis-h"></i>

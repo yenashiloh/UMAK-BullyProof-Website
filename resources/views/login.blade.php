@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="icon" href="{{ asset('assets/img/logo.png') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('assets/img/logo-3.png') }}" type="image/x-icon">
     <title>Admin Login</title>
     <!-- plugins:css -->
     <link rel="stylesheet" href="../../assets-admin/vendors/mdi/css/materialdesignicons.min.css">

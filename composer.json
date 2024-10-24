@@ -10,7 +10,9 @@
         "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
-        "mongodb/laravel-mongodb": "^5.0"
+        "mongodb/laravel-mongodb": "^5.0",
+        "php-ai/php-ml": "^0.10.0",
+        "phpoffice/phpspreadsheet": "^3.3"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

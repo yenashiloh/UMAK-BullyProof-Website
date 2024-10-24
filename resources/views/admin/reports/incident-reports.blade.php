@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Profile</title>
+    <title>Incidents Report</title>
 
     @include('partials.admin-link')
 </head>
@@ -28,7 +28,7 @@
     <div class="container">
         <div class="page-inner">
             <div class="page-header">
-                <h3 class="fw-bold mb-3">Incident Reports</h3>
+                <h3 class="fw-bold mb-3">Incidents Report</h3>
                 <ul class="breadcrumbs mb-3">
                     <li class="nav-home">
                         <a href="{{ route('admin.dashboard') }}">
@@ -40,7 +40,7 @@
                         <i class="icon-arrow-right"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="#">Incident Reports</a>
+                        <a href="#">Incidents Reports</a>
                     </li>
                 </ul>
             </div>
@@ -59,8 +59,9 @@
                                             <th>#</th>
                                             <th>Date and Time</th>
                                             <th>Reported By</th>
-                                            <th>Victim Name</th>
-                                            <th>Grade Year/Level</th>
+                                            <th>Victim's Name</th>
+                                            {{-- <th>Grade Year/Level</th> --}}
+                                            <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -71,23 +72,46 @@
                                             <td>{{ \Carbon\Carbon::parse($report['reportDate']->toDateTime())->setTimezone('Asia/Manila')->format('F j, Y, g:i a') }}</td>
                                             <td>{{ $report['reporterFullName'] }}</td>
                                             <td>{{ $report['victimName'] }}</td>
-                                            <td>{{ $report['gradeYearLevel'] }}</td>
+                                            {{-- <td>{{ $report['gradeYearLevel'] }}</td> --}}
+                                            <td>
+                                                @if($report['status'] == 'To Review')
+                                                    <span class="badge bg-primary ">{{ $report['status'] }}</span>
+                                                @elseif($report['status'] == 'Under Investigation')
+                                                    <span class="badge bg-warning text-dark">{{ $report['status'] }}</span>
+                                                @elseif($report['status'] == 'Resolved')
+                                                    <span class="badge bg-success">{{ $report['status'] }}</span>
+                                                @else
+                                                    <span class="badge bg-secondary">{{ $report['status'] }}</span>
+                                                @endif
+                                            </td>
                                             <td>
                                                 <div class="form-button-action">
-                                                    <div class="form-button-action">
-                                                        <a href="{{ route('admin.reports.view', ['id' => $report['_id']]) }}" 
-                                                            class="btn btn-link btn-primary" 
-                                                            data-bs-toggle="tooltip" 
-                                                            title="View Report" 
-                                                            data-original-title="View">
-                                                             <i class="fa fa-eye"></i>
-                                                         </a>
-                                                    </div>
-                                                    <button type="button" data-bs-toggle="tooltip"
-                                                        title="Change Status" class="btn btn-link btn-primary "
-                                                        data-original-title="Change Status">
-                                                        <i class="fa fa-edit"></i>
-                                                    </button>
+                                                    <a href="{{ route('admin.reports.view', ['id' => $report['_id']]) }}" 
+                                                        class="btn btn-sm btn-info" 
+                                                        data-bs-toggle="tooltip" 
+                                                        title="View Report" 
+                                                        data-original-title="View">
+                                                        View
+                                                    </a>
+                                                </div>
+
+                                                    @if($report['status'] == 'To Review')
+                                                    <form action="{{ route('admin.reports.changeStatus', ['id' => $report['_id']]) }}" method="POST" style="display:inline;">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <button type="submit" class="btn btn-sm btn-warning " data-bs-toggle="tooltip" title="Change Status" data-original-title="Change Status">
+                                                            Under Investigation
+                                                        </button>
+                                                    </form>
+                                                    @elseif($report['status'] == 'Under Investigation')
+                                                    <form action="{{ route('admin.reports.changeStatus', ['id' => $report['_id']]) }}" method="POST" style="display:inline;">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <button type="submit" class="btn btn-sm btn-success" data-bs-toggle="tooltip" title="Change Status" data-original-title="Change Status">
+                                                            Resolve Incident
+                                                        </button>
+                                                    </form>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>

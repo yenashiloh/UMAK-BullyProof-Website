@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Profile</title>
+    <title>View Report</title>
 
     @include('partials.admin-link')
 </head>
@@ -28,7 +28,7 @@
     <div class="container">
         <div class="page-inner">
             <div class="page-header">
-                <h3 class="fw-bold mb-3">Incident Reports</h3>
+                <h3 class="fw-bold mb-3">View Report</h3>
                 <ul class="breadcrumbs mb-3">
                     <li class="nav-home">
                         <a href="{{ route('admin.dashboard') }}">
@@ -40,7 +40,7 @@
                         <i class="icon-arrow-right"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('admin.reports.incident-reports') }}">Incident Reports</a>
+                        <a href="{{ route('admin.reports.incident-reports') }}">View Report</a>
                     </li>
                     <li class="separator">
                         <i class="icon-arrow-right"></i>
@@ -64,7 +64,7 @@
                                         href="#pills-home" role="tab" aria-controls="pills-home"
                                         aria-selected="true">Victim's Information</a>
                                 </li>
-                               
+
                                 <li class="nav-item">
                                     <a class="nav-link" id="pills-preperator-information" data-bs-toggle="pill"
                                         href="#pills-contact" role="tab" aria-controls="pills-contact"
@@ -167,7 +167,7 @@
                                             ({{ number_format($reportData['cyberbullyingPercentage'], 2) }}% match)
                                         </div>
                                         <div class="col-12">
-                                            <strong>Detected Words:</strong> 
+                                            <strong>Detected Words:</strong>
                                             @if (!empty($reportData['detectedWords']))
                                                 {{ implode(', ', $reportData['detectedWords']) }}
                                             @else
@@ -201,10 +201,12 @@
                                         <div class="col-8">{{ $reportData['describeActions'] }}</div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
 
-                @include('partials.admin-footer')
+    @include('partials.admin-footer')
