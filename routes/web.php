@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\ReportExportController;
 use App\Http\Controllers\ListController;
 use App\Http\Middleware\PreventBackHistory;
 
@@ -25,6 +26,9 @@ Route::middleware([PreventBackHistory::class, 'discipline'])->group(function () 
 
     Route::get('/cbfs/list-of-perpetrators', [ListController::class, 'showListOfPerpetrators'])->name('admin.list.list-perpetrators');
     Route::get('/cbfs/list-of-perpetrators/view/{id}', [ListController::class, 'viewPerpetratorDiscipline'])->name('admin.list.view-perpertrators');
+
+    Route::get('/export/csv', [ReportExportController::class, 'exportCSV'])->name('reports.export.csv');
+    Route::get('/export/xlsx', [ReportExportController::class, 'exportXLSX'])->name('reports.export.xlsx');
 });
 
 

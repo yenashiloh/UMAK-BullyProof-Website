@@ -18,6 +18,8 @@
     @include('partials.admin-header')
     <!-- Toastr CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 
     <!-- jQuery (required for Toastr) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -25,6 +27,11 @@
     <!-- Toastr JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
+    <style>
+        .dropdown-menu {
+            min-width: 100%;
+        }
+    </style>
     <div class="container">
         <div class="page-inner">
             <div class="page-header">
@@ -40,7 +47,7 @@
                         <i class="icon-arrow-right"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="#">Incidents Reports</a>
+                        <a href="#">Export</a>
                     </li>
                 </ul>
             </div>
@@ -48,9 +55,29 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="card">
-                        <div class="card-header">
+                        <div class="card-header d-flex justify-content-between align-items-center">
                             <h4 class="card-title">List of Incident Reports</h4>
+                            <div class="dropdown">
+                                <a href="#" class="btn btn-primary btn-round dropdown-toggle" id="exportDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-file-export"></i> Export Reports
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                                    <li>
+                                        <a class="dropdown-item export-link no-loading" href="{{ route('reports.export.csv') }}">
+                                            <i class="fas fa-file-csv"></i> Export as CSV
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item export-link no-loading" href="{{ route('reports.export.xlsx') }}">
+                                            <i class="fas fa-file-excel"></i> Export as XLSX
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
+                        
+                        
+                        
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table id="basic-datatables" class="display table table-striped table-hover">
@@ -85,7 +112,7 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <div class="form-button-action">
+                                                <div class="form-button-action d-grid gap-2">
                                                     <a href="{{ route('admin.reports.view', ['id' => $report['_id']]) }}" 
                                                         class="btn btn-sm btn-info" 
                                                         data-bs-toggle="tooltip" 
@@ -93,21 +120,20 @@
                                                         data-original-title="View">
                                                         View
                                                     </a>
-                                                </div>
-
+                                                    
                                                     @if($report['status'] == 'To Review')
-                                                    <form action="{{ route('admin.reports.changeStatus', ['id' => $report['_id']]) }}" method="POST" style="display:inline;">
+                                                    <form action="{{ route('admin.reports.changeStatus', ['id' => $report['_id']]) }}" method="POST">
                                                         @csrf
                                                         @method('PUT')
-                                                        <button type="submit" class="btn btn-sm btn-warning " data-bs-toggle="tooltip" title="Change Status" data-original-title="Change Status">
+                                                        <button type="submit" class="btn btn-sm btn-warning w-100" data-bs-toggle="tooltip" title="Change Status" data-original-title="Change Status">
                                                             Under Investigation
                                                         </button>
                                                     </form>
                                                     @elseif($report['status'] == 'Under Investigation')
-                                                    <form action="{{ route('admin.reports.changeStatus', ['id' => $report['_id']]) }}" method="POST" style="display:inline;">
+                                                    <form action="{{ route('admin.reports.changeStatus', ['id' => $report['_id']]) }}" method="POST">
                                                         @csrf
                                                         @method('PUT')
-                                                        <button type="submit" class="btn btn-sm btn-success" data-bs-toggle="tooltip" title="Change Status" data-original-title="Change Status">
+                                                        <button type="submit" class="btn btn-sm btn-success w-100" data-bs-toggle="tooltip" title="Change Status" data-original-title="Change Status">
                                                             Resolve Incident
                                                         </button>
                                                     </form>
@@ -128,6 +154,7 @@
     </div>
 
     @include('partials.admin-footer')
+
     <script>
         $(document).ready(function() {
             $("#basic-datatables").DataTable({});

@@ -9,174 +9,23 @@ use Illuminate\Support\Facades\Log;
 
 class CyberbullyingClassifier
 {
-    private $keywords = [];
-    private $specialCharMappings;
-    private $commonPrefixes;
-    private $commonSuffixes;
-    private const MAX_WORD_LENGTH = 100; // Increased to accommodate multi-word phrases
-    private const CHUNK_SIZE = 1000;
-    private $wordSeparators = ['-', '_', ' ', '.', '$'];
-
-    private $spacedPatterns = [
-        'n i g g a' => true,
-        'n a z i' => true,
-        'j e w' => true,
-        'f a g' => true,
-        'c o o n' => true,
-        'a s s' => true,
-        'r a p e' => true,
-        'd i c k' => true,
-        'p o r n' => true,
-        'p e n i s' => true,
-        'h o e' => true,
-        's l u t' => true,
-        'slut' => true,
-        't w a t' => true,
-        't w 4 t' => true,
-        'twa t' => true,
-        'tw at' => true,
-        'c u m' => true,
-        'f ag' => true,
-        'fa g' => true,
-        'n ig' => true,
-        'ni g' => true,
-        'f u c k' => true,
-        's hit' => true,
-        'Ching Chong' => true
-    ];
+    private $keywords;
+    private $wordCounts;
+    private $classCounts;
+    private $vocabularySize;
+    private $spacedWords;
 
     public function __construct()
     {
-        $this->initializeSpecialCharMappings();
-        $this->initializeCommonAffixes();
         $this->loadDatasets();
-    }
-
-    private function initializeSpecialCharMappings()
-    {
-        $this->specialCharMappings = [
-            'a' => ['@', '4', '*', 'α', 'Α', '$'],
-            'e' => ['3', '*', 'є', 'ε'],
-            'i' => ['1', '!', '*', 'í', 'ί'],
-            'o' => ['0', '*', 'ο', 'σ'],
-            's' => ['$', '5', 'ѕ', 'z'],
-            'l' => ['1', '|', '!', '/'],
-            't' => ['7', '+'],
-            'b' => ['8', 'β'],
-            'g' => ['9', 'q'],
-            'u' => ['v', 'υ'],
-            'v' => ['u', 'ν'],
-            'x' => ['×', '×'],
-            'h' => ['#'],
-            'k' => ['c'],
-            'c' => ['k'],
-            'n' => ['ñ'],
-            'y' => ['j']
-        ];
-    }
-
-    private function checkSpacedPatterns($text)
-    {
-        $text = strtolower($text);
-        foreach ($this->spacedPatterns as $pattern => $value) {
-            // Check exact match
-            if ($text === strtolower($pattern)) {
-                return true;
-            }
-            
-            // Check pattern without spaces
-            $noSpacePattern = str_replace(' ', '', strtolower($pattern));
-            if (str_replace(' ', '', $text) === $noSpacePattern) {
-                return true;
-            }
-            
-            // Check pattern with varying number of spaces
-            $flexiblePattern = preg_quote($pattern, '/');
-            $flexiblePattern = str_replace(' ', '\s*', $flexiblePattern);
-            if (preg_match("/^{$flexiblePattern}$/i", $text)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    private function initializeCommonAffixes()
-    {
-        $this->commonPrefixes = ['ka', 'ma', 'pa', 'na', 'pina', 'nag', 'paka', 'naka', 'mag', 'pag'];
-        $this->commonSuffixes = ['an', 'han', 'in', 'ers', 'ski', 'ing', 'hin', 'ng'];
-    }
-
-    private function generateAllVariations($word)
-    {
-        $variations = [];
-        $word = trim($word);
         
-        if (empty($word) || strlen($word) > self::MAX_WORD_LENGTH) {
-            return $variations;
-        }
-
-        // Generate separator variations first
-        $variations = $this->generateSeparatorVariations($word);
-
-        // For each variation, generate character replacements
-        $baseVariations = $variations;
-        foreach ($baseVariations as $baseWord) {
-            $lowerWord = strtolower($baseWord);
-            
-            // Generate special character variations
-            foreach ($this->specialCharMappings as $letter => $replacements) {
-                if (strpos($lowerWord, $letter) !== false) {
-                    foreach ($replacements as $replacement) {
-                        $variations[] = str_replace($letter, $replacement, $lowerWord);
-                    }
-                }
-            }
-
-            // For multi-word phrases
-            if (strpos($baseWord, ' ') !== false) {
-                $words = explode(' ', $baseWord);
-                if (count($words) <= 3) {
-                    // Add variations with different word combinations
-                    $variations[] = implode('', $words); // No spaces
-                    $variations[] = implode('-', $words); // With dashes
-                    $variations[] = implode('_', $words); // With underscores
-                }
-            }
-
-            // Handle common affixes
-            foreach ($this->commonPrefixes as $prefix) {
-                $variations[] = $prefix . $lowerWord;
-            }
-
-            foreach ($this->commonSuffixes as $suffix) {
-                $variations[] = $lowerWord . $suffix;
-            }
-
-            // Add reversed character variations for simple obfuscation
-            if (strlen($lowerWord) <= 10) { // Only for shorter words to avoid too many variations
-                $variations[] = strrev($lowerWord);
-            }
-
-            // Handle repeating characters
-            $variations[] = preg_replace('/(.)\1+/', '$1', $lowerWord);
-        }
-
-        // Add normalized versions
-        foreach ($variations as $variation) {
-            $variations[] = $this->normalizeText($variation);
-        }
-
-        return array_unique($variations);
+        $this->spacedWords = ['n i g g a', 'n a z i', 'j e w', 'f a g', 'c o o n', 'a s s', 'r a p e', 'di ck', 'd i c k', 'p o r n', 'p e n i s', 'h o e', 's l u t', 'slu t', 't w a t', 't w 4 t',
+        'twa t', 'tw at', 'c u m', 'f ag', 'fa g', 'n ig', 'ni g', 'f u c k', 's hit', 'Ching Chong'];
     }
+
     private function loadDatasets()
     {
         try {
-            if (Cache::has('cyberbullying_keywords')) {
-                $this->keywords = Cache::get('cyberbullying_keywords');
-                return;
-            }
-
             $excelFile = storage_path('app/public/cyberbullying_datasets.xlsx');
             
             if (!file_exists($excelFile)) {
@@ -184,234 +33,141 @@ class CyberbullyingClassifier
             }
 
             $spreadsheet = IOFactory::load($excelFile);
-            $keywords = [];
 
-            foreach ($spreadsheet->getSheetNames() as $sheetName) {
+            // Get all sheet names
+            $sheetNames = $spreadsheet->getSheetNames();
+            Log::info("Available sheets in the Excel file: " . implode(', ', $sheetNames));
+
+            $combinedDataset = [];
+
+            foreach ($sheetNames as $sheetName) {
                 if (stripos($sheetName, 'Tagalog') !== false || stripos($sheetName, 'English') !== false) {
                     $sheet = $spreadsheet->getSheetByName($sheetName);
-                    $highestRow = $sheet->getHighestRow();
+                    $data = $sheet->toArray();
                     
-                    for ($startRow = 2; $startRow <= $highestRow; $startRow += self::CHUNK_SIZE) {
-                        $endRow = min($startRow + self::CHUNK_SIZE - 1, $highestRow);
-                        $data = $sheet->rangeToArray("A{$startRow}:D{$endRow}", null, true, false);
-                        
-                        foreach ($data as $row) {
-                            foreach ($row as $cell) {
-                                if (!empty($cell) && strlen($cell) <= self::MAX_WORD_LENGTH) {
-                                    // Store variations with different separators
-                                    foreach ($this->generateSeparatorVariations($cell) as $variation) {
-                                        $keywords[strtolower($variation)] = true;
-                                    }
-                                    
-                                    // Store normalized versions
-                                    $normalizedWord = $this->normalizeText($cell);
-                                    $keywords[$normalizedWord] = true;
-                                    
-                                    // Generate and store all possible variations
-                                    foreach ($this->generateAllVariations($cell) as $variation) {
-                                        $keywords[strtolower($variation)] = true;
-                                    }
-                                }
+                    // Remove the header row
+                    array_shift($data);
+
+                    foreach ($data as $row) {
+                        foreach ($row as $cell) {
+                            if (!empty($cell)) {
+                                $combinedDataset[] = $cell;
                             }
                         }
-                        
-                        gc_collect_cycles();
                     }
                 }
             }
 
-            $this->keywords = $keywords;
-            Cache::put('cyberbullying_keywords', $this->keywords, now()->addDay());
-            
-            $spreadsheet->disconnectWorksheets();
-            unset($spreadsheet);
-            gc_collect_cycles();
+            $this->keywords = array_flip(array_map(function($word) {
+                return strtolower(str_replace(' ', '', $word));
+            }, $combinedDataset));
 
             Log::info("Datasets loaded successfully. Total keywords: " . count($this->keywords));
         } catch (Exception $e) {
             Log::error("Error loading datasets: " . $e->getMessage());
-            $this->keywords = [];
+            $this->keywords = [];  // Initialize with an empty array to prevent further errors
         }
     }
 
-    private function generateSeparatorVariations($word)
+    
+    public function train(array $texts, array $labels)
     {
-        $variations = [];
-        $word = trim($word);
-        
-        if (empty($word)) {
-            return $variations;
-        }
-
-        // Add original word
-        $variations[] = $word;
-        
-        // Generate variations with different separators
-        foreach ($this->wordSeparators as $separator) {
-            // Replace all possible separators with the current separator
-            $variation = str_replace($this->wordSeparators, $separator, $word);
-            $variations[] = $variation;
-            
-            // Also add version without any separator
-            $variations[] = str_replace($separator, '', $variation);
-        }
-        
-        // Add lowercase versions
-        foreach ($variations as $variation) {
-            $variations[] = strtolower($variation);
-        }
-
-        // For multi-word phrases, add variations with different word orderings
-        if (strpos($word, ' ') !== false) {
-            $words = explode(' ', $word);
-            if (count($words) <= 3) { // Limit to phrases of 3 words or less
-                // Add original phrase with normalized spacing
-                $variations[] = implode(' ', $words);
-                
-                // Add version without spaces
-                $variations[] = implode('', $words);
-                
-                // Add version with dashes
-                $variations[] = implode('-', $words);
+        foreach ($texts as $index => $text) {
+            $label = $labels[$index];
+            $this->classCounts[$label] = ($this->classCounts[$label] ?? 0) + 1;
+            $words = $this->tokenize($text);
+            foreach ($words as $word) {
+                $this->wordCounts[$label][$word] = ($this->wordCounts[$label][$word] ?? 0) + 1;
             }
         }
 
-        return array_unique($variations);
+        Cache::put('cyberbullying_word_counts', $this->wordCounts, now()->addDay());
+        Cache::put('cyberbullying_class_counts', $this->classCounts, now()->addDay());
+    }
+
+    private function tokenize(string $text): array
+    {
+        $words = preg_split('/\W+/', strtolower($text), -1, PREG_SPLIT_NO_EMPTY);
+        $result = [];
+        foreach ($words as $word) {
+            $result[] = $word;
+            $result[] = str_replace(' ', '', $word);
+        }
+        return array_unique($result);
+    }
+
+    public function classify(string $text): array
+    {
+        $words = $this->tokenize($text);
+        $scores = [
+            'cyberbullying' => log(($this->classCounts['cyberbullying'] ?? 0) + 1),
+            'not_cyberbullying' => log(($this->classCounts['not_cyberbullying'] ?? 0) + 1)
+        ];
+
+        foreach ($words as $word) {
+            foreach (['cyberbullying', 'not_cyberbullying'] as $class) {
+                $wordCount = ($this->wordCounts[$class][$word] ?? 0) + 1;
+                $totalWords = array_sum($this->wordCounts[$class] ?? []) + $this->vocabularySize;
+                $scores[$class] += log($wordCount / $totalWords);
+            }
+        }
+
+        $totalScore = array_sum(array_map('exp', $scores));
+        $cyberbullyingProbability = exp($scores['cyberbullying']) / $totalScore;
+
+        return [
+            'isCyberbullying' => $cyberbullyingProbability > 0.5,
+            'cyberbullyingProbability' => $cyberbullyingProbability,
+            'cyberbullyingPercentage' => $this->calculateCyberbullyingPercentage($words),
+        ];
+    }
+
+    private function calculateCyberbullyingPercentage(array $words): float
+    {
+        $cyberbullyingScore = 0;
+        foreach ($words as $word) {
+            if (isset($this->keywords[strtolower($word)])) {
+                $cyberbullyingScore++;
+            }
+        }
+        return $words ? ($cyberbullyingScore / count($words)) * 100 : 0;
     }
 
     public function detectCyberbullying(string $text): array
     {
-        if (empty($text)) {
-            return $this->getEmptyResult();
-        }
-
-        $text = substr($text, 0, 2000); // Increased limit to handle longer text
+        $words = $this->tokenize($text);
         $detectedWords = [];
+        $totalWords = count($words);
         $cyberbullyingWordCount = 0;
 
-        // Split text into words and phrases
-        $words = preg_split('/[\s,]+/', $text, -1, PREG_SPLIT_NO_EMPTY);
-        
-        // Check individual words and their variations
         foreach ($words as $word) {
-            if (empty($word) || strlen($word) > self::MAX_WORD_LENGTH) {
-                continue;
+            if (isset($this->keywords[$word])) {
+                $detectedWords[] = $word;
+                $cyberbullyingWordCount++;
+            } else {
+                // check for words with spaces
+                $spacedWord = implode(' ', str_split($word));
+                if (isset($this->keywords[str_replace(' ', '', $spacedWord)])) {
+                    $detectedWords[] = $spacedWord;
+                    $cyberbullyingWordCount++;
+                }
             }
+        }
 
-            if ($this->checkWordAndVariations($word, $detectedWords)) {
+        // check for spaced words
+        foreach ($this->spacedWords as $spacedWord) {
+            if (stripos($text, $spacedWord) !== false) {
+                $detectedWords[] = $spacedWord;
                 $cyberbullyingWordCount++;
             }
         }
 
-        // Check phrases up to 3 words
-        for ($windowSize = 2; $windowSize <= 3; $windowSize++) {
-            for ($i = 0; $i <= count($words) - $windowSize; $i++) {
-                $phrase = implode(' ', array_slice($words, $i, $windowSize));
-                if (strlen($phrase) <= self::MAX_WORD_LENGTH) {
-                    if ($this->checkWordAndVariations($phrase, $detectedWords)) {
-                        $cyberbullyingWordCount++;
-                    }
-                }
-            }
-        }
-
-        $totalWords = count($words);
         $cyberbullyingPercentage = $totalWords > 0 ? ($cyberbullyingWordCount / $totalWords) * 100 : 0;
-
-        // Convert all detected words to lowercase
-        $detectedWords = array_map('strtolower', array_unique($detectedWords));
 
         return [
             'isCyberbullying' => $cyberbullyingWordCount > 0,
-            'cyberbullyingPercentage' => round($cyberbullyingPercentage, 2),
-            'detectedWords' => $detectedWords,
-            'totalWordsAnalyzed' => $totalWords,
-            'offensiveWordCount' => $cyberbullyingWordCount
-        ];
-    }
-
-    private function checkWordAndVariations($word, &$detectedWords): bool
-    {
-        $word = trim($word);
-        
-        // Check original word
-        if ($this->isOffensiveWord($word)) {
-            $detectedWords[] = strtolower($word);
-            return true;
-        }
-
-        // Check all possible variations including separators
-        foreach ($this->generateSeparatorVariations($word) as $separatorVariation) {
-            if ($this->isOffensiveWord($separatorVariation)) {
-                $detectedWords[] = strtolower($word);
-                return true;
-            }
-
-            // Check all character variations for each separator variation
-            foreach ($this->generateAllVariations($separatorVariation) as $variation) {
-                if ($this->isOffensiveWord($variation)) {
-                    $detectedWords[] = strtolower($word);
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private function isOffensiveWord(string $word): bool
-    {
-        if (empty($word)) {
-            return false;
-        }
-
-        $word = strtolower($word);
-
-        // Check against spaced patterns first
-        if ($this->checkSpacedPatterns($word)) {
-            return true;
-        }
-
-        // Check original word
-        if (isset($this->keywords[$word]) || isset($this->spacedPatterns[$word])) {
-            return true;
-        }
-
-        // Check normalized version
-        $normalizedWord = $this->normalizeText($word);
-        return isset($this->keywords[$normalizedWord]) || isset($this->spacedPatterns[$normalizedWord]);
-    }
-
-    private function normalizeText($text)
-    {
-        if (empty($text)) {
-            return '';
-        }
-
-        $text = strtolower(trim($text));
-        
-        // Normalize spaces and separators
-        $text = str_replace($this->wordSeparators, '', $text);
-        
-        // Remove repeated characters
-        $text = preg_replace('/(.)\1{2,}/', '$1', $text);
-        
-        // Normalize special characters
-        foreach ($this->specialCharMappings as $letter => $replacements) {
-            $text = str_replace($replacements, $letter, $text);
-        }
-
-        return $text;
-    }
-
-    private function getEmptyResult(): array
-    {
-        return [
-            'isCyberbullying' => false,
-            'cyberbullyingPercentage' => 0,
-            'detectedWords' => [],
-            'totalWordsAnalyzed' => 0,
-            'offensiveWordCount' => 0
+            'cyberbullyingPercentage' => $cyberbullyingPercentage,
+            'detectedWords' => array_unique($detectedWords),
         ];
     }
 }

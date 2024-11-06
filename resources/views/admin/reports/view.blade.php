@@ -3,10 +3,25 @@
 
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Profile</title>
+    <title>View Report</title>
 
     @include('partials.admin-link')
 </head>
+<style>
+    .gallery-image:hover {
+        transform: scale(1.05);
+        transition: transform 0.2s;
+    }
+
+    #galleryViewer {
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    #galleryViewer.show {
+        opacity: 1;
+    }
+</style>
 
 <body>
 
@@ -64,7 +79,7 @@
                                         href="#pills-home" role="tab" aria-controls="pills-home"
                                         aria-selected="true">Victim's Information</a>
                                 </li>
-                               
+
                                 <li class="nav-item">
                                     <a class="nav-link" id="pills-preperator-information" data-bs-toggle="pill"
                                         href="#pills-contact" role="tab" aria-controls="pills-contact"
@@ -76,6 +91,8 @@
                                         aria-selected="false">Incident Details</a>
                                 </li>
                             </ul>
+
+                            <!-- Victim's Information -->
                             <div class="tab-content mt-2 mb-3" id="pills-tabContent">
                                 <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
                                     aria-labelledby="pills-home-tab">
@@ -113,7 +130,7 @@
                                     </div>
                                 </div>
 
-
+                                <!-- Incident Details -->
                                 <div class="tab-pane fade" id="pills-profile" role="tabpanel"
                                     aria-labelledby="pills-incident-details">
                                     <div class="row">
@@ -148,6 +165,52 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-12 mb-2 mt-3">
+                                            <strong>Incident Evidence:</strong>
+                                        </div>
+                                        <div class="col-12">
+                                            @if (!empty($reportData['incidentEvidence']))
+                                                <div class="d-flex flex-wrap">
+                                                    @foreach ($reportData['incidentEvidence'] as $index => $base64Image)
+                                                        <div class="m-2">
+                                                            <img src="data:image/jpeg;base64,{{ $base64Image }}"
+                                                                alt="Incident Evidence"
+                                                                class="img-fluid img-thumbnail gallery-image"
+                                                                style="width: 150px; height: 150px; object-fit: cover; cursor: pointer;"
+                                                                data-gallery-index="{{ $index }}">
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            @else
+                                                <p>No incident evidence available.</p>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <!-- Full Screen Image Viewer -->
+                                    <div id="galleryViewer"
+                                        class="position-fixed top-0 start-0 w-100 h-100 bg-black d-none"
+                                        style="z-index: 1050;">
+                                        <div class="position-absolute top-0 end-0 p-3">
+                                            <button type="button" class="btn btn-light" id="closeGallery">
+                                                <span>&times;</span>
+                                            </button>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between align-items-center h-100 px-3">
+                                            <button class="btn btn-light" id="prevImage">&lt;</button>
+
+                                            <div class="text-center" style="height: 90vh;">
+                                                <img id="fullImage" src="" alt="Full Size Image"
+                                                    style="max-height: 100%; max-width: 90vw; object-fit: contain;">
+                                            </div>
+
+                                            <button class="btn btn-light" id="nextImage">&gt;</button>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="row">
+                                        <div class="col-12 mb-2 mt-3">
                                             <strong>Incident Details:</strong>
                                         </div>
                                         <div class="col-12">
@@ -167,7 +230,7 @@
                                             ({{ number_format($reportData['cyberbullyingPercentage'], 2) }}% match)
                                         </div>
                                         <div class="col-12">
-                                            <strong>Detected Words:</strong> 
+                                            <strong>Detected Words:</strong>
                                             @if (!empty($reportData['detectedWords']))
                                                 {{ implode(', ', $reportData['detectedWords']) }}
                                             @else
@@ -176,6 +239,8 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Perpetrator's Information -->
                                 <div class="tab-pane fade" id="pills-contact" role="tabpanel"
                                     aria-labelledby="pills-preperator-information">
                                     <div class="row">
@@ -201,10 +266,19 @@
                                         <div class="col-8">{{ $reportData['describeActions'] }}</div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
 
-                @include('partials.admin-footer')
+
+    @include('partials.admin-footer')
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        window.galleryImages = @json($reportData['incidentEvidence'] ?? []);
+    </script>
+    <script src="../../../../assets/js/report.js"></script>

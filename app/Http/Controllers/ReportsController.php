@@ -151,8 +151,9 @@ class ReportsController extends Controller
             'perpetratorGradeYearLevel' => $report->perpetratorGradeYearLevel,
             'actionsTaken' => $report->actionsTaken ?? 'N/A',
             'describeActions' => $report->describeActions ?? 'N/A',
+            'incidentEvidence' => $report->incidentEvidence instanceof \MongoDB\Model\BSONArray ? $report->incidentEvidence->getArrayCopy() : [],
         ];
-    
+
         // Classify the incident
         $classificationResult = $classifier->detectCyberbullying($reportData['incidentDetails']);
        $reportData['isCyberbullying'] = $classificationResult['isCyberbullying'];
@@ -204,6 +205,7 @@ class ReportsController extends Controller
             'perpetratorGradeYearLevel' => $report->perpetratorGradeYearLevel,
             'actionsTaken' => $report->actionsTaken ?? 'N/A',
             'describeActions' => $report->describeActions ?? 'N/A',
+            'incidentEvidence' => $report->incidentEvidence instanceof \MongoDB\Model\BSONArray ? $report->incidentEvidence->getArrayCopy() : [],
         ];
  
         return view('guidance.reports.view', compact(
