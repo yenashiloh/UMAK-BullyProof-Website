@@ -1,12 +1,20 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Services\CyberbullyingClassifier;
+use App\Services\CyberbullyingDetectionService;
 use Illuminate\Http\Request;
 use MongoDB\Client;
 
+
 class ReportsController extends Controller
 {
+    protected $detectionService;
+
+    public function __construct(CyberbullyingDetectionService $detectionService) 
+    {
+        $this->detectionService = $detectionService;
+    }
+
     //show reports in discipline side
     public function showReportsDiscipline()
     {
@@ -37,6 +45,7 @@ class ReportsController extends Controller
                 '$project' => [
                     'reportDate' => 1,
                     'victimName' => 1,
+                    'perpetratorName' => 1,
                     'gradeYearLevel' => 1,
                     'status' => 1,
                     'reporterFullName' => '$reporter.fullname',
@@ -104,8 +113,7 @@ class ReportsController extends Controller
         )); 
     }
 
-    //view report for discipline
-    public function viewReportDiscipline($id, CyberbullyingClassifier $classifier)
+    public function viewReportDiscipline($id) 
     {
         $client = new Client(env('MONGODB_URI'));
         $reportCollection = $client->bullyproof->reports;
@@ -132,7 +140,13 @@ class ReportsController extends Controller
         if (!$reporter) {
             abort(404, 'Reporter not found');
         }
-    
+
+        // Get incident details from the report
+        $incidentDetails = $report->incidentDetails ?? '';
+        
+        // Analyze the incident details using the detection service
+        $analysisResult = $this->detectionService->analyze($incidentDetails);
+
         $reportData = [
             'reportDate' => $report->reportDate->toDateTime()->format('Y-m-d H:i:s'),
             'victimRelationship' => $report->victimRelationship,
@@ -145,21 +159,24 @@ class ReportsController extends Controller
             'reportedTo' => $report->reportedTo ?? 'N/A',
             'platformUsed' => $report->platformUsed instanceof \MongoDB\Model\BSONArray ? $report->platformUsed->getArrayCopy() : [],
             'cyberbullyingType' => $report->cyberbullyingType instanceof \MongoDB\Model\BSONArray ? $report->cyberbullyingType->getArrayCopy() : [],
-            'incidentDetails' => $report->incidentDetails ?? 'N/A',
+            'incidentDetails' => $incidentDetails,
             'perpetratorName' => $report->perpetratorName,
             'perpetratorRole' => $report->perpetratorRole,
             'perpetratorGradeYearLevel' => $report->perpetratorGradeYearLevel,
             'actionsTaken' => $report->actionsTaken ?? 'N/A',
             'describeActions' => $report->describeActions ?? 'N/A',
             'incidentEvidence' => $report->incidentEvidence instanceof \MongoDB\Model\BSONArray ? $report->incidentEvidence->getArrayCopy() : [],
+            // Add the analysis results from the Python script
+            'analysisResult' => $analysisResult['analysisResult'],
+            'analysisProbability' => $analysisResult['analysisProbability']
         ];
 
-        // Classify the incident
-        $classificationResult = $classifier->detectCyberbullying($reportData['incidentDetails']);
-       $reportData['isCyberbullying'] = $classificationResult['isCyberbullying'];
-       $reportData['cyberbullyingPercentage'] = $classificationResult['cyberbullyingPercentage'];
-       $reportData['detectedWords'] = $classificationResult['detectedWords'];
 
+        // Add error to reportData if present
+        if (!empty($analysisResult['error'])) {
+            $reportData['error'] = $analysisResult['error'];
+        }
+    
         return view('admin.reports.view', compact(
             'firstName',
             'lastName',
@@ -167,8 +184,7 @@ class ReportsController extends Controller
             'reportData'
         ));
     }
-     
-     
+    
     //view report for guidance
     public function viewReportGuidance($id)
     {
@@ -230,7 +246,7 @@ class ReportsController extends Controller
         $currentStatus = $report->status;
         $newStatus = '';
 
-        if ($currentStatus == 'To Review') {
+        if ($currentStatus == 'For Review') {
             $newStatus = 'Under Investigation';
         } elseif ($currentStatus == 'Under Investigation') {
             $newStatus = 'Resolved';

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c613f3c72e62dbb4f91b3bab285afed6",
+    "content-hash": "d1e72acc7f4042104d62e44d343da007",
     "packages": [
         {
             "name": "brick/math",
@@ -2132,16 +2132,16 @@
         },
         {
             "name": "mongodb/laravel-mongodb",
-            "version": "5.0.2",
+            "version": "5.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mongodb/laravel-mongodb.git",
-                "reference": "b51aeff76c065839da25c56652428421d1b54cad"
+                "reference": "39558070786b400c3a82f22ad9da3b77eb99ceaa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mongodb/laravel-mongodb/zipball/b51aeff76c065839da25c56652428421d1b54cad",
-                "reference": "b51aeff76c065839da25c56652428421d1b54cad",
+                "url": "https://api.github.com/repos/mongodb/laravel-mongodb/zipball/39558070786b400c3a82f22ad9da3b77eb99ceaa",
+                "reference": "39558070786b400c3a82f22ad9da3b77eb99ceaa",
                 "shasum": ""
             },
             "require": {
@@ -2230,9 +2230,9 @@
             "support": {
                 "issues": "https://www.mongodb.com/support",
                 "security": "https://www.mongodb.com/security",
-                "source": "https://github.com/mongodb/laravel-mongodb/tree/5.0.2"
+                "source": "https://github.com/mongodb/laravel-mongodb/tree/5.1.0"
             },
-            "time": "2024-09-17T11:05:10+00:00"
+            "time": "2024-10-07T08:37:33+00:00"
         },
         {
             "name": "mongodb/mongodb",
@@ -5485,16 +5485,16 @@
         },
         {
             "name": "symfony/process",
-            "version": "v7.1.5",
+            "version": "v7.1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "5c03ee6369281177f07f7c68252a280beccba847"
+                "reference": "42783370fda6e538771f7c7a36e9fa2ee3a84892"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/5c03ee6369281177f07f7c68252a280beccba847",
-                "reference": "5c03ee6369281177f07f7c68252a280beccba847",
+                "url": "https://api.github.com/repos/symfony/process/zipball/42783370fda6e538771f7c7a36e9fa2ee3a84892",
+                "reference": "42783370fda6e538771f7c7a36e9fa2ee3a84892",
                 "shasum": ""
             },
             "require": {
@@ -5526,7 +5526,7 @@
             "description": "Executes commands in sub-processes",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/process/tree/v7.1.5"
+                "source": "https://github.com/symfony/process/tree/v7.1.8"
             },
             "funding": [
                 {
@@ -5542,7 +5542,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-09-19T21:48:23+00:00"
+            "time": "2024-11-06T14:23:19+00:00"
         },
         {
             "name": "symfony/routing",

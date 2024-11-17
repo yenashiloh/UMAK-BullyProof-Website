@@ -47,13 +47,11 @@
     
         document.addEventListener('DOMContentLoaded', hideLoadingOverlay);
         window.addEventListener('beforeunload', function(event) {
-            // Only show loading overlay if navigating away from the page
             if (!event.target.activeElement.classList.contains('no-loading')) {
                 showLoadingOverlay();
             }
         });
     
-        // Attach a click event to export links to prevent the overlay from showing
         document.addEventListener('click', function(event) {
             if (event.target.closest('.export-link')) {
                 hideLoadingOverlay();

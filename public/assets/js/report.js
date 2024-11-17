@@ -82,3 +82,4 @@ class ImageGallery {
 document.addEventListener('DOMContentLoaded', () => {
     new ImageGallery();
 });
+

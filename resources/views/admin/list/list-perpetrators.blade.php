@@ -28,19 +28,18 @@
     <div class="container">
         <div class="page-inner">
             <div class="page-header">
-                <h3 class="fw-bold mb-3">List of Perpetrator</h3>
+                <h3 class="fw-bold mb-3">Respondents</h3>
                 <ul class="breadcrumbs mb-3">
                     <li class="nav-home">
                         <a href="{{ route('admin.dashboard') }}">
                             <i class="icon-home"></i>
                         </a>
                     </li>
-
                     <li class="separator">
                         <i class="icon-arrow-right"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="#">List of Perpetrators</a>
+                        <a href="#">Respondents</a>
                     </li>
                 </ul>
             </div>
@@ -54,10 +53,10 @@
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Perpetrator's Name</th>
+                                            <th>Respondent's Name</th>
                                             <th>Grade/Year Level & Section</th>
                                             <th>ID Number</th>
-                                            <th>Offense Counts</th>
+                                            <th>Remarks</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -69,17 +68,18 @@
                                                 <td>{{ $report->perpetratorGradeYearLevel ?? 'N/A' }}</td>
                                                 <td>{{ $report->idNumber ?? 'N/A' }}</td> 
                                                 <td>{{ $report->offenseCounts ?? 'N/A' }}</td> 
-                                                <td>
-                                                    <div class="form-button-action">
-                                                        <a href="{{ route('admin.list.view-perpertrators', ['id' => $report->_id]) }}" 
-                                                           class="btn btn-sm btn-info" 
-                                                           data-bs-toggle="tooltip" 
-                                                           title="View Report" 
-                                                           data-original-title="View">
-                                                            View
-                                                        </a>
-                                                    </div>
-                                                </td>
+                                                <td class="d-flex">
+                                                    <a href="{{ route('admin.list.view-perpertrators', ['id' => $report->_id]) }}"
+                                                       class="btn btn-link btn-primary me-2" data-bs-toggle="tooltip"
+                                                       title="View" data-original-title="View">
+                                                       <i class="fa fa-eye"></i>
+                                                    </a>
+                                                
+                                                    <a href="#" class="btn btn-link btn-primary" data-bs-toggle="tooltip"
+                                                       title="Edit" data-original-title="Edit">
+                                                       <i class="fa fa-edit"></i>
+                                                    </a>
+                                                </td>   
                                             </tr>
                                         @endforeach
                                     </tbody>

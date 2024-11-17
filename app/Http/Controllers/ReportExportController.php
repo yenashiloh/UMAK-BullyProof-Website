@@ -69,48 +69,48 @@ class ReportExportController extends Controller
     }
 
     public function exportCSV()
-{
-    $reports = $this->getReportData();
+    {
+        $reports = $this->getReportData();
 
-    if (empty($reports)) {
-        return redirect()->back()->with('error', 'No reports found to export');
-    }
+        if (empty($reports)) {
+            return redirect()->back()->with('error', 'No reports found to export');
+        }
 
-    $spreadsheet = new Spreadsheet();
-    $sheet = $spreadsheet->getActiveSheet();
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
 
-    $headers = array_keys($reports[0]);
-    $column = 'A';
-
-    foreach ($headers as $header) {
-        $sheet->setCellValue($column . '1', $header);
-        $column++;
-    }
-
-    $row = 2;
-    foreach ($reports as $report) {
+        $headers = array_keys($reports[0]);
         $column = 'A';
-        foreach ($report as $value) {
-            $sheet->setCellValue($column . $row, $value);
+
+        foreach ($headers as $header) {
+            $sheet->setCellValue($column . '1', $header);
             $column++;
         }
-        $row++;
+
+        $row = 2;
+        foreach ($reports as $report) {
+            $column = 'A';
+            foreach ($report as $value) {
+                $sheet->setCellValue($column . $row, $value);
+                $column++;
+            }
+            $row++;
+        }
+
+        $filename = 'incident_reports_' . date('Y-m-d_His') . '.csv';
+        $writer = new Csv($spreadsheet);
+
+        return response()->stream(
+            function() use ($writer) {
+                $writer->save('php://output');
+            },
+            200,
+            [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            ]
+        );
     }
-
-    $filename = 'incident_reports_' . date('Y-m-d_His') . '.csv';
-    $writer = new Csv($spreadsheet);
-
-    return response()->stream(
-        function() use ($writer) {
-            $writer->save('php://output');
-        },
-        200,
-        [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ]
-    );
-}
 
 
     public function exportXLSX()

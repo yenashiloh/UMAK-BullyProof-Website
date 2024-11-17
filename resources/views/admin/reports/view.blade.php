@@ -60,7 +60,7 @@
                     <li class="separator">
                         <i class="icon-arrow-right"></i>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item fw-bold">
                         <a href="">View Report</a>
                     </li>
                 </ul>
@@ -83,7 +83,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link" id="pills-preperator-information" data-bs-toggle="pill"
                                         href="#pills-contact" role="tab" aria-controls="pills-contact"
-                                        aria-selected="false">Perpetrator's Information</a>
+                                        aria-selected="false">Respondent's Information</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="pills-incident-details" data-bs-toggle="pill"
@@ -97,37 +97,102 @@
                                 <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
                                     aria-labelledby="pills-home-tab">
                                     <div class="row">
-                                        <div class="col-3 mb-2 mt-3"><strong>Reported Date and Time:</strong></div>
-                                        <div class="col-8 mt-3">
-                                            {{ \Carbon\Carbon::parse($reportData['reportDate'])->setTimezone('Asia/Manila')->format('F j, Y, g:i A') }}
+                                        <div class="col-md-6 mb-2 mt-3">
+                                            <label class="mb-2 mt-2"><strong>Reported Date and Time:</strong></label>
+                                            <input type="text" class="form-control"
+                                                value="{{ \Carbon\Carbon::parse($reportData['reportDate'])->setTimezone('Asia/Manila')->format('F j, Y, g:i A') }}"
+                                                disabled>
+                                        </div>
+                                        <div class="col-md-6 mb-2 mt-3">
+                                            <label class="mb-2 mt-2"><strong>Complainant's Name:</strong></label>
+                                            <input type="text" class="form-control"
+                                                value="{{ $reportData['victimName'] }}" disabled>
                                         </div>
                                     </div>
+
                                     <div class="row">
-                                        <div class="col-3 mb-2"><strong>Victim's Name:</strong></div>
-                                        <div class="col-8">{{ $reportData['victimName'] }}</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-3 mb-2"><strong>Victim’s Year Level or Position: </strong></div>
-                                        <div class="col-8">{{ $reportData['gradeYearLevel'] }}</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-3 mb-2"><strong>Victim's Role:</strong></div>
-                                        <div class="col-8">{{ $reportData['victimType'] }}</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-3 mb-2"><strong>Relationship to the Victim:</strong></div>
-                                        <div class="col-8">{{ $reportData['victimRelationship'] }}</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-3 mb-2"><strong>Have Reported the Incident to Anyone Else:
-                                            </strong>
+                                        <div class="col-md-6 mb-2">
+                                            <label class="mb-2 mt-2"><strong>Victim’s Year Level or
+                                                    Position:</strong></label>
+                                            <input type="text" class="form-control"
+                                                value="{{ $reportData['gradeYearLevel'] }}" disabled>
                                         </div>
-                                        <div class="col-8">{{ $reportData['hasReportedBefore'] }}</div>
+                                        <div class="col-md-6 mb-2">
+                                            <label class="mb-2 mt-2"><strong>Complainant's Role:</strong></label>
+                                            <input type="text" class="form-control"
+                                                value="{{ $reportData['victimType'] }}" disabled>
+                                        </div>
                                     </div>
+
                                     <div class="row">
-                                        <div class="col-3 mb-2"><strong>Reported to: </strong></div>
-                                        <div class="col-8">{{ $reportData['reportedTo'] }}</div>
+                                        <div class="col-md-6 mb-2">
+                                            <label class="mb-2 mt-2"><strong>Relationship to the
+                                                    Victim:</strong></label>
+                                            <input type="text" class="form-control"
+                                                value="{{ $reportData['victimRelationship'] }}" disabled>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <label class="mb-2 mt-2"><strong>Have Reported the Incident to Anyone
+                                                    Else:</strong></label>
+                                            <input type="text" class="form-control"
+                                                value="{{ $reportData['hasReportedBefore'] }}" disabled>
+                                        </div>
                                     </div>
+
+                                    @if (!empty($reportData['reportedTo']))
+                                        <div class="row">
+                                            <div class="col-md-6 mb-2">
+                                                <label class="mb-2 mt-2"><strong>Reported to:</strong></label>
+                                                <input type="text" class="form-control"
+                                                    value="{{ $reportData['reportedTo'] }}" disabled>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+
+
+
+                                <!-- Respondent's Information -->
+                                <div class="tab-pane fade" id="pills-contact" role="tabpanel"
+                                    aria-labelledby="pills-preperator-information">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-2 mt-3">
+                                            <label class="mb-2 mt-2"><strong>Respondents’s Fullname:</strong></label>
+                                            <input type="text" class="form-control"
+                                                value="{{ $reportData['perpetratorName'] }}" disabled>
+                                        </div>
+                                        <div class="col-md-6 mb-2 mt-3">
+                                            <label class="mb-2 mt-2"><strong>Respondents’s Role in the
+                                                    University:</strong></label>
+                                            <input type="text" class="form-control"
+                                                value="{{ $reportData['perpetratorRole'] }}" disabled>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-2">
+                                            <label class="mb-2 mt-2"><strong>Respondents’s Grade/Year Level or
+                                                    Position:</strong></label>
+                                            <input type="text" class="form-control"
+                                                value="{{ $reportData['perpetratorGradeYearLevel'] }}" disabled>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <label class="mb-2 mt-2"><strong>Have actions been taken so
+                                                    far:</strong></label>
+                                            <input type="text" class="form-control"
+                                                value="{{ $reportData['actionsTaken'] }}" disabled>
+                                        </div>
+                                    </div>
+
+                                    @if (!empty($reportData['describeActions']))
+                                        <div class="row">
+                                            <div class="col-md-6 mb-2">
+                                                <label class="mb-2 mt-2"><strong>Describe Actions:</strong></label>
+                                                <input type="text" class="form-control"
+                                                    value="{{ $reportData['describeActions'] }}" disabled>
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
 
                                 <!-- Incident Details -->
@@ -139,30 +204,24 @@
                                         </div>
                                         <div class="col-12">
                                             @foreach ($reportData['platformUsed'] as $platform)
-                                                <div>
-                                                    <ul>
-                                                        <li>{{ $platform }}
-                                                        </li>
-                                                    </ul>
+                                                <div class="mb-2">
+                                                    <input type="text" class="form-control"
+                                                        value="{{ $platform }}" disabled>
                                                 </div>
                                             @endforeach
                                         </div>
                                     </div>
+
+
                                     <div class="row">
                                         <div class="col-12 mb-2 mt-3">
-                                            <strong>Type of cyberbullying was involved:</strong>
+                                            <strong>Incident Details:</strong>
                                         </div>
                                         <div class="col-12">
-                                            @foreach ($reportData['cyberbullyingType'] as $type)
-                                                <div>
-                                                    <ul>
-                                                        <li>{{ $type }}
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            @endforeach
+                                            <textarea class="form-control" rows="12" disabled>{{ $reportData['incidentDetails'] }}</textarea>
                                         </div>
                                     </div>
+
                                     <div class="row">
                                         <div class="col-12 mb-2 mt-3">
                                             <strong>Incident Evidence:</strong>
@@ -208,62 +267,37 @@
                                         </div>
                                     </div>
 
-
-                                    <div class="row">
-                                        <div class="col-12 mb-2 mt-3">
-                                            <strong>Incident Details:</strong>
-                                        </div>
-                                        <div class="col-12">
-                                            {!! nl2br(e($reportData['incidentDetails'])) !!}
-                                        </div>
-                                    </div>
                                     <hr>
+                                    <div class="result">
+                                        @if (isset($reportData['analysisResult']))
+                                         
+                                                <h3 class="text-lg font-semibold mb-2">Cyberbullying Analysis</h3>
+                                                <p class="mb-2">
+                                                    <span class="font-medium">Result:</span>
+                                                    <span
+                                                        class="@if ($reportData['analysisResult'] === 'Cyberbullying Detected') text-danger @else text-success @endif">
+                                                        {{ $reportData['analysisResult'] }}
+                                                    </span>
+                                                </p>
+                                                <p>
+                                                    <span class="font-medium">Probability:</span>
+                                                    <span
+                                                        class="@if ($reportData['analysisProbability'] > 50) text-danger @else text-success @endif">
+                                                        {{ number_format($reportData['analysisProbability'], 2) }}%
+                                                    </span>
+                                                </p>
+                                            
+                                        @else
+                                            <div class="bg-yellow-50 p-4 rounded-lg shadow mb-4">
+                                                <p class="text-yellow-700">Analysis result not available</p>
+                                            </div>
+                                        @endif
 
-                                    <div class="row">
-                                        <div class="col-12 mb-2 mt-3">
-                                            <strong>Cyberbullying Detection:</strong>
-                                            @if ($reportData['isCyberbullying'])
-                                                <span class="text-danger">Cyberbullying detected</span>
-                                            @else
-                                                <span class="text-success">No cyberbullying detected</span>
-                                            @endif
-                                            ({{ number_format($reportData['cyberbullyingPercentage'], 2) }}% match)
-                                        </div>
-                                        <div class="col-12">
-                                            <strong>Detected Words:</strong>
-                                            @if (!empty($reportData['detectedWords']))
-                                                {{ implode(', ', $reportData['detectedWords']) }}
-                                            @else
-                                                None
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Perpetrator's Information -->
-                                <div class="tab-pane fade" id="pills-contact" role="tabpanel"
-                                    aria-labelledby="pills-preperator-information">
-                                    <div class="row">
-                                        <div class="col-3 mb-2 mt-3"><strong>Perpetrator’s Fullname:</strong></div>
-                                        <div class="col-8 mt-3">{{ $reportData['perpetratorName'] }}</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-3 mb-2"><strong>Perpetrator’s Role in the University:</strong>
-                                        </div>
-                                        <div class="col-8">{{ $reportData['perpetratorRole'] }}</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-3 mb-2"><strong>Perpetrator’s Grade/Year Level or
-                                                Position:</strong></div>
-                                        <div class="col-8">{{ $reportData['perpetratorGradeYearLevel'] }}</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-3 mb-2"><strong>Have actions been taken so far: </strong></div>
-                                        <div class="col-8">{{ $reportData['actionsTaken'] }}</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-3 mb-2"><strong>Describe Actions: </strong></div>
-                                        <div class="col-8">{{ $reportData['describeActions'] }}</div>
+                                        @if (isset($reportData['error']))
+                                            <div class="bg-red-50 p-4 rounded-lg shadow">
+                                                <p class="text-red-700">Error: {{ $reportData['error'] }}</p>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

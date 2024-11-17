@@ -59,24 +59,22 @@
                             <h4 class="card-title">List of Incident Reports</h4>
                             <div class="dropdown">
                                 <a href="#" class="btn btn-primary btn-round dropdown-toggle" id="exportDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-file-export"></i> Export Reports
+                                    <i class="fas fa-file-export"></i> Export
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="exportDropdown">
                                     <li>
                                         <a class="dropdown-item export-link no-loading" href="{{ route('reports.export.csv') }}">
-                                            <i class="fas fa-file-csv"></i> Export as CSV
+                                            <i class="fas fa-file-csv"></i> Export to CSV
                                         </a>
                                     </li>
                                     <li>
                                         <a class="dropdown-item export-link no-loading" href="{{ route('reports.export.xlsx') }}">
-                                            <i class="fas fa-file-excel"></i> Export as XLSX
+                                            <i class="fas fa-file-excel"></i> Export to XLSX
                                         </a>
                                     </li>
                                 </ul>
                             </div>
                         </div>
-                        
-                        
                         
                         <div class="card-body">
                             <div class="table-responsive">
@@ -85,9 +83,8 @@
                                         <tr>
                                             <th>#</th>
                                             <th>Date and Time</th>
-                                            <th>Reported By</th>
-                                            <th>Victim's Name</th>
-                                            {{-- <th>Grade Year/Level</th> --}}
+                                            <th>Complainant's Name</th>
+                                            <th>Respondent's Name</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -97,11 +94,11 @@
                                         <tr>
                                             <td>{{ $index + 1 }}</td>
                                             <td>{{ \Carbon\Carbon::parse($report['reportDate']->toDateTime())->setTimezone('Asia/Manila')->format('F j, Y, g:i a') }}</td>
-                                            <td>{{ $report['reporterFullName'] }}</td>
                                             <td>{{ $report['victimName'] }}</td>
-                                            {{-- <td>{{ $report['gradeYearLevel'] }}</td> --}}
+                                            <td>{{ $report['perpetratorName'] }}</td>
+                                    
                                             <td>
-                                                @if($report['status'] == 'To Review')
+                                                @if($report['status'] == 'For Review')
                                                     <span class="badge bg-primary ">{{ $report['status'] }}</span>
                                                 @elseif($report['status'] == 'Under Investigation')
                                                     <span class="badge bg-warning text-dark">{{ $report['status'] }}</span>
@@ -121,7 +118,7 @@
                                                         View
                                                     </a>
                                                     
-                                                    @if($report['status'] == 'To Review')
+                                                    @if($report['status'] == 'For Review')
                                                     <form action="{{ route('admin.reports.changeStatus', ['id' => $report['_id']]) }}" method="POST">
                                                         @csrf
                                                         @method('PUT')

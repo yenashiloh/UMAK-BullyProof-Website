@@ -8,6 +8,7 @@
     @include('partials.admin-link')
 </head>
 
+
 <body>
     <div id="loading-overlay">
         <div class="spinner"></div>
@@ -22,10 +23,47 @@
                     <h6 class="op-7 mb-2">All reports are displayed in this dashboard</h6>
                 </div>
                 <div class="ms-md-auto py-2 py-md-0">
-                    {{-- <a href="#" class="btn btn-label-info btn-round me-2">Manage</a> --}}
-                    <a href="#" class="btn btn-primary btn-round">Generate Report</a>
+                    <a href="#" class="btn btn-label-info btn-round me-2" data-bs-toggle="modal" data-bs-target="#filterModal">
+                        Filters <i class="fas fa-sliders-h"></i>
+                    </a>
+                    {{-- <a href="#" class="btn btn-primary btn-round">Generate Report</a> --}}
                 </div>
             </div>
+        
+            <!-- Filter Modal -->
+            <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="filterModalLabel">Filter Reports
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="dateRangeForm" method="GET">
+                                <div class="mb-3">
+                                    <label for="start_date" class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" id="start_date" name="start_date" 
+                                           value="{{ $startDate }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="end_date" class="form-label">End Date</label>
+                                    <input type="date" class="form-control" id="end_date" name="end_date" 
+                                           value="{{ $endDate }}" required>
+                                </div>
+                                <div class="modal-footer px-0 pb-0">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="resetDateRange()">Reset
+                                    </button>
+                                    <button type="submit" class="btn btn-secondary">Apply Filters
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
             <div class="row">
                 <div class="col-12 col-md-4">
                     <div class="card card-stats card-round">
@@ -57,11 +95,14 @@
                                     </div>
                                 </div>
                                 <div class="col col-stats ms-3 ms-sm-0">
-                                    <div class="numbers">
-                                        <p class="card-category">Total Incidents Reported</p>
-                                        <h4 class="card-title">{{ $totalReports }}</h4>
+                                    <div class="numbers d-flex align-items-center">
+                                        <div>
+                                            <p class="card-category">Total Incidents Reported</p>
+                                            <h4 class="card-title">{{ $totalReports }}</h4>
+                                        </div>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -147,239 +188,45 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">Types of Cyberbullying</div>
-                        </div>
-                        <div class="card-body">
-                            <div class="chart-container">
-                                <canvas id="pieChart" ></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">Number of Reports</div>
-                        </div>
-                        <div class="card-body">
-                            <div class="chart-container">
-                                <canvas id="lineChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <input type="hidden" id="reportMonths" value="{{ json_encode($reportMonthData) }}">
+            <input type="hidden" id="reportCounts" value="{{ json_encode(array_values($reportCounts)) }}">
+            <input type="hidden" id="platformLabels" value="{{ json_encode($platformLabels) }}">
+            <input type="hidden" id="platformData" value="{{ json_encode($platformData) }}">
 
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">Cyberbullying Platforms</div>
-                        </div>
-                        <div class="card-body">
-                            <div class="chart-container">
-                                <canvas id="platformBarChart"></canvas>
-                            </div>
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Number of Reports</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="lineChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Cyberbullying Platforms</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="platformBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- End Custom template -->
+    </div>
+
+    <!-- End Custom template -->
     </div>
     @include('partials.admin-footer')
-
-    <script>
-        var cyberbullyingTypes = @json(array_keys($cyberbullyingData));
-        var cyberbullyingCounts = @json(array_values($cyberbullyingData));
-
-        var myPieChart = new Chart(pieChart, {
-            type: "pie",
-            data: {
-                datasets: [{
-                    data: cyberbullyingCounts,
-                    backgroundColor: ["#1d7af3", "#f3545d", "#fdaf4b", "#36a2eb",
-                        "#ff6384"
-                    ],
-                    borderWidth: 0,
-                }, ],
-                labels: cyberbullyingTypes,
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                legend: {
-                    position: "bottom",
-                    labels: {
-                        fontColor: "rgb(154, 154, 154)",
-                        fontSize: 11,
-                        usePointStyle: true,
-                        padding: 20,
-                    },
-                },
-                pieceLabel: {
-                    render: "percentage",
-                    fontColor: "white",
-                    fontSize: 14,
-                },
-                tooltips: false,
-                layout: {
-                    padding: {
-                        left: 20,
-                        right: 20,
-                        top: 20,
-                        bottom: 20,
-                    },
-                },
-            },
-        });
-
-        //line chart
-        var ctx = document.getElementById('lineChart').getContext('2d');
-
-        var reportMonths = @json($reportMonthData);
-        var reportCounts = @json(array_values($reportCounts));
-
-        var myLineChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: reportMonths,
-                datasets: [{
-                    label: 'Number reports',
-                    data: reportCounts,
-                    backgroundColor: 'rgba(29, 122, 243, 0.1)',
-                    borderColor: 'rgb(29, 122, 243)',
-                    borderWidth: 2,
-                    pointBackgroundColor: 'rgb(29, 122, 243)',
-                    pointBorderColor: 'rgb(29, 122, 243)',
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        grid: {
-                            display: false
-                        },
-                        ticks: {
-                            color: '#666'
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.1)'
-                        },
-                        ticks: {
-                            color: '#666',
-                            callback: function(value) {
-                                return value.toLocaleString();
-                            }
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'bottom'
-                    },
-                    title: {
-                        display: true,
-                        text: 'Line Chart',
-                        font: {
-                            size: 16,
-                            weight: 'bold'
-                        }
-                    }
-                },
-                elements: {
-                    line: {
-                        tension: 0.4
-                    }
-                }
-            }
-        });
-
-        //bar chart
-        var ctx = document.getElementById('platformBarChart').getContext('2d');
-
-        function getRandomColor() {
-            var r = Math.floor(Math.random() * 255);
-            var g = Math.floor(Math.random() * 255);
-            var b = Math.floor(Math.random() * 255);
-            return `rgba(${r}, ${g}, ${b}, 0.3)`; 
-        }
-
-        var randomColors = @json($platformLabels).map(() => getRandomColor());
-
-        var platformBarChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: @json($platformLabels),
-                datasets: [{
-                    label: 'Number of Incidents',
-                    data: @json($platformData),
-                    backgroundColor: randomColors,
-                    borderColor: randomColors.map(color => color.replace('0.6',
-                    '1')), 
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Number of Platforms Where Cyberbullying Occurred'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Platforms'
-                        },
-                        ticks: {
-                            autoSkip: false,
-                            maxRotation: 0,
-                            minRotation: 0
-                        },
-                        grid: {
-                            display: false
-                        },
-                        offset: false,
-                        padding: 0
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    title: {
-                        display: true,
-                        text: 'Common Platforms Used in Incidents'
-                    }
-                },
-                layout: {
-                    padding: {
-                        left: 10,
-                        right: 10
-                    }
-                }
-            }
-        });
-    </script>
+    <script src="../../../../assets/js/dashboard.js"></script>
 </body>
 
 </html>

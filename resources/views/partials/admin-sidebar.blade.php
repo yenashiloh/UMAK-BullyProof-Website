@@ -52,15 +52,41 @@
                     <li class="nav-item">
                         <a data-bs-toggle="collapse" href="#sidebarLayouts">
                             <i class="fas fa-users"></i>
-                            <p>List of Complainants</p>
+                            <p>Complainants</p>
                         </a>
                     </li>
                     <li class="nav-item {{ Route::currentRouteName() === 'admin.list.list-perpetrators' ? 'active' : '' }}">
                         <a href="{{ route('admin.list.list-perpetrators') }}">
-                            <i class="fas fa-users"></i>
-                            <p>List of Perpetrators</p>
+                            <i class="fas fa-user-friends"></i>
+                            <p>Respondents</p>
                         </a>
-                    </li>                    
+                    </li>      
+                    
+                    <li class="nav-section">
+                        <span class="sidebar-mini-icon">
+                            <i class="fa fa-ellipsis-h"></i>
+                        </span>
+                        <h4 class="text-section">Appointment Management</h4>
+                    </li>
+                    <li class="nav-item {{ Route::currentRouteName() === 'admin.appointment.appointment' ? 'active' : '' }}">
+                        <a href="{{ route('admin.appointment.appointment') }}">
+                            <i class="fas fa-calendar"></i>
+                            <p>Appointments</p>
+                        </a>
+                    </li>
+                    <li class="nav-item {{ Route::currentRouteName() === 'admin.appointment.summary' ? 'active' : '' }}">
+                        <a href="{{ route('admin.appointment.summary') }}">
+                            <i class="fas fa-calendar-check"></i>
+                            <p>Appointments Summary</p>
+                        </a>
+                    </li>
+                    {{-- <li class="nav-item ">
+                        <a href="">
+                            <i class="fas fa-envelope"></i>
+                            <p>Email Content</p>
+                        </a>
+                    </li> --}}
+                    
                     <li class="nav-section">
                         <span class="sidebar-mini-icon">
                             <i class="fa fa-ellipsis-h"></i>
