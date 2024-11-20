@@ -86,4 +86,23 @@ class ListController extends Controller
             'reportData'
         ));
     }
+
+    //show complainee page
+    public function showAddComplainee()
+    {
+        $client = new Client(env('MONGODB_URI'));
+        $userCollection = $client->bullyproof->users;
+        $adminCollection = $client->bullyproof->admins;
+        $reportCollection = $client->bullyproof->reports;
+
+        $reports = $reportCollection->find()->toArray();
+
+        $adminId = session('admin_id');
+        $admin = $adminCollection->findOne(['_id' => new \MongoDB\BSON\ObjectId($adminId)]);
+        $firstName = $admin->first_name ?? '';
+        $lastName = $admin->last_name ?? '';
+        $email = $admin->email ?? '';
+
+        return view('admin.list.add-complainee', compact('reports', 'firstName', 'lastName', 'email')); 
+    }
 }

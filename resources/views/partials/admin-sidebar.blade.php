@@ -52,7 +52,7 @@
                     <li class="nav-item">
                         <a data-bs-toggle="collapse" href="#sidebarLayouts">
                             <i class="fas fa-users"></i>
-                            <p>Complainants</p>
+                            <p>Complainees</p>
                         </a>
                     </li>
                     <li class="nav-item {{ Route::currentRouteName() === 'admin.list.list-perpetrators' ? 'active' : '' }}">
@@ -61,13 +61,13 @@
                             <p>Respondents</p>
                         </a>
                     </li>      
-                    
                     <li class="nav-section">
                         <span class="sidebar-mini-icon">
                             <i class="fa fa-ellipsis-h"></i>
                         </span>
                         <h4 class="text-section">Appointment Management</h4>
                     </li>
+                   
                     <li class="nav-item {{ Route::currentRouteName() === 'admin.appointment.appointment' ? 'active' : '' }}">
                         <a href="{{ route('admin.appointment.appointment') }}">
                             <i class="fas fa-calendar"></i>

@@ -75,14 +75,6 @@ class CyberbullyingDetectionService
                 $returnVar = proc_close($process);
             }
 
-            // Log the execution details
-            Log::debug('Python Script Execution', [
-                'command' => $command,
-                'output' => $output,
-                'return_var' => $returnVar,
-                'errors' => $errors ?? null
-            ]);
-
             // Check for execution errors
             if ($returnVar !== 0) {
                 throw new Exception("Python script execution failed with code $returnVar: " . ($errors ?? 'Unknown error'));

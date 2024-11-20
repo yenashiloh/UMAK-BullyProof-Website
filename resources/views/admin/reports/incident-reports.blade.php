@@ -82,7 +82,7 @@
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Date and Time</th>
+                                            <th>Date Filed</th>
                                             <th>Complainant's Name</th>
                                             <th>Respondent's Name</th>
                                             <th>Status</th>

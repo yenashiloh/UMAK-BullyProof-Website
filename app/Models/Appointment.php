@@ -17,19 +17,10 @@ class Appointment extends Model
         'complainant_email',
         'appointment_datetime',
         'status',
+        'appointment_date',
+        'appointment_start_time',
+        'appointment_end_time',
         'created_at',
         'updated_at'
-    ];
-
-    protected $dates = [
-        'appointment_datetime',
-        'created_at',
-        'updated_at'
-    ];
-
-    protected $casts = [
-        'appointment_datetime' => 'datetime',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
     ];
 }

@@ -10,9 +10,21 @@ use MongoDB\BSON\UTCDateTime;
 use Carbon\Carbon;
 use App\Mail\AppointmentNotification;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
+use MongoDB\BSON\ObjectId;
+
 
 class AppointmentController extends Controller
 {
+    protected $collection;
+
+    public function __construct()
+    {
+        $client = new Client(env('MONGODB_URI'));
+        $database = $client->selectDatabase(env('DB_DATABASE', 'bullyproof'));
+        $this->collection = $database->appointments;
+    }
+    
     //show appointment page
     public function showAppointmentPage()
     {
@@ -20,49 +32,140 @@ class AppointmentController extends Controller
         $adminCollection = $client->bullyproof->admins;
     
         $adminId = session('admin_id');
-        $admin = $adminCollection->findOne(['_id' => new \MongoDB\BSON\ObjectId($adminId)]);
+        $admin = $adminCollection->findOne(['_id' => new ObjectId($adminId)]);
     
         $firstName = $admin->first_name ?? '';
         $lastName = $admin->last_name ?? '';
         $email = $admin->email ?? '';
     
-        $appointments = $this->getAppointments();
+        $appointments = $this->getCalendar();
+        
+        $appointmentsJson = json_encode($appointments);
     
         return view('admin.appointment.appointment', compact(
             'firstName', 
             'lastName', 
             'email',
-            'appointments' 
+            'appointments',
+            'appointmentsJson'
         ));
     }
     
-    //get the appointment
-    private function getAppointments()
+    //get appointment for calendar
+    private function getCalendar()
     {
         try {
             $appointments = Appointment::all();
             
             return $appointments->map(function ($appointment) {
-                $startTime = Carbon::parse($appointment->appointment_datetime);
+                $appointmentDate = Carbon::parse($appointment->appointment_date);
+                $startTime = Carbon::parse($appointment->appointment_start_time);
+                $endTime = Carbon::parse($appointment->appointment_end_time);
+                
+                $eventStart = Carbon::create(
+                    $appointmentDate->year,
+                    $appointmentDate->month,
+                    $appointmentDate->day,
+                    $startTime->hour,
+                    $startTime->minute,
+                    0
+                );
+                
+                $eventEnd = Carbon::create(
+                    $appointmentDate->year,
+                    $appointmentDate->month,
+                    $appointmentDate->day,
+                    $endTime->hour,
+                    $endTime->minute,
+                    0
+                );
+                
+                // Format the status class name
+                $status = $appointment->status ?? 'Waiting for Confirmation';
+                $statusClass = 'event-' . str_replace(' ', '-', strtolower($status));
                 
                 return [
                     'id' => (string) $appointment->_id,
                     'title' => $appointment->respondent_name,
-                    'start' => $startTime->format('Y-m-d\TH:i:s'),
-                    'end' => $startTime->addHours(1)->format('Y-m-d\TH:i:s'),
-                    'description' => $appointment->complainant_name,
-                    'status' => $appointment->status ?? 'Waiting for Confirmation',
-                    'className' => 'event-' . strtolower($appointment->status ?? 'waiting-for-confirmation'),
-                    'respondent_email' => $appointment->respondent_email,  
-                    'complainant_email' => $appointment->complainant_email  
+                    'start' => $eventStart->format('Y-m-d\TH:i:s'),
+                    'end' => $eventEnd->format('Y-m-d\TH:i:s'),
+                    'description' => 'Complainant: ' . $appointment->complainant_name,
+                    'status' => $status,
+                    'className' => $statusClass,
+                    'respondent_email' => $appointment->respondent_email,
+                    'complainant_email' => $appointment->complainant_email,
+                    'respondent_name' => $appointment->respondent_name,
+                    'complainant_name' => $appointment->complainant_name,
+                    'appointment_end_time' => $appointment->appointment_end_time,  
                 ];
             })->toArray();
         } catch (\Exception $e) {
-            Log::error('Error fetching appointments: ' . $e->getMessage());
+            Log::error('Error fetching appointments: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
             return [];
         }
     }
 
+    //get appointments data
+    private function getAppointments()
+    {
+        try {
+            $appointments = Appointment::all();
+
+            $appointments = $appointments->sortBy(function ($appointment) {
+                return Carbon::parse($appointment->appointment_date);
+            });
+            
+            return $appointments->map(function ($appointment) {
+                $appointmentDate = Carbon::parse($appointment->appointment_date);
+                $startTime = Carbon::parse($appointment->appointment_start_time);
+                $endTime = Carbon::parse($appointment->appointment_end_time);
+                
+                $eventStart = Carbon::create(
+                    $appointmentDate->year,
+                    $appointmentDate->month,
+                    $appointmentDate->day,
+                    $startTime->hour,
+                    $startTime->minute,
+                    0
+                );
+                
+                $eventEnd = Carbon::create(
+                    $appointmentDate->year,
+                    $appointmentDate->month,
+                    $appointmentDate->day,
+                    $endTime->hour,
+                    $endTime->minute,
+                    0
+                );
+                
+                $status = $appointment->status ?? 'Waiting for Confirmation';
+                $statusClass = 'event-' . str_replace(' ', '-', strtolower($status));
+                
+                return [
+                    'id' => (string) $appointment->_id,
+                    'title' => $appointment->respondent_name,
+                    'start' => $eventStart->format('Y-m-d\TH:i:s'),
+                    'end' => $eventEnd->format('Y-m-d\TH:i:s'),
+                    'description' =>$appointment->complainant_name,
+                    'status' => $status,
+                    'className' => $statusClass,
+                    'respondent_email' => $appointment->respondent_email,
+                    'complainant_email' => $appointment->complainant_email,
+                    'respondent_name' => $appointment->respondent_name,
+                    'complainant_name' => $appointment->complainant_name,
+                    'appointment_end_time' => $appointment->appointment_end_time,   
+                ];
+            })->toArray();
+        } catch (\Exception $e) {
+            Log::error('Error fetching appointments: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            return [];
+        }
+    }
+    
     //filter appointment summary
     public function filterAppointments(Request $request)
     {
@@ -104,55 +207,100 @@ class AppointmentController extends Controller
     public function storeAppointment(Request $request)
     {
         try {
-            $validated = $request->validate([
+            $validator = Validator::make($request->all(), [
                 'respondent_name' => 'required|string|max:255',
-                'respondent_email' => 'required|email|max:255',
+                'respondent_email' => 'required|email',
                 'complainant_name' => 'required|string|max:255',
-                'complainant_email' => 'required|email|max:255',
-                'appointment_date' => 'required|date',  
-                'appointment_time' => 'required|date_format:H:i',  
+                'complainant_email' => 'required|email',
+                'appointment_date' => 'required|date',
+                'appointment_start_time' => 'required|date_format:H:i',
+                'appointment_end_time' => 'required|date_format:H:i|after:appointment_start_time',
             ]);
     
-            $appointmentDateTime = Carbon::parse($validated['appointment_date'] . ' ' . $validated['appointment_time']);
-            
+            if ($validator->fails()) {
+                return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+            }
+    
+            $validated = $validator->validated();
+    
+            $startDateTime = Carbon::parse($validated['appointment_date'] . ' ' . $validated['appointment_start_time']);
+            $endDateTime = Carbon::parse($validated['appointment_date'] . ' ' . $validated['appointment_end_time']);
+    
+            $overlappingAppointments = $this->collection->countDocuments([
+                'appointment_date' => new UTCDateTime($startDateTime->timestamp * 1000),
+                '$or' => [
+                    [
+                        'appointment_start_time' => [
+                            '$lt' => $validated['appointment_end_time']
+                        ],
+                        'appointment_end_time' => [
+                            '$gt' => $validated['appointment_start_time']
+                        ]
+                    ]
+                ],
+                'status' => [
+                    '$nin' => ['Cancelled']
+                ]
+            ]);
+    
+            if ($overlappingAppointments > 0) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => ['appointment_date' => ['This time slot is already booked']]
+                ], 422);
+            }
+    
+            $now = Carbon::now();
+            $startDateTime = Carbon::parse($validated['appointment_date'] . ' ' . $validated['appointment_start_time']);
+            $appointmentDate = new UTCDateTime($startDateTime->timestamp * 1000);
+    
             $document = [
                 'respondent_name' => $validated['respondent_name'],
                 'respondent_email' => $validated['respondent_email'],
                 'complainant_name' => $validated['complainant_name'],
                 'complainant_email' => $validated['complainant_email'],
-                'appointment_datetime' => $appointmentDateTime,  
+                'appointment_date' => $appointmentDate,
+                'appointment_start_time' => $validated['appointment_start_time'],
+                'appointment_end_time' => $validated['appointment_end_time'],
                 'status' => 'Waiting for Confirmation',
-                'created_at' => new UTCDateTime(now()),
-                'updated_at' => new UTCDateTime(now()),
+                'created_at' => new UTCDateTime($now->timestamp * 1000),
+                'updated_at' => new UTCDateTime($now->timestamp * 1000)
             ];
     
-            $appointment = new Appointment($document);
-            $appointment->save();
+            $result = $this->collection->insertOne($document);
     
-            // Send email to complainant
-            Mail::to($validated['complainant_email'])
-                ->send(new AppointmentNotification($document));
+            if ($result->getInsertedCount() > 0) {
+                try {
+                    Mail::to($validated['complainant_email'])
+                        ->send(new AppointmentNotification($document));
     
-            // Send email to respondent
-            Mail::to($validated['respondent_email'])
-                ->send(new AppointmentNotification($document));
+                    Mail::to($validated['respondent_email'])
+                        ->send(new AppointmentNotification($document));
     
-            return response()->json([
-                'success' => true,
-                'message' => 'Appointment created successfully!',
-                'appointment_id' => (string)$appointment->_id
-            ], 201);
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Appointment created successfully!',
+                        'appointment_id' => (string)$result->getInsertedId()
+                    ], 201);
     
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
+                } catch (\Exception $e) {
+                    Log::error('Email sending failed', [
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString()
+                    ]);
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Appointment created, but email notifications failed.'
+                    ], 500);
+                }
+            } else {
+                throw new \Exception('Failed to insert document');
+            }
+    
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'An unexpected error occurred: ' . $e->getMessage()
+                'message' => 'Failed to create appointment'
             ], 500);
         }
     }
@@ -185,23 +333,23 @@ class AppointmentController extends Controller
     {
         $validated = $request->validate([
             'appointment_id' => 'required|string',
-            'new_status' => 'required|string|in:Waiting for Confirmation,Approved,Cancelled,Missed,Done',
+            'new_status' => 'required|string|in:Waiting for Confirmation,Approved,Cancelled,Missed,Done,Rescheduled',
         ]);
-
+    
         try {
             $appointment = Appointment::find($validated['appointment_id']);
-
+    
             if (!$appointment) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Appointment not found'
                 ], 404);
             }
-
+    
             $appointment->status = $validated['new_status'];
             $appointment->updated_at = new \MongoDB\BSON\UTCDateTime(now()); 
             $appointment->save();
-
+    
             return response()->json([
                 'success' => true,
                 'message' => 'Status updated successfully!',

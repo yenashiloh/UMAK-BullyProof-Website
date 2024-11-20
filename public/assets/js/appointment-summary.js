@@ -62,24 +62,41 @@ function updateStatusBadge(appointmentId, newStatus) {
     const dropdownMenu = dropdownContainer.querySelector('.dropdown-menu');
 
     badge.textContent = newStatus;
-    badge.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-secondary', 'dropdown-toggle');
+    badge.classList.remove(
+        'event-waiting-for-confirmation', 
+        'event-approved', 
+        'event-cancelled', 
+        'event-missed', 
+        'event-done', 
+        'rescheduled', 
+        'dropdown-toggle'
+    );
 
     let badgeClass = '';
     switch (newStatus) {
+        case 'Waiting for Confirmation':
+            badgeClass = 'event-waiting-for-confirmation';
+            break;
         case 'Approved':
-            badgeClass = 'bg-success';
+            badgeClass = 'event-approved';
             break;
         case 'Cancelled':
+            badgeClass = 'event-cancelled';
+            break;
         case 'Missed':
-            badgeClass = 'bg-warning';
+            badgeClass = 'event-missed';
             break;
         case 'Done':
-            badgeClass = 'bg-success';
+            badgeClass = 'event-done';
+            break;
+        case 'Rescheduled':
+            badgeClass = 'rescheduled';
             break;
         default:
-            badgeClass = 'bg-secondary';
+            badgeClass = 'bg-secondary'; 
             break;
     }
+    
     badge.classList.add(badgeClass);
 
     if (newStatus === 'Waiting for Confirmation' || newStatus === 'Approved') {
@@ -208,47 +225,40 @@ document.addEventListener('DOMContentLoaded', function () {
                             <li><a class="dropdown-item" href="#" onclick="changeStatus('${appointment.id}', 'Done')">Mark as Done</a></li>
                         `;
                     }
-                    
-                    badgeHtml += `
-                            </ul>
-                        </div>
-                    `;
+
+                    badgeHtml += `</ul></div>`;
                 } else {
                     badgeHtml = `<span class="badge ${getBadgeClass(appointment.status)}">${appointment.status}</span>`;
                 }
-    
-                const row = [
-                    index + 1,
-                    appointmentDate.format('MMMM D, YYYY'),
-                    appointmentDate.format('hh:mm A'),
-                    appointment.title,
-                    appointment.respondent_email,
-                    appointment.description,
-                    appointment.complainant_email,
+
+                dataTable.row.add([
+                    appointmentDate.format('MMMM Do YYYY'),
+                    appointment.client_name,
+                    appointment.course,
+                    appointment.instructor_name,
                     badgeHtml
-                ];
-                dataTable.row.add(row);
+                ]).draw();
             });
-    
-            dataTable.draw();
         })
-        .catch(error => {
-            console.error('Error fetching filtered data:', error);
-        });
+        .catch(error => console.error('Error fetching appointments:', error));
     }
 
     function getBadgeClass(status) {
         switch (status) {
+            case 'Waiting for Confirmation':
+                return 'event-waiting-for-confirmation';
             case 'Approved':
-                return 'bg-success';
+                return 'event-approved';
             case 'Cancelled':
-                return 'bg-danger';
+                return 'event-cancelled';
             case 'Missed':
-                return 'bg-warning';
+                return 'event-missed';
             case 'Done':
-                return 'bg-success';
+                return 'event-done';
+            case 'Rescheduled':
+                return 'rescheduled';
             default:
-                return 'bg-secondary';
+                return 'bg-secondary'; // Default class for unrecognized statuses
         }
     }
 });

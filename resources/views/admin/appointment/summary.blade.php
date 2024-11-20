@@ -102,7 +102,7 @@
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($appointment['start'])->format('F j, Y') }}
                                                 </td>
-                                                <td>{{ \Carbon\Carbon::parse($appointment['start'])->format('g:i A') }}
+                                                <td>{{ \Carbon\Carbon::parse($appointment['start'])->format('g:i A') }} -  {{ \Carbon\Carbon::parse($appointment['appointment_end_time'])->format('g:i A') }}
                                                 </td>
                                                 <td>{{ $appointment['title'] }}</td>
                                                 <td>{{ $appointment['respondent_email'] }}</td>
@@ -110,10 +110,15 @@
                                                 <td>{{ $appointment['complainant_email'] }}</td>
                                                 <td>
                                                     <div class="dropdown">
-                                                        <span
-                                                            class="badge {{ $appointment['status'] == 'Approved' ? 'bg-success' : ($appointment['status'] == 'Cancelled' ? 'bg-danger' : ($appointment['status'] == 'Missed' ? 'bg-warning' : ($appointment['status'] == 'Done' ? 'bg-success' : 'bg-secondary'))) }} 
-                                                        dropdown-toggle-no-caret
-                                                        {{ $appointment['status'] == 'Waiting for Confirmation' || $appointment['status'] == 'Approved' ? 'dropdown-toggle' : '' }}"
+                                                        <span class="badge
+                                                            {{ $appointment['status'] == 'Approved' ? 'event-approved' : 
+                                                               ($appointment['status'] == 'Cancelled' ? 'event-cancelled' : 
+                                                               ($appointment['status'] == 'Missed' ? 'event-missed' : 
+                                                               ($appointment['status'] == 'Done' ? 'event-done' : 
+                                                               ($appointment['status'] == 'Rescheduled' ? 'rescheduled' : 
+                                                               ($appointment['status'] == 'Waiting for Confirmation' ? 'event-waiting-for-confirmation' : 'bg-secondary'))))) }} 
+                                                            dropdown-toggle-no-caret
+                                                            {{ $appointment['status'] == 'Waiting for Confirmation' || $appointment['status'] == 'Approved' ? 'dropdown-toggle' : '' }}"
                                                             id="statusDropdown{{ $appointment['id'] }}"
                                                             {{ $appointment['status'] == 'Waiting for Confirmation' || $appointment['status'] == 'Approved' ? 'data-bs-toggle=dropdown aria-expanded=false style=cursor:pointer;' : '' }}>
                                                             {{ $appointment['status'] }}
@@ -122,30 +127,23 @@
                                                             @endif
                                                         </span>
                                                         @if ($appointment['status'] == 'Waiting for Confirmation' || $appointment['status'] == 'Approved')
-                                                            <ul class="dropdown-menu"
-                                                                aria-labelledby="statusDropdown{{ $appointment['id'] }}">
+                                                            <ul class="dropdown-menu" aria-labelledby="statusDropdown{{ $appointment['id'] }}">
                                                                 @if ($appointment['status'] == 'Waiting for Confirmation')
-                                                                    <li><a class="dropdown-item" href="#"
-                                                                            onclick="changeStatus('{{ $appointment['id'] }}', 'Approved')">Mark
-                                                                            as Approved</a></li>
-                                                                    <li><a class="dropdown-item" href="#"
-                                                                            onclick="changeStatus('{{ $appointment['id'] }}', 'Cancelled')">Mark
-                                                                            as Cancelled</a></li>
-                                                                @else
-                                                                    <li><a class="dropdown-item" href="#"
-                                                                            onclick="changeStatus('{{ $appointment['id'] }}', 'Cancelled')">Mark
-                                                                            as Cancelled</a></li>
-                                                                    <li><a class="dropdown-item" href="#"
-                                                                            onclick="changeStatus('{{ $appointment['id'] }}', 'Missed')">Mark
-                                                                            as Missed</a></li>
-                                                                    <li><a class="dropdown-item" href="#"
-                                                                            onclick="changeStatus('{{ $appointment['id'] }}', 'Done')">Mark
-                                                                            as Done</a></li>
+                                                                    <li><a class="dropdown-item" href="#" onclick="changeStatus('{{ $appointment['id'] }}', 'Approved')">Mark as Approved</a></li>
+                                                                    <li><a class="dropdown-item" href="#" onclick="changeStatus('{{ $appointment['id'] }}', 'Cancelled')">Mark as Cancelled</a></li>
+                                                                    <li><a class="dropdown-item" href="#" onclick="changeStatus('{{ $appointment['id'] }}', 'Rescheduled')">Mark as Rescheduled</a></li>
+                                                                @elseif ($appointment['status'] == 'Approved')
+                                                                   
+                                                                    <li><a class="dropdown-item" href="#" onclick="changeStatus('{{ $appointment['id'] }}', 'Cancelled')">Mark as Cancelled</a></li>
+                                                                    <li><a class="dropdown-item" href="#" onclick="changeStatus('{{ $appointment['id'] }}', 'Missed')">Mark as Missed</a></li>
+                                                                    <li><a class="dropdown-item" href="#" onclick="changeStatus('{{ $appointment['id'] }}', 'Rescheduled')">Mark as Rescheduled</a></li>
+                                                                    <li><a class="dropdown-item" href="#" onclick="changeStatus('{{ $appointment['id'] }}', 'Done')">Mark as Done</a></li>
                                                                 @endif
                                                             </ul>
                                                         @endif
                                                     </div>
                                                 </td>
+                                                
                                             </tr>
                                         @endforeach
                                     </tbody>

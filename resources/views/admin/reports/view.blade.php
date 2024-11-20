@@ -83,7 +83,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link" id="pills-preperator-information" data-bs-toggle="pill"
                                         href="#pills-contact" role="tab" aria-controls="pills-contact"
-                                        aria-selected="false">Respondent's Information</a>
+                                        aria-selected="false">Complainee's Information</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="pills-incident-details" data-bs-toggle="pill"

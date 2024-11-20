@@ -55,7 +55,7 @@ stopwords = set(ENGLISH_STOP_WORDS).union({
 lemmatizer = WordNetLemmatizer()
 
 non_cyberbullying_keywords = {
-    "ganda", "bait", "maganda", "friendly", "kamukha", "ligtas"
+    "ganda", "bait", "maganda", "friendly", "kamukha", "ligtas", "cute", "gwapo", "pogi"
 }
 
 cyberbullying_keywords = {

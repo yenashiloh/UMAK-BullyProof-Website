@@ -1,4 +1,5 @@
 $(document).ready(function() {
+    //calendar
     const calendar = $('#calendar').fullCalendar({
         header: {
             left: 'prev,next today',
@@ -9,34 +10,211 @@ $(document).ready(function() {
         navLinks: true,
         editable: true,
         eventLimit: true,
+        weekends: false,
+        businessHours: {
+            start: '08:00',
+            end: '17:00',
+            dow: [1, 2, 3, 4, 5]
+        },
         events: appointments,
+        dayRender: function(date, cell) {
+            // holiday
+            if (date.format('MM-DD') === '11-01') {
+                cell.append('<span class="holiday-indicator">All Soul\'s Day<br>(Special Non-Working Holiday)</span>');
+                cell.addClass('holiday');
+            }
+            if (date.format('MM-DD') === '11-30') {
+                cell.append('<span class="holiday-indicator">Bonifacio Day<br>(Regular Holiday)</span>');
+                cell.addClass('holiday');
+            }
+            if (date.format('MM-DD') === '12-25') {
+                cell.append('<span class="holiday-indicator">Christmas<br>(Regular Holiday)</span>');
+                cell.addClass('holiday');
+            }
+            if (date.format('MM-DD') === '12-30') {
+                cell.append('<span class="holiday-indicator">Rizal Day<br>(Regular Holiday)</span>');
+                cell.addClass('holiday');
+            }
+            if (date.format('MM-DD') === '01-01') {
+                cell.append('<span class="holiday-indicator">New Year\'s Day<br>(Regular Holiday)</span>');
+                cell.addClass('holiday');
+            }
+            if (date.format('MM-DD') === '02-25') {
+                cell.append('<span class="holiday-indicator">EDSA People Power Revolution<br>(Special Non-Working Holiday)</span>');
+                cell.addClass('holiday');
+            }
+            if (date.format('MM-DD') === '04-09') {
+                cell.append('<span class="holiday-indicator">Araw ng Kagitingan<br>(Regular Holiday)</span>');
+                cell.addClass('holiday');
+            }
+            if (date.format('MM-DD') === '05-01') {
+                cell.append('<span class="holiday-indicator">Labor Day<br>(Regular Holiday)</span>');
+                cell.addClass('holiday');
+            }
+            if (date.format('MM-DD') === '06-12') {
+                cell.append('<span class="holiday-indicator">Independence Day<br>(Regular Holiday)</span>');
+                cell.addClass('holiday');
+            }
+        },
         eventRender: function(event, element) {
-            const statusClass = 'event-' + event.status.toLowerCase().replace(/\s+/g, '-');
-            element.addClass(statusClass);
-
+            // Ensure status is properly formatted for class names
+            const status = event.status ? event.status.toLowerCase().replace(/\s+/g, '-') : 'waiting-for-confirmation';
+            element.addClass('event-' + status);
+            
+            // Add background color class based on status
+            if (status === 'rescheduled') {
+                element.addClass('event-rescheduled-bg');
+            }
+        
+            const startMoment = moment(event.start);
+            const endMoment = moment(event.end);
+            
             element.find('.fc-content').html(`
-                <span class="fc-time">${moment(event.start).format('h:mma')}</span>
+                <span class="fc-time text-center">${startMoment.format('h:mm A')} - <br>${endMoment.format('h:mm A')}</span>
             `);
         },
+        
         eventClick: function(event) {
             let complainantName = event.description.replace('Complainant: ', '');
             
             $('#modalRespondent').text(event.title);
-            $('#modalRespondentEmail').text(event.respondent_email); 
+            $('#modalRespondentEmail').text(event.respondent_email);
             $('#modalDescription').text(complainantName);
-            $('#modalComplainantEmail').text(event.complainant_email); 
+            $('#modalComplainantEmail').text(event.complainant_email);
             $('#modalStatus').text(event.status);
-            $('#modalTime').text(moment(event.start).format('MMMM Do YYYY, h:mm a'));
+            $('#modalTime').text(
+                `${moment(event.start).format('MMMM Do YYYY, h:mm A')} - ${moment(event.end).format('h:mm A')}`
+            );
             
             $('#appointmentModal').modal('show');
         }
-        
     });
 
     window.calendar = calendar;
-})
 
-document.addEventListener('DOMContentLoaded', function() {
+    $("#appointmentDate").datepicker({
+        dateFormat: 'yy-mm-dd',
+        minDate: 0,
+        beforeShowDay: function(date) {
+            if (date.getMonth() === 10 && date.getDate() === 1) { 
+                return [false, "All Soul's Day"];
+            }
+            if (date.getMonth() === 11 && date.getDate() === 25) { 
+                return [false, "Christmas Day(Holiday)"];
+            }
+            if (date.getMonth() === 0 && date.getDate() === 1) { 
+                return [false, "New Year's Day (Holiday)"];
+            }
+            if (date.getMonth() === 1 && date.getDate() === 25) { 
+                return [false, "EDSA People Power Revolution (Holiday)"];
+            }
+            if (date.getMonth() === 3 && date.getDate() === 9) { 
+                return [false, "Araw ng Kagitingan (Regular Holiday)"];
+            }
+            if (date.getMonth() === 4 && date.getDate() === 1) { 
+                return [false, "Labor Day (Regular Holiday)"];
+            }
+            if (date.getMonth() === 5 && date.getDate() === 12) { 
+                return [false, "Independence Day (Regular Holiday)"];
+            }
+            return [date.getDay() !== 0 && date.getDay() !== 6, ""];
+        }
+    });
+
+    function generateTimeOptions() {
+        
+        const startHour = 8;
+        const endHour = 17;
+        const times = [];
+        
+        for (let hour = startHour; hour <= endHour; hour++) {
+            const period = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour > 12 ? hour - 12 : hour;
+            
+            // Add time options from 8:00 AM to 5:00 PM (no 5:30 PM)
+            if (hour < 17) {
+                times.push(
+                    `${String(displayHour).padStart(2, '0')}:00 ${period}`,
+                    `${String(displayHour).padStart(2, '0')}:30 ${period}`
+                );
+            } else {
+                times.push(`${String(displayHour).padStart(2, '0')}:00 ${period}`);
+            }
+        }
+        
+        return times;
+    }
+
+    // Initialize the time selectors
+    const $startTime = $('#appointmentStartTime');
+    const $endTime = $('#appointmentEndTime');
+    const timeOptions = generateTimeOptions();
+    
+    // Clear and populate start time dropdown
+    function populateStartTime() {
+        $startTime.empty();
+        $startTime.append('<option value="">Select start time</option>');
+        timeOptions.forEach(time => {
+            $startTime.append(`<option value="${time}">${time}</option>`);
+        });
+    }
+
+    // Clear and populate end time dropdown
+    function populateEndTime(startTime) {
+        $endTime.empty();
+        $endTime.append('<option value="">Select end time</option>');
+        
+        if (!startTime) {
+            $endTime.prop('disabled', true);
+            return;
+        }
+    }
+
+    function convertTimeToMinutes(timeStr) {
+        const [time, period] = timeStr.split(' ');
+        let [hours, minutes] = time.split(':').map(Number);
+        
+        // Convert to 24-hour format
+        if (period === 'PM' && hours !== 12) {
+            hours += 12;
+        } else if (period === 'AM' && hours === 12) {
+            hours = 0;
+        }
+        
+        return hours * 60 + minutes;
+    }
+
+    // Initialize start time dropdown
+    populateStartTime();
+
+    $startTime.on('change', function() {
+        const startTime = $(this).val();
+        if (!startTime) {
+            $endTime.prop('disabled', true);
+            $endTime.html('<option value="">Select end time</option>');
+            return;
+        }
+
+        const startTimeMinutes = convertTimeToMinutes(startTime);
+        
+        let endTimeOptions = timeOptions.filter(time => {
+            const endTimeMinutes = convertTimeToMinutes(time);
+            return endTimeMinutes > startTimeMinutes;
+        });
+
+        $endTime.prop('disabled', false);
+        $endTime.html('<option value="">Select end time</option>');
+
+        endTimeOptions.forEach(time => {
+            $endTime.append(`<option value="${time}">${time}</option>`);
+        });
+    });
+
+    // Initialize end time dropdown as disabled
+    $endTime.prop('disabled', true);
+
+
+    // form validation and submission
     const form = document.getElementById('appointmentForm');
     const submitButton = document.querySelector('button[type="submit"]');
     const loadingOverlay = document.getElementById('loading-overlay');
@@ -49,100 +227,70 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingOverlay.style.display = 'none';
     }
 
-    hideLoadingOverlay();
-
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        clearValidationMessages();
-
-        if (validateForm()) {
-            const appointmentDate = document.getElementById('appointmentDate').value;
-            const appointmentTime = document.getElementById('appointmentTime').value;
-            
-            showLoadingOverlay();
-            
-            submitForm({
-                respondent_name: document.getElementById('respondentName').value,
-                respondent_email: document.getElementById('respondentEmail').value,
-                complainant_name: document.getElementById('complainantName').value,
-                complainant_email: document.getElementById('complainantEmail').value,
-                appointment_date: appointmentDate,
-                appointment_time: appointmentTime
-            });
+    function handleServerErrors(errors) {
+        for (const field in errors) {
+            const input = document.querySelector(`[name="${field}"]`);
+            if (input) {
+                showError(input, errors[field][0]);
+            }
         }
-    });
-
-    //form validation 
-    function addEventToCalendar(appointmentData) {
-        const event = {
-            id: appointmentData.appointment_id,
-            title: appointmentData.respondent_name,
-            start: moment(appointmentData.appointment_datetime).format('YYYY-MM-DD HH:mm:ss'),
-            description: 'Complainant: ' + appointmentData.complainant_name,
-            status: appointmentData.status,
-            respondent_email: appointmentData.respondent_email,   
-            complainant_email: appointmentData.complainant_email  
-        };
-    
-        $('#calendar').fullCalendar('renderEvent', event, true);
     }
-    
 
     function validateForm() {
         let isValid = true;
-
+    
         const respondentName = document.getElementById('respondentName');
         if (!respondentName.value.trim()) {
-            showError(respondentName, 'Respondent name is required');
+            showError(respondentName, 'Complainee name is required');
             isValid = false;
         }
-
+    
         const respondentEmail = document.getElementById('respondentEmail');
         if (!validateEmail(respondentEmail.value)) {
             showError(respondentEmail, 'Please enter a valid email address');
             isValid = false;
         }
-
+    
         const complainantName = document.getElementById('complainantName');
         if (!complainantName.value.trim()) {
             showError(complainantName, 'Complainant name is required');
             isValid = false;
         }
-
+    
         const complainantEmail = document.getElementById('complainantEmail');
         if (!validateEmail(complainantEmail.value)) {
             showError(complainantEmail, 'Please enter a valid email address');
             isValid = false;
         }
-
+    
         const appointmentDate = document.getElementById('appointmentDate');
         if (!appointmentDate.value) {
             showError(appointmentDate, 'Appointment date is required');
             isValid = false;
         }
-
-        const appointmentTime = document.getElementById('appointmentTime');
-        if (!appointmentTime.value) {
-            showError(appointmentTime, 'Appointment time is required');
+    
+        const startTime = document.getElementById('appointmentStartTime');
+        if (!startTime.value) {
+            showError(startTime, 'Start time is required');
             isValid = false;
         }
-
+    
         return isValid;
     }
-
+    
     function validateEmail(email) {
         const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         return re.test(String(email).toLowerCase());
     }
-
+    
     function showError(input, message) {
         const feedback = input.nextElementSibling;
         input.classList.add('is-invalid');
         feedback.textContent = message;
     }
-
+    
     function clearValidationMessages() {
-        const inputs = form.querySelectorAll('.form-control');
+        const inputs = document.querySelectorAll('.form-control');
         inputs.forEach(input => {
             input.classList.remove('is-invalid');
             const feedback = input.nextElementSibling;
@@ -151,8 +299,94 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    // real-time validation
+    document.getElementById('respondentName').addEventListener('input', function () {
+        clearError(this);
+    });
+    document.getElementById('respondentEmail').addEventListener('input', function () {
+        clearError(this);
+    });
+    document.getElementById('complainantName').addEventListener('input', function () {
+        clearError(this);
+    });
+    document.getElementById('complainantEmail').addEventListener('input', function () {
+        clearError(this);
+    });
+    document.getElementById('appointmentDate').addEventListener('input', function () {
+        clearError(this);
+    });
+    document.getElementById('appointmentStartTime').addEventListener('input', function () {
+        clearError(this);
+    });
+    
+    function clearError(input) {
+        const feedback = input.nextElementSibling;
+        if (input.value.trim() !== '') {
+            input.classList.remove('is-invalid');
+            feedback.textContent = '';
+        }
+    }
 
-    //submit form
+    function addEventToCalendar(appointmentData) {
+        // Combine date and time properly
+        const startDateTime = moment(appointmentData.appointment_date + ' ' + 
+            convertTo24Hour(appointmentData.appointment_start_time), 'YYYY-MM-DD HH:mm');
+        const endDateTime = moment(appointmentData.appointment_date + ' ' + 
+            convertTo24Hour(appointmentData.appointment_end_time), 'YYYY-MM-DD HH:mm');
+
+        const event = {
+            id: appointmentData.appointment_id,
+            title: appointmentData.respondent_name,
+            start: startDateTime.format('YYYY-MM-DD[T]HH:mm:ss'),
+            end: endDateTime.format('YYYY-MM-DD[T]HH:mm:ss'),    
+            description: 'Complainant: ' + appointmentData.complainant_name,
+            status: appointmentData.status,
+            respondent_email: appointmentData.respondent_email,
+            complainant_email: appointmentData.complainant_email
+        };
+        
+        $('#calendar').fullCalendar('renderEvent', event, true);
+    }
+
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        clearValidationMessages();
+
+        if (validateForm()) {
+            showLoadingOverlay();
+            
+            const startTime = convertTo24Hour(document.getElementById('appointmentStartTime').value);
+            const endTime = convertTo24Hour(document.getElementById('appointmentEndTime').value);
+            
+            submitForm({
+                respondent_name: document.getElementById('respondentName').value,
+                respondent_email: document.getElementById('respondentEmail').value,
+                complainant_name: document.getElementById('complainantName').value,
+                complainant_email: document.getElementById('complainantEmail').value,
+                appointment_date: document.getElementById('appointmentDate').value,
+                appointment_start_time: startTime,
+                appointment_end_time: endTime
+            });
+        }
+    });
+
+    function convertTo24Hour(time12h) {
+        const [time, modifier] = time12h.split(' ');
+        let [hours, minutes] = time.split(':');
+        
+        if (hours === '12') {
+            hours = '00';
+        }
+        
+        if (modifier === 'PM' && hours !== '12') {
+            hours = parseInt(hours, 10) + 12;
+        }
+        
+        return `${hours.toString().padStart(2, '0')}:${minutes}`;
+    }
+
     function submitForm(data) {
         submitButton.disabled = true;
     
@@ -172,14 +406,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 const appointmentData = {
                     appointment_id: data.appointment_id,
                     respondent_name: document.getElementById('respondentName').value,
-                    complainant_name: document.getElementById('complainantName').value,
-                    appointment_datetime: moment(
-                        document.getElementById('appointmentDate').value + ' ' + 
-                        document.getElementById('appointmentTime').value
-                    ).format('YYYY-MM-DD HH:mm:ss'),
-                    status: 'Waiting for Confirmation',
                     respondent_email: document.getElementById('respondentEmail').value,
-                    complainant_email: document.getElementById('complainantEmail').value
+                    complainant_name: document.getElementById('complainantName').value,
+                    complainant_email: document.getElementById('complainantEmail').value,
+                    appointment_date: document.getElementById('appointmentDate').value,
+                    appointment_start_time: document.getElementById('appointmentStartTime').value,
+                    appointment_end_time: document.getElementById('appointmentEndTime').value,
+                    status: 'Waiting for Confirmation'
                 };
     
                 addEventToCalendar(appointmentData);
@@ -212,4 +445,38 @@ document.addEventListener('DOMContentLoaded', function() {
             submitButton.disabled = false;
         });
     }
+
+});
+
+
+//holiday list
+document.addEventListener("DOMContentLoaded", function() {
+    const holidays = [
+        { date: '06-12', name: 'Independence Day' },
+        { date: '08-21', name: 'Ninoy Aquino Day' },
+        { date: '08-21', name: 'National Heroes Day' },
+        { date: '11-01', name: 'All Souls\' Day' },
+        { date: '11-30', name: 'Bonifacio Day' },
+        { date: '12-25', name: 'Christmas' },
+        { date: '12-30', name: 'Rizal Day' },
+        { date: '01-01', name: 'New Year\'s Day' },
+        { date: '02-25', name: 'EDSA People Power Revolution' },
+        { date: '04-09', name: 'Araw ng Kagitingan' },
+        { date: '05-01', name: 'Labor Day' },
+        { date: '06-12', name: 'Independence Day' }
+    ];
+
+    const today = moment();
+    const upcomingHolidays = holidays.filter(holiday => {
+        const holidayDate = moment(holiday.date, 'MM-DD');
+        return holidayDate.isAfter(today, 'day');
+    });
+
+    const holidayListElement = document.getElementById('holiday-list');
+    upcomingHolidays.forEach(holiday => {
+        const listItem = document.createElement('li');
+        listItem.classList.add('holiday-bg');
+        listItem.innerHTML = `<strong>${holiday.date} - </strong>${holiday.name}`;
+        holidayListElement.appendChild(listItem);
+    });
 });
