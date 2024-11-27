@@ -46,10 +46,28 @@ except Exception as e:
 
 # Define stopwords and keywords
 stopwords = set(ENGLISH_STOP_WORDS).union({
-    "ako", "ikaw", "siya", "kami", "kayo", "sila", "ito", "iyan", "iyan", "mga", 
-    "ng", "sa", "para", "ang", "ngunit", "habang", "dahil", "at", "o", "na", 
-    "mula", "tungkol", "upang", "hindi", "lahat", "isa", "ito", "iyon", "pati", 
-    "bukod", "tama", "mali", "wala", "may", "di", "naman"
+   "ang", "sa", "ng", "para", "at", "ito", "ay", "na", "ako", "ni",
+    "is", "kung", "hindi", "mga", "may", "ko", "kami", "kayo", "nila",
+    "naman", "pa", "si", "ngayon", "dahil", "wala", "doon", "dito",
+    "isang", "o", "lahat", "tungkol", "pero", "alam", "huwag", "tama",
+    "baka", "pag", "ganun", "sana", "iyan", "iyong", "nito", "akin",
+    "kanila", "sila", "amin", "atin", "ikaw", "tao", "bakit", "ano",
+    "paano", "ganoon", "ganito", "noon", "ngayong", "iyo", "nga",
+    "nang", "muli", "kasama", "bago", "pagkatapos", "habang", "sapagkat",
+    "kaya", "upang", "mula", "hanggang", "din", "rin", "man", "talaga",
+    "walang", "sino", "alin", "kanino", "bawat", "maging", "subalit",
+    "bagamat", "dati", "lagi", "pala", "muna", "halos", "lamang",
+    "siyang", "niya", "kahit", "daw", "raw", "pati", "iyon", "diyan",
+    "kay", "kaniya", "tulad", "niyo", "kailan", "magkaroon", "gawa",
+    "tayo", "siya", "iba", "ibang", "kahiyan", "kailanman", "karamihan",
+    "katulad", "kaysa", "kayat", "lalo", "lalo na", "lalung",
+    "magkagayunman", "magkagayun", "marahil", "masyado", "matapos",
+    "naging", "napaka", "narito", "nasaan", "ngunit", "pareho", "pwede",
+    "pwedeng", "saan", "saanman", "sanhi", "tila", "tuloy", "tuloy-tuloy",
+    "yata", "yun", "yung", "makipag", "maibsan", "maitala", "makita",
+    "malaki", "maliit", "mamaya", "mas", "mayron", "mayroon", "mula sa",
+    "nasa", "nitong", "noon", "palagay", "patungkol", "puwede",
+    "samantalang", "tapos", "yari", "kahit na", "mo", "ka"
 })
 
 lemmatizer = WordNetLemmatizer()
