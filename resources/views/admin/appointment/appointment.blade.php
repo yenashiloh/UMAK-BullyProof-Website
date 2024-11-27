@@ -9,11 +9,14 @@
     <title>Appointment</title>
     @include('partials.admin-link')
 </head>
+
 <body>
 
     <div id="loading-overlay">
+        <img id="loading-logo" src="{{ asset('assets/img/logo-4.png') }}" alt="Loading Logo">
         <div class="spinner"></div>
     </div>
+
 
     @include('partials.admin-sidebar')
     @include('partials.admin-header')
@@ -32,7 +35,7 @@
                         <i class="icon-arrow-right"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('admin.users.users') }}">Appointment</a>
+                        <a href="{{ route('admin.appointment.appointment') }}">Appointment</a>
                     </li>
                 </ul>
             </div>
@@ -106,16 +109,15 @@
                                 </div>
                             </div>
                         </div>
-                    </div>    
+                    </div>
 
-                    <!-- New Holiday List Card -->
+                    <!-- Holiday List Card -->
                     <div class="card">
                         <div class="card-header">
                             <h5 class="fw-bold">Upcoming Holidays</h5>
                         </div>
                         <div class="card-body">
                             <ul class="list-unstyled" id="holiday-list">
-                                <!-- Future holidays will be displayed here -->
                             </ul>
                         </div>
                     </div>
@@ -136,6 +138,7 @@
                                 <form method="POST" action="{{ route('appointments.store') }}" id="appointmentForm"
                                     novalidate>
                                     @csrf
+
                                     <!-- Respondent Name -->
                                     <div class="mb-3">
                                         <label for="respondentName" class="form-label fw-bold">Complainee Name <span
@@ -206,7 +209,7 @@
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-outline-dark"
                                     data-bs-dismiss="modal">Close</button>
-                                <button type="submit" form="appointmentForm" class="btn btn-secondary">Save
+                                <button type="submit" form="appointmentForm" class="btn btn-secondary">Submit
                                     Appointment</button>
                             </div>
                         </div>
@@ -289,6 +292,12 @@
             $("#basic-datatables").DataTable({});
         });
         $(function() {
-            $("#datepicker").datepicker();
+            $("#appointmentDate").datepicker({
+                dateFormat: "mm/dd/yy" 
+            });
+
+            $("#appointmentDate").on('keydown', function(event) {
+                event.preventDefault();
+            });
         });
     </script>

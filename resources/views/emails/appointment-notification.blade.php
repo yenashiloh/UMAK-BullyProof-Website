@@ -20,44 +20,11 @@
 </style>
 
 <body>
-    <p>Good Day!</p>
-    <p>This is still related to your administrative/community service concern/s rendered at the Inclusive Education -
-        Gender and Development (IE-GAD) office. Please be informed the we have
-        received a report forwarded at this office dated today, regarding an alleged rude and disrespectful behavior
-        towards non-teaching staff including an alleged disclosure of confidential
-        information under the Violation of the Data Privacy Act of 2012, both violations of the university Student
-        Handbook, to wit:
-    </p>
+<body>
+    <p>{!! $emailContent !!}</p>
+    <p>Date: <strong>{{ $appointmentDate }}</strong></p>
+    <p>Time: <strong>{{ $appointmentStartTime }} to {{ $appointmentEndTime }}</strong></p>
 
-    <p>4.2.17 Grave act of disrespect that tends to malign the University officials, faculty members or
-        <strong>administrative non-teaching staff.</strong> </p>
-
-    <p>4.2.35 Violation of the Anti-Bullying Act of 2013 and/or Cybercrime Prevention Act of 2012 and other
-        similar/related laws</p>
-
-    <p>*(Please see pp. 84-85 of the Student Handbook 2021 Edition)</p>
-
-    <p>In line with this, this office would like to invite you for a preliminary/clarificatory conference on
-
-        <strong>{{ $appointmentDate }} from {{ $appointmentStartTime }} to {{ $appointmentEndTime }}</strong>
-        for further clarification and/or discussion on this matter.
-    </p>
-
-    <p><strong>You are advised to bring your parent's and/or guardian/s with you</strong></p>
-
-    <p><strong>Please be guidance that your parent's/guardian's physical appearance is relevant and/or important to
-            address this issue and to proceed with the proper process and procedures.</strong></p>
-
-    <p><strong>In case your parent/s and/or guardian/s are not available to attend, please provide a letter of consent
-            from your parent/s and/or guardian/s affixed wit their physical signature and valid I.D</strong></p>
-
-    <p>Kindly confirm your availability through this email today.</p>
-
-    <strong>(Inability to confirm your attendance through this email will be automatically rescheduled)</strong>
-
-    <p>Thank you</p>
-
-    <br>
     <div class="container">
         <div class="info-section"
             style="border: 1px solid black; padding: 20px; border-radius: 8px; background-color: transparent;">
@@ -80,6 +47,70 @@
             </div>
         </div>
     </div>
+    {{-- <p>In line with this, this office would like to invite you for a preliminary/clarificatory conference on {{ $appointmentDate }} from  {{ $appointmentStartTime }} to {{ $appointmentEndTime }} for further clarification and/or discussion on this matter.</p>
+    <p>Kindly confirm your availability through this email today.</p> --}}
+
+
+    {{-- <p>This is still related to your administrative/community service concern/s rendered at the Inclusive Education -
+        Gender and Development (IE-GAD) office. Please be informed the we have
+        received a report forwarded at this office dated today, regarding an alleged rude and disrespectful behavior
+        received a re    <p>{!! $emailContent !!}</p>
+    <p>In line with this, this office would like to invite you for a preliminary/clarificatory conference on {{ $appointmentDate }} from  {{ $appointmentStartTime }} to {{ $appointmentEndTime }} for further clarification and/or discussion on this matter.</p>
+    <p>Kindly confirm your availability through this email today.</p>
+
+
+    {{-- <p>This is still related to your administrative/community service concern/s rendered at the Inclusive Education -
+        Gender and Development (IE-GAD) office. Please be informed the we have
+        received a report forwarded at this office dated today, regarding an alleged rude and disrespectful behavior
+        received a re    <p>{!! $emailContent !!}</p>
+    <p>In line with this, this office would like to invite you for a preliminary/clarificatory conference on {{ $appointmentDate }} from  {{ $appointmentStartTime }} to {{ $appointmentEndTime }} for further clarification and/or discussion on this matter.</p>
+    <p>Kindly confirm your availability through this email today.</p>
+
+
+    {{-- <p>This is still related to your administrative/community service concern/s rendered at the Inclusive Education -
+        Gender and Development (IE-GAD) office. Please be informed the we have
+        received a report forwarded at this office dated today, regarding an alleged rude and disrespectful behavior
+        towards non-teaching staff including an alleged disclosure of confidential
+        information under the Violation of the Data Privacy Act of 2012, both violations of the university Student
+       
+        Handbook, to wit:
+    </p>
+    </p>
+    </p>
+
+
+    <p>4.2.17 Grave act of disrespect that tends to malign the University officials, faculty members or
+        <strong>administrative non-teaching staff.</strong> </p>
+
+    <p>4.2.35 Violation of the Anti-Bullying Act of 2013 and/or Cybercrime Prevention Act of 2012 and other
+        similar/related laws</p>
+
+    <p>*(Please see pp. 84-85 of the Student Handbook 2021 Edition)</p>
+
+    <p>In line with this, this office would like to invite you for a preliminary/clarificatory conference on
+
+        <strong>{{ $appointmentDate }} from {{ $appointmentStartTime }} to {{ $appointmentEndTime }}</strong>
+        for further clarification and/or discussion on this matter.
+    </p>
+
+    <p><strong>You are advised to bring your parent's and/or guardian/s with you</strong></p>
+
+    <p><strong>Please be guidance that your parent's/guardian's physical appearance is relevant and/or important to
+            address this issue and to proceed with the proper process and procedures.</strong></p>
+
+    <p><str<str<strong>In case your parent/s and/or guardian/s are not available to attend, please provide a letter of consent
+                    from your parent/s and/or guardian/s affixed wit their physical signature and valid I.D</strong></p>
+
+
+
+    <p>KindKindKindly confirm your availability through this email today.</p>
+
+    <strong>(Inability to confirm your attendance through this email will be automatically rescheduled)</strong>
+
+    <p>Thank you</p>
+
+    <br>
+ --}}
 
 
     {{-- <p>Complainant:</p>

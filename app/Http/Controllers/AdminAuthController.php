@@ -10,13 +10,14 @@ use MongoDB\Client;
 
 class AdminAuthController extends Controller
 {
-    //show login form
+    // Show login form
     public function showLoginForm()
     {
         if (session('admin_logged_in')) {
             $role = session('admin_role');
             
-            if ($role === 'discipline') {
+            // Redirect based on the role (discipline and superadmin are treated the same)
+            if ($role === 'discipline' || $role === 'superadmin') {
                 return redirect()->route('admin.dashboard');
             } elseif ($role === 'guidance') {
                 return redirect()->route('guidance.dashboard');
@@ -25,7 +26,7 @@ class AdminAuthController extends Controller
         return view('login');
     }
 
-    //login post 
+    // Login post
     public function login(Request $request)
     {
         $request->validate([
@@ -45,17 +46,18 @@ class AdminAuthController extends Controller
                 'admin_role' => $admin->role
             ]);
     
-            if ($admin->role === 'discipline') {
+            // Simplified redirect logic since discipline and superadmin go to the same place
+            if (in_array($admin->role, ['discipline', 'superadmin'])) {
                 return redirect()->route('admin.dashboard');
             } elseif ($admin->role === 'guidance') {
-                return redirect()->route('guidance.dashboard'); 
+                return redirect()->route('guidance.dashboard');
             }
-        } else {
-            return back()->withErrors(['email' => 'Incorrect email or password. Please try again.']);
         }
+    
+        return back()->withErrors(['email' => 'Incorrect email or password. Please try again.']);
     }
 
-    //logout
+    // Logout admin
     public function logoutAdmin(Request $request)
     {
         Session::flush(); 
@@ -66,6 +68,7 @@ class AdminAuthController extends Controller
         return response()->json(['success' => true, 'message' => 'Logged out successfully']);
     }
 
+    // Logout guidance
     public function logoutGuidance(Request $request)
     {
         Session::flush(); 

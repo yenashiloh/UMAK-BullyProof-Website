@@ -1,0 +1,53 @@
+------------------------------EMAIL CONTENT--------------------------------
+db.createCollection("emailContent");  // Creates a collection called 'emailContent'
+
+db.emailContent.createIndex({ "createdAt": 1 }, { expireAfterSeconds: 3600 }); // Optional: Index for expiration
+
+// Insert a document into the 'emailContent' collection
+db.emailContent.insertOne({
+    complainant_email_content: "Initial content for complainants",
+    complainee_email_content: "Initial content for complainees",
+    cancelled_email_content: "Initial content for cancelled",
+    createdAt: new Date(),
+    updatedAt: new Date()
+});
+
+------------------------------NOTIFICATIONS--------------------------------
+db.createCollection("notifications", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["userId", "reportId", "type", "message", "status", "createdAt"],
+      properties: {
+        userId: {
+          bsonType: "objectId",
+          description: "must be an ObjectId and is required"
+        },
+        reportId: {
+          bsonType: "objectId",
+          description: "must be an ObjectId and is required"
+        },
+        type: {
+          bsonType: "string",
+          description: "must be a string and is required"
+        },
+        message: {
+          bsonType: "string",
+          description: "must be a string and is required"
+        },
+        status: {
+          enum: ["unread", "read"],
+          description: "can only be 'unread' or 'read' and is required"
+        },
+        createdAt: {
+          bsonType: "date",
+          description: "must be a date and is required"
+        },
+        readAt: {
+          bsonType: ["date", "null"],
+          description: "can be a date or null"
+        }
+      }
+    }
+  }
+});

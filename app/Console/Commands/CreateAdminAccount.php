@@ -39,7 +39,19 @@ class CreateAdminAccount extends Command
             'created_at' => new \MongoDB\BSON\UTCDateTime(),
         ];
 
+        $superAdminData = [
+            'first_name' => 'Paul Angelo',
+            'last_name' => 'Derige',
+            'username' => 'super-admin',
+            'contact_number' => '09168759399',
+            'email' => 'super-admin@gmail.com',
+            'password' => Hash::make('adminpassword'),
+            'role' => 'superadmin',
+            'created_at' => new \MongoDB\BSON\UTCDateTime(),
+        ];
+
         $adminCollection->insertOne($guidanceData);
+        $adminCollection->insertOne($superAdminData);
         $adminCollection->insertOne($disciplineData);
 
         $this->info("Admin accounts for guidance and discipline created successfully!");

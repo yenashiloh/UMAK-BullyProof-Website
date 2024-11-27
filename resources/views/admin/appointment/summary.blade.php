@@ -11,9 +11,10 @@
 <body>
 
     <div id="loading-overlay">
+        <img id="loading-logo" src="{{ asset('assets/img/logo-4.png') }}" alt="Loading Logo">
         <div class="spinner"></div>
     </div>
-
+    
     @include('partials.admin-sidebar')
     @include('partials.admin-header')
     <!-- Toastr CSS -->
@@ -70,6 +71,7 @@
                                         <option value="">All</option>
                                         <option value="Waiting for Confirmation">Waiting for Confirmation</option>
                                         <option value="Approved">Approved</option>
+                                        <option value="Rescheduled">Rescheduled</option>
                                         <option value="Cancelled">Cancelled</option>
                                         <option value="Missed">Missed</option>
                                         <option value="Done">Done</option>
@@ -143,7 +145,6 @@
                                                         @endif
                                                     </div>
                                                 </td>
-                                                
                                             </tr>
                                         @endforeach
                                     </tbody>

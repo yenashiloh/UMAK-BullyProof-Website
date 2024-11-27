@@ -11,8 +11,10 @@
 <body>
 
     <div id="loading-overlay">
+        <img id="loading-logo" src="{{ asset('assets/img/logo-4.png') }}" alt="Loading Logo">
         <div class="spinner"></div>
     </div>
+    
 
     @include('partials.guidance-sidebar')
     @include('partials.guidance-header')
@@ -123,21 +125,6 @@
                                                 <div>
                                                     <ul>
                                                         <li>{{ $platform }}
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-12 mb-2 mt-3">
-                                            <strong>Type of cyberbullying was involved:</strong>
-                                        </div>
-                                        <div class="col-12">
-                                            @foreach ($reportData['cyberbullyingType'] as $type)
-                                                <div>
-                                                    <ul>
-                                                        <li>{{ $type }}
                                                         </li>
                                                     </ul>
                                                 </div>

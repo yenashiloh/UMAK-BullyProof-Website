@@ -4,8 +4,12 @@ class ImageGallery {
         this.images = window.galleryImages || [];
         this.viewer = document.getElementById('galleryViewer');
         this.fullImage = document.getElementById('fullImage');
+        this.prevButton = document.getElementById('prevImage');
+        this.nextButton = document.getElementById('nextImage');
+        this.closeButton = document.getElementById('closeGallery');
         
         this.initializeEventListeners();
+        this.updateNavigationButtons();
     }
 
     initializeEventListeners() {
@@ -18,16 +22,16 @@ class ImageGallery {
         });
 
         // Navigation buttons
-        document.getElementById('prevImage').addEventListener('click', () => {
+        this.prevButton.addEventListener('click', () => {
             this.navigateImage(-1);
         });
 
-        document.getElementById('nextImage').addEventListener('click', () => {
+        this.nextButton.addEventListener('click', () => {
             this.navigateImage(1);
         });
 
         // Close button
-        document.getElementById('closeGallery').addEventListener('click', () => {
+        this.closeButton.addEventListener('click', () => {
             this.closeGallery();
         });
 
@@ -40,7 +44,7 @@ class ImageGallery {
 
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
-            if (this.viewer.classList.contains('show')) {
+            if (this.viewer.classList.contains('show') && this.images.length > 1) {
                 switch(e.key) {
                     case 'ArrowLeft':
                         this.navigateImage(-1);
@@ -56,21 +60,33 @@ class ImageGallery {
         });
     }
 
+    updateNavigationButtons() {
+        const shouldShowNavigation = this.images.length > 1;
+        this.prevButton.style.display = shouldShowNavigation ? 'block' : 'none';
+        this.nextButton.style.display = shouldShowNavigation ? 'block' : 'none';
+    }
+
     openGallery(index) {
         this.currentImageIndex = index;
         this.viewer.classList.remove('d-none');
         setTimeout(() => this.viewer.classList.add('show'), 10);
         this.updateImage();
+        this.updateNavigationButtons();
     }
 
     closeGallery() {
+        // Ensure the close button works even if transitions are involved
         this.viewer.classList.remove('show');
-        setTimeout(() => this.viewer.classList.add('d-none'), 300);
+        setTimeout(() => {
+            this.viewer.classList.add('d-none');
+        }, 300); // Ensure this matches the fade-out duration
     }
 
     navigateImage(direction) {
-        this.currentImageIndex = (this.currentImageIndex + direction + this.images.length) % this.images.length;
-        this.updateImage();
+        if (this.images.length > 1) {
+            this.currentImageIndex = (this.currentImageIndex + direction + this.images.length) % this.images.length;
+            this.updateImage();
+        }
     }
 
     updateImage() {
@@ -78,8 +94,6 @@ class ImageGallery {
     }
 }
 
-// Initialize the gallery when the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     new ImageGallery();
 });
-

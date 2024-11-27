@@ -28,13 +28,6 @@
    <!-- Sweet Alert -->
    <script src="../../../../assets/js/plugin/sweetalert/sweetalert.min.js"></script>
 
-   <!-- Kaiadmin JS -->
-   <script src="../../../../assets/js/kaiadmin.min.js"></script>
-
-   <script src="../../../../assets/js/setting-demo.js"></script>
-   <script src="../../../../assets/js/demo.js"></script>
-
-   <script src="../../../../assets/js/logout.js"></script>
    <script>
     (function() {
         const overlay = document.getElementById('loading-overlay');

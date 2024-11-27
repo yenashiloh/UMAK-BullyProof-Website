@@ -34,32 +34,22 @@ class ReportExportController extends Controller
                 }
             }
 
-            $cyberbullyingType = [];
-            if (isset($report->cyberbullyingType)) {
-                if ($report->cyberbullyingType instanceof \MongoDB\Model\BSONArray) {
-                    $cyberbullyingType = $report->cyberbullyingType->getArrayCopy();
-                } elseif (is_array($report->cyberbullyingType)) {
-                    $cyberbullyingType = $report->cyberbullyingType;
-                }
-            }
-
             $date = $report->reportDate->toDateTime();
             $date->setTimezone(new \DateTimeZone('Asia/Manila'));
             
             $formattedReports[] = [
-                'Report Date' => $date->format('F j, Y, g:iA'),
-                'Reporter Name' => $reporter->fullname ?? 'N/A',
-                'Reporter Email' => $reporter->email ?? 'N/A',
-                'Victim Name' => $report->victimName ?? 'N/A',
-                'Victim Type' => $report->victimType ?? 'N/A',
-                'Victim Relationship' => $report->victimRelationship ?? 'N/A',
+                'Date Filed' => $date->format('F j, Y, g:iA'),
+                'Account Name' => $reporter->fullname ?? 'N/A',
+                'Account Email' => $reporter->email ?? 'N/A',
+                'Complainant\'s Name' => $report->victimName ?? 'N/A',
+                'Complainant\'s Type' => $report->victimType ?? 'N/A',
+                'Complainant\'s Relationship' => $report->victimRelationship ?? 'N/A',
                 'Grade/Year Level' => $report->gradeYearLevel ?? 'N/A',
                 'Platform Used' => !empty($platformUsed) ? implode(', ', $platformUsed) : 'N/A',
-                'Cyberbullying Type' => !empty($cyberbullyingType) ? implode(', ', $cyberbullyingType) : 'N/A',
                 'Incident Details' => $report->incidentDetails ?? 'N/A',
-                'Perpetrator Name' => $report->perpetratorName ?? 'N/A',
-                'Perpetrator Role' => $report->perpetratorRole ?? 'N/A',
-                'Perpetrator Grade/Year' => $report->perpetratorGradeYearLevel ?? 'N/A',
+                'Complainee\'s Name' => $report->perpetratorName ?? 'N/A',
+                'Complainee\'s Role' => $report->perpetratorRole ?? 'N/A',
+                'Complainee\'s Grade/Year' => $report->perpetratorGradeYearLevel ?? 'N/A',
                 'Actions Taken' => $report->actionsTaken ?? 'N/A',
                 'Actions Description' => $report->describeActions ?? 'N/A',
             ];
@@ -112,7 +102,6 @@ class ReportExportController extends Controller
         );
     }
 
-
     public function exportXLSX()
     {
         $reports = $this->getReportData();
@@ -153,7 +142,7 @@ class ReportExportController extends Controller
             ],
             'fill' => [
                 'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['rgb' => '4B5563'],
+                'startColor' => ['rgb' => '164789'],
             ],
             'borders' => [
                 'allBorders' => [

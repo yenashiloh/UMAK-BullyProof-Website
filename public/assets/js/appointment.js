@@ -8,7 +8,7 @@ $(document).ready(function() {
         },
         defaultDate: moment().format('YYYY-MM-DD'),
         navLinks: true,
-        editable: true,
+        editable: false,
         eventLimit: true,
         weekends: false,
         businessHours: {
@@ -57,11 +57,11 @@ $(document).ready(function() {
             }
         },
         eventRender: function(event, element) {
-            // Ensure status is properly formatted for class names
+            // ensure status is properly formatted for class names
             const status = event.status ? event.status.toLowerCase().replace(/\s+/g, '-') : 'waiting-for-confirmation';
             element.addClass('event-' + status);
             
-            // Add background color class based on status
+            // add background color class based on status
             if (status === 'rescheduled') {
                 element.addClass('event-rescheduled-bg');
             }
@@ -122,17 +122,16 @@ $(document).ready(function() {
     });
 
     function generateTimeOptions() {
-        
         const startHour = 8;
-        const endHour = 17;
+        const endHour = 16; 
         const times = [];
         
         for (let hour = startHour; hour <= endHour; hour++) {
             const period = hour >= 12 ? 'PM' : 'AM';
             const displayHour = hour > 12 ? hour - 12 : hour;
             
-            // Add time options from 8:00 AM to 5:00 PM (no 5:30 PM)
-            if (hour < 17) {
+            // options from 8:00 AM to 4:00 PM (no 4:30 PM)
+            if (hour < 16) {
                 times.push(
                     `${String(displayHour).padStart(2, '0')}:00 ${period}`,
                     `${String(displayHour).padStart(2, '0')}:30 ${period}`
@@ -144,13 +143,13 @@ $(document).ready(function() {
         
         return times;
     }
-
-    // Initialize the time selectors
+    
+    // initialize the time selectors
     const $startTime = $('#appointmentStartTime');
     const $endTime = $('#appointmentEndTime');
     const timeOptions = generateTimeOptions();
     
-    // Clear and populate start time dropdown
+    // clear and populate start time dropdown
     function populateStartTime() {
         $startTime.empty();
         $startTime.append('<option value="">Select start time</option>');
@@ -159,7 +158,7 @@ $(document).ready(function() {
         });
     }
 
-    // Clear and populate end time dropdown
+    // clear and populate end time dropdown
     function populateEndTime(startTime) {
         $endTime.empty();
         $endTime.append('<option value="">Select end time</option>');
@@ -174,7 +173,7 @@ $(document).ready(function() {
         const [time, period] = timeStr.split(' ');
         let [hours, minutes] = time.split(':').map(Number);
         
-        // Convert to 24-hour format
+        // convert to 24-hour format
         if (period === 'PM' && hours !== 12) {
             hours += 12;
         } else if (period === 'AM' && hours === 12) {
@@ -184,7 +183,7 @@ $(document).ready(function() {
         return hours * 60 + minutes;
     }
 
-    // Initialize start time dropdown
+    // initialize start time dropdown
     populateStartTime();
 
     $startTime.on('change', function() {
@@ -210,7 +209,7 @@ $(document).ready(function() {
         });
     });
 
-    // Initialize end time dropdown as disabled
+    // initialize end time dropdown as disabled
     $endTime.prop('disabled', true);
 
 
@@ -329,7 +328,7 @@ $(document).ready(function() {
     }
 
     function addEventToCalendar(appointmentData) {
-        // Combine date and time properly
+        // combine date and time properly
         const startDateTime = moment(appointmentData.appointment_date + ' ' + 
             convertTo24Hour(appointmentData.appointment_start_time), 'YYYY-MM-DD HH:mm');
         const endDateTime = moment(appointmentData.appointment_date + ' ' + 
@@ -349,13 +348,18 @@ $(document).ready(function() {
         $('#calendar').fullCalendar('renderEvent', event, true);
     }
 
-    // Form submission
+    // form submission
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         clearValidationMessages();
-
+    
         if (validateForm()) {
             showLoadingOverlay();
+            
+            // get the submit button and change its text
+            const submitButton = document.querySelector('button[type="submit"]');
+            submitButton.textContent = 'Submitting Appointment...';
+            submitButton.disabled = true;
             
             const startTime = convertTo24Hour(document.getElementById('appointmentStartTime').value);
             const endTime = convertTo24Hour(document.getElementById('appointmentEndTime').value);
@@ -371,6 +375,7 @@ $(document).ready(function() {
             });
         }
     });
+    
 
     function convertTo24Hour(time12h) {
         const [time, modifier] = time12h.split(' ');
@@ -388,7 +393,7 @@ $(document).ready(function() {
     }
 
     function submitForm(data) {
-        submitButton.disabled = true;
+        const submitButton = document.querySelector('button[type="submit"]');
     
         fetch(form.action, {
             method: 'POST',
@@ -416,7 +421,7 @@ $(document).ready(function() {
                 };
     
                 addEventToCalendar(appointmentData);
-
+    
                 const modal = bootstrap.Modal.getInstance(document.getElementById('newAppointmentModal'));
                 modal.hide();
     
@@ -442,12 +447,11 @@ $(document).ready(function() {
             });
         })
         .finally(() => {
+            submitButton.textContent = 'Submit Appointment';
             submitButton.disabled = false;
         });
     }
-
 });
-
 
 //holiday list
 document.addEventListener("DOMContentLoaded", function() {

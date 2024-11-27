@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Services\CyberbullyingDetectionService;
 use Illuminate\Http\Request;
 use MongoDB\Client;
@@ -29,7 +30,9 @@ class ReportsController extends Controller
         $lastName = $admin->last_name ?? '';
         $email = $admin->email ?? '';
     
-        $reports = $reportCollection->aggregate([
+        $status = request('status', 'all');
+    
+        $pipeline = [
             [
                 '$lookup' => [
                     'from' => 'users',
@@ -55,16 +58,28 @@ class ReportsController extends Controller
             [
                 '$sort' => ['reportDate' => -1]
             ]
-        ])->toArray();
+        ];
+    
+        if ($status !== 'all') {
+            array_unshift($pipeline, [
+                '$match' => ['status' => $status]
+            ]);
+        }
+    
+        $reports = $reportCollection->aggregate($pipeline)->toArray();
+    
+        if (request()->ajax()) {
+            return response()->json(['data' => $reports]);
+        }
     
         return view('admin.reports.incident-reports', compact(
             'firstName', 
             'lastName', 
             'email',
             'reports'
-        )); 
+        ));
     }
-
+    
     //show reports in guidance side
     public function showReportsGuidance()
     {
@@ -113,6 +128,7 @@ class ReportsController extends Controller
         )); 
     }
 
+    //view report incident
     public function viewReportDiscipline($id) 
     {
         $client = new Client(env('MONGODB_URI'));
@@ -140,25 +156,41 @@ class ReportsController extends Controller
         if (!$reporter) {
             abort(404, 'Reporter not found');
         }
-
-        // Get incident details from the report
+    
         $incidentDetails = $report->incidentDetails ?? '';
         
-        // Analyze the incident details using the detection service
         $analysisResult = $this->detectionService->analyze($incidentDetails);
+    
+        
+        //victim relationship and others
+        $displayedVictimRelationship = '';
+
+        if (!empty($report->otherVictimRelationship)) {
+            $displayedVictimRelationship = $report->otherVictimRelationship;
+        } elseif ($report->victimRelationship === "Other" && !empty($report->otherVictimRelationship)) {
+            $displayedVictimRelationship = $report->otherVictimRelationship;
+        } else {
+            $displayedVictimRelationship = $report->victimRelationship;
+        }
 
         $reportData = [
+            '_id' => (string)$report->_id, 
             'reportDate' => $report->reportDate->toDateTime()->format('Y-m-d H:i:s'),
-            'victimRelationship' => $report->victimRelationship,
+            'victimRelationship' => $displayedVictimRelationship,
+            'otherVictimRelationship' => $report->otherVictimRelationship,
             'victimName' => $report->victimName,
             'victimType' => $report->victimType,
             'gradeYearLevel' => $report->gradeYearLevel,
+            'idNumber' => $report->idNumber ?? '',  
+            'remarks' => $report->remarks ?? '',  
             'reporterFullName' => $reporter->fullname,
             'reporterEmail' => $reporter->email,
             'hasReportedBefore' => $report->hasReportedBefore ?? 'N/A',
             'reportedTo' => $report->reportedTo ?? 'N/A',
             'platformUsed' => $report->platformUsed instanceof \MongoDB\Model\BSONArray ? $report->platformUsed->getArrayCopy() : [],
-            'cyberbullyingType' => $report->cyberbullyingType instanceof \MongoDB\Model\BSONArray ? $report->cyberbullyingType->getArrayCopy() : [],
+            'otherPlatformUsed' => $report->otherPlatformUsed,
+            'supportTypes' => $report->supportTypes instanceof \MongoDB\Model\BSONArray ? $report->supportTypes->getArrayCopy() : [],
+            'otherSupportTypes' => $report->otherSupportTypes,
             'incidentDetails' => $incidentDetails,
             'perpetratorName' => $report->perpetratorName,
             'perpetratorRole' => $report->perpetratorRole,
@@ -166,17 +198,36 @@ class ReportsController extends Controller
             'actionsTaken' => $report->actionsTaken ?? 'N/A',
             'describeActions' => $report->describeActions ?? 'N/A',
             'incidentEvidence' => $report->incidentEvidence instanceof \MongoDB\Model\BSONArray ? $report->incidentEvidence->getArrayCopy() : [],
-            // Add the analysis results from the Python script
             'analysisResult' => $analysisResult['analysisResult'],
             'analysisProbability' => $analysisResult['analysisProbability']
         ];
 
-
-        // Add error to reportData if present
+        if (!empty($reportData['otherPlatformUsed'])) {
+            $reportData['platformUsed'][] = $reportData['otherPlatformUsed'];
+        }
+        
+        $reportData['platformUsed'] = array_filter($reportData['platformUsed'], function($platform) {
+            return $platform !== "Others (Please Specify)";
+        });
+        $reportData['platformUsed'] = array_values($reportData['platformUsed']);
+    
         if (!empty($analysisResult['error'])) {
             $reportData['error'] = $analysisResult['error'];
         }
     
+        //otherSupportTypes
+        if (!empty($report->otherSupportTypes)) {
+            $reportData['supportTypes'][] = $report->otherSupportTypes;
+        }
+
+        //remove "Others (Please Specify"
+        $reportData['supportTypes'] = array_filter($reportData['supportTypes'], function($supportType) {
+            return $supportType !== "Others (Please Specify)";
+        });
+
+        $reportData['supportTypes'] = array_values($reportData['supportTypes']);
+
+
         return view('admin.reports.view', compact(
             'firstName',
             'lastName',
@@ -185,6 +236,64 @@ class ReportsController extends Controller
         ));
     }
     
+    //update the remarks and id number of complainee
+    public function updateReport(Request $request)
+    {
+        $validated = $request->validate([
+            'id_number' => 'required|string',
+            'remarks' => 'nullable|string',
+            'report_id' => 'required|string',
+        ]);
+    
+        try {
+            $reportId = $request->input('report_id');
+            $idNumber = $request->input('id_number');
+            $remarks = $request->input('remarks', ''); 
+    
+            $client = new Client(env('MONGODB_URI'));
+            $reportCollection = $client->bullyproof->reports;
+    
+            $updateData = ['idNumber' => $idNumber];
+    
+            if (!empty($remarks)) {
+                $updateData['remarks'] = $remarks;
+            }
+    
+            $updateResult = $reportCollection->updateOne(
+                ['_id' => new \MongoDB\BSON\ObjectId($reportId)],
+                ['$set' => $updateData]
+            );
+    
+            if ($updateResult->getModifiedCount() > 0) {
+                return response()->json(['message' => 'Saved Successfully!', 'status' => 'success'], 200);
+            } else {
+                return response()->json(['message' => 'No changes were made to the ID Number or remarks.', 'status' => 'error'], 400);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to save ID Number and remarks: ' . $e->getMessage(), 'status' => 'error'], 500);
+        }
+    }
+    
+    //search id number
+    public function searchIdNumber(Request $request)
+    {
+        $searchTerm = $request->input('term', '');
+
+        $client = new Client(env('MONGODB_URI'));
+        $reportCollection = $client->bullyproof->reports;
+
+        $reports = $reportCollection->find([
+            'idNumber' => new \MongoDB\BSON\Regex('^' . preg_quote($searchTerm), 'i')
+        ]);
+
+        $idNumbers = [];
+        foreach ($reports as $report) {
+            $idNumbers[] = $report['idNumber'];
+        }
+
+        return response()->json($idNumbers);
+    }
+
     //view report for guidance
     public function viewReportGuidance($id)
     {
@@ -206,19 +315,25 @@ class ReportsController extends Controller
         $reportData = [
             'reportDate' => $report->reportDate->toDateTime()->format('Y-m-d H:i:s'),
             'victimRelationship' => $report->victimRelationship,
+            'otherVictimRelationship' => $otherVictimRelationship, //
             'victimName' => $report->victimName,
-            'victimType' => $report->victimType,
+            'victimType' => $report->victimType, //
             'gradeYearLevel' => $report->gradeYearLevel,
             'reporterFullName' => $reporter->fullname,
             'reporterEmail' => $reporter->email,
             'hasReportedBefore' => $report->hasReportedBefore ?? 'N/A', 
+            'departmentCollege' => $report->departmentCollege, //
             'reportedTo' => $report->reportedTo ?? 'N/A', 
             'platformUsed' => $report->platformUsed instanceof \MongoDB\Model\BSONArray ? $report->platformUsed->getArrayCopy() : [],
-            'cyberbullyingType' => $report->cyberbullyingType instanceof \MongoDB\Model\BSONArray ? $report->cyberbullyingType->getArrayCopy() : [],
+            'otherPlatformUsed' => $report->otherPlatformUsed, //
+            'hasWitness' => $hasWitness, //
+            'witnessInfo' => $witnessInfo, //
             'incidentDetails' => $report->incidentDetails ?? 'N/A',
             'perpetratorName' => $report->perpetratorName,
             'perpetratorRole' => $report->perpetratorRole,
             'perpetratorGradeYearLevel' => $report->perpetratorGradeYearLevel,
+            'supportTypes' => $supportTypes,
+            'otherSupportTypes' => $otherSupportTypes, //
             'actionsTaken' => $report->actionsTaken ?? 'N/A',
             'describeActions' => $report->describeActions ?? 'N/A',
             'incidentEvidence' => $report->incidentEvidence instanceof \MongoDB\Model\BSONArray ? $report->incidentEvidence->getArrayCopy() : [],
@@ -236,30 +351,49 @@ class ReportsController extends Controller
     {
         $client = new Client(env('MONGODB_URI'));
         $reportCollection = $client->bullyproof->reports;
-
+        $notificationCollection = $client->bullyproof->notifications;
+    
         $report = $reportCollection->findOne(['_id' => new \MongoDB\BSON\ObjectId($id)]);
-
+    
         if (!$report) {
             return redirect()->back()->with('error', 'Report not found.');
         }
-
+    
         $currentStatus = $report->status;
         $newStatus = '';
-
+        $notificationMessage = '';
+    
         if ($currentStatus == 'For Review') {
             $newStatus = 'Under Investigation';
+            $notificationMessage = 'Your report is now under investigation.';
         } elseif ($currentStatus == 'Under Investigation') {
             $newStatus = 'Resolved';
+            $notificationMessage = 'Your report has been resolved.';
         } else {
             return redirect()->back()->with('error', 'Invalid status change.');
         }
-
+    
         $reportCollection->updateOne(
             ['_id' => new \MongoDB\BSON\ObjectId($id)],
             ['$set' => ['status' => $newStatus]]
         );
-
-        return redirect()->back()->with('success', 'Status updated successfully.');
+    
+        $notification = [
+            'userId' => new \MongoDB\BSON\ObjectId($report->reportedBy),
+            'reportId' => new \MongoDB\BSON\ObjectId($id),
+            'type' => 'status_update',
+            'message' => $notificationMessage,
+            'status' => 'unread',
+            'createdAt' => new \MongoDB\BSON\UTCDateTime(time() * 1000),
+            'readAt' => null
+        ];
+    
+        try {
+            $notificationCollection->insertOne($notification);
+            return redirect()->back()->with('success', 'Status Updated Successfully!')->with('toastType', 'success');
+        } catch (\Exception $e) {
+            \Log::error('Failed to create notification: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Status updated but failed to create notification.')->with('toastType', 'danger');
+        }
     }
-
 }

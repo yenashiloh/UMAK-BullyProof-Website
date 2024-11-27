@@ -30,6 +30,11 @@ function showToast(message, type) {
 
 //change the status of appointment 
 function changeStatus(appointmentId, newStatus) {
+    // Immediately update the badge to show "Loading..."
+    const badge = document.querySelector(`#statusDropdown${appointmentId}`);
+    const originalStatus = badge.textContent;
+    updateStatusBadge(appointmentId, 'Loading...');
+
     fetch('/appointments/change-status', {
         method: 'POST',
         headers: {
@@ -47,10 +52,12 @@ function changeStatus(appointmentId, newStatus) {
             showToast('Status updated successfully!', 'success');
             updateStatusBadge(appointmentId, newStatus);
         } else {
+            updateStatusBadge(appointmentId, originalStatus);
             showToast('Error: ' + data.message, 'danger');
         }
     })
     .catch(error => {
+        updateStatusBadge(appointmentId, originalStatus);
         console.error('Error updating status:', error);
         showToast('An error occurred while updating the status.', 'danger');
     });
@@ -59,21 +66,24 @@ function changeStatus(appointmentId, newStatus) {
 function updateStatusBadge(appointmentId, newStatus) {
     const dropdownContainer = document.querySelector(`#statusDropdown${appointmentId}`).closest('.dropdown');
     const badge = dropdownContainer.querySelector('.badge');
-    const dropdownMenu = dropdownContainer.querySelector('.dropdown-menu');
-
+    
     badge.textContent = newStatus;
     badge.classList.remove(
-        'event-waiting-for-confirmation', 
-        'event-approved', 
-        'event-cancelled', 
-        'event-missed', 
-        'event-done', 
-        'rescheduled', 
-        'dropdown-toggle'
+        'event-waiting-for-confirmation',
+        'event-approved',
+        'event-cancelled',
+        'event-missed',
+        'event-done',
+        'rescheduled',
+        'dropdown-toggle',
+        'bg-secondary'
     );
 
     let badgeClass = '';
     switch (newStatus) {
+        case 'Loading...':
+            badgeClass = 'bg-secondary';
+            break;
         case 'Waiting for Confirmation':
             badgeClass = 'event-waiting-for-confirmation';
             break;
@@ -93,25 +103,36 @@ function updateStatusBadge(appointmentId, newStatus) {
             badgeClass = 'rescheduled';
             break;
         default:
-            badgeClass = 'bg-secondary'; 
+            badgeClass = 'bg-secondary';
             break;
     }
-    
+
     badge.classList.add(badgeClass);
 
     if (newStatus === 'Waiting for Confirmation' || newStatus === 'Approved') {
         badge.classList.add('dropdown-toggle');
         badge.setAttribute('data-bs-toggle', 'dropdown');
+        badge.setAttribute('aria-expanded', 'false');
+        badge.style.cursor = 'pointer';  
+
+        let dropdownMenu = dropdownContainer.querySelector('.dropdown-menu');
+        if (!dropdownMenu) {
+            dropdownMenu = document.createElement('ul');
+            dropdownMenu.classList.add('dropdown-menu');
+            dropdownContainer.appendChild(dropdownMenu);
+        }
 
         if (newStatus === 'Waiting for Confirmation') {
             dropdownMenu.innerHTML = `
                 <li><a class="dropdown-item" href="#" onclick="changeStatus('${appointmentId}', 'Approved')">Mark as Approved</a></li>
                 <li><a class="dropdown-item" href="#" onclick="changeStatus('${appointmentId}', 'Cancelled')">Mark as Cancelled</a></li>
+                <li><a class="dropdown-item" href="#" onclick="changeStatus('${appointmentId}', 'Rescheduled')">Mark as Rescheduled</a></li>
             `;
         } else if (newStatus === 'Approved') {
             dropdownMenu.innerHTML = `
                 <li><a class="dropdown-item" href="#" onclick="changeStatus('${appointmentId}', 'Cancelled')">Mark as Cancelled</a></li>
                 <li><a class="dropdown-item" href="#" onclick="changeStatus('${appointmentId}', 'Missed')">Mark as Missed</a></li>
+                <li><a class="dropdown-item" href="#" onclick="changeStatus('${appointmentId}', 'Rescheduled')">Mark as Rescheduled</a></li>
                 <li><a class="dropdown-item" href="#" onclick="changeStatus('${appointmentId}', 'Done')">Mark as Done</a></li>
             `;
         }
@@ -125,6 +146,10 @@ function updateStatusBadge(appointmentId, newStatus) {
     } else {
         badge.classList.remove('dropdown-toggle');
         badge.removeAttribute('data-bs-toggle');
+        badge.removeAttribute('aria-expanded');
+        badge.style.cursor = 'default';
+
+        const dropdownMenu = dropdownContainer.querySelector('.dropdown-menu');
         if (dropdownMenu) {
             dropdownMenu.remove();
         }
@@ -134,6 +159,11 @@ function updateStatusBadge(appointmentId, newStatus) {
             chevronIcon.remove();
         }
     }
+
+    const dropdowns = document.querySelectorAll('[data-bs-toggle="dropdown"]');
+    dropdowns.forEach(dropdown => {
+        new bootstrap.Dropdown(dropdown);
+    });
 }
 
 //filter status
@@ -147,16 +177,16 @@ document.addEventListener('DOMContentLoaded', function () {
             format: 'MM/DD/YYYY',
             cancelLabel: 'Clear'
         },
-        startDate: moment(), 
-        endDate: moment(),   
+        startDate: moment(),
+        endDate: moment(),
         showDropdowns: true,
-        ranges: {           
-           'Today': [moment(), moment()],
-           'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-           'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-           'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-           'This Month': [moment().startOf('month'), moment().endOf('month')],
-           'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        ranges: {
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
         }
     });
 
@@ -164,12 +194,11 @@ document.addEventListener('DOMContentLoaded', function () {
         $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
         const startDate = picker.startDate.format('YYYY-MM-DD');
         const endDate = picker.endDate.format('YYYY-MM-DD');
-        console.log("Date Range selected: " + startDate + ' to ' + endDate);
         const selectedStatus = $('#statusFilter').val();
         fetchAppointments(startDate, endDate, selectedStatus);
     });
 
-    $('#statusFilter').on('change', function() {
+    $('#statusFilter').on('change', function () {
         const dateRange = $('input[name="daterange"]').val().split(' - ');
         if (dateRange.length === 2) {
             const startDate = moment(dateRange[0], 'MM/DD/YYYY').format('YYYY-MM-DD');
@@ -193,54 +222,65 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(response => response.json())
         .then(data => {
-            dataTable.clear();
+            dataTable.clear(); 
+
             const filteredAppointments = data.appointments.filter(appointment => {
                 const appointmentDate = moment(appointment.start);
                 return appointmentDate.isBetween(startDate, endDate, 'day', '[]');
             });
-    
-            filteredAppointments.forEach((appointment, index) => {
-                const appointmentDate = moment(appointment.start);
-                let badgeHtml = '';
-                
-                if (appointment.status === 'Waiting for Confirmation' || appointment.status === 'Approved') {
-                    badgeHtml = `
-                        <div class="dropdown">
-                            <span id="statusDropdown${appointment.id}" class="badge ${getBadgeClass(appointment.status)}" data-bs-toggle="dropdown" style="cursor: pointer;">
-                                ${appointment.status}
-                                <i class="fas fa-chevron-down ms-2"></i>
-                            </span>
-                            <ul class="dropdown-menu">
-                    `;
-                    
-                    if (appointment.status === 'Waiting for Confirmation') {
-                        badgeHtml += `
-                            <li><a class="dropdown-item" href="#" onclick="changeStatus('${appointment.id}', 'Approved')">Mark as Approved</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="changeStatus('${appointment.id}', 'Cancelled')">Mark as Cancelled</a></li>
+
+            if (filteredAppointments.length === 0) {
+                dataTable.draw();
+                return;
+            }
+
+                filteredAppointments.forEach((appointment, index) => {
+                    const appointmentDate = moment(appointment.start);
+                    let badgeHtml = '';
+
+                    if (appointment.status === 'Waiting for Confirmation' || appointment.status === 'Approved') {
+                        badgeHtml = `
+                            <div class="dropdown">
+                                <span id="statusDropdown${appointment.id}" class="badge ${getBadgeClass(appointment.status)}" data-bs-toggle="dropdown" style="cursor: pointer;">
+                                    ${appointment.status}
+                                    <i class="fas fa-chevron-down ms-2"></i>
+                                </span>
+                                <ul class="dropdown-menu">
                         `;
-                    } else if (appointment.status === 'Approved') {
-                        badgeHtml += `
-                            <li><a class="dropdown-item" href="#" onclick="changeStatus('${appointment.id}', 'Cancelled')">Mark as Cancelled</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="changeStatus('${appointment.id}', 'Missed')">Mark as Missed</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="changeStatus('${appointment.id}', 'Done')">Mark as Done</a></li>
-                        `;
+
+                        if (appointment.status === 'Waiting for Confirmation') {
+                            badgeHtml += `
+                                <li><a class="dropdown-item" href="#" onclick="changeStatus('${appointment.id}', 'Approved')">Mark as Approved</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="changeStatus('${appointment.id}', 'Cancelled')">Mark as Cancelled</a></li>
+                            `;
+                        } else if (appointment.status === 'Approved') {
+                            badgeHtml += `
+                                <li><a class="dropdown-item" href="#" onclick="changeStatus('${appointment.id}', 'Cancelled')">Mark as Cancelled</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="changeStatus('${appointment.id}', 'Missed')">Mark as Missed</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="changeStatus('${appointment.id}', 'Done')">Mark as Done</a></li>
+                            `;
+                        }
+
+                        badgeHtml += `</ul></div>`;
+                    } else {
+                        badgeHtml = `<span class="badge ${getBadgeClass(appointment.status)}">${appointment.status}</span>`;
                     }
 
-                    badgeHtml += `</ul></div>`;
-                } else {
-                    badgeHtml = `<span class="badge ${getBadgeClass(appointment.status)}">${appointment.status}</span>`;
-                }
-
-                dataTable.row.add([
-                    appointmentDate.format('MMMM Do YYYY'),
-                    appointment.client_name,
-                    appointment.course,
-                    appointment.instructor_name,
-                    badgeHtml
-                ]).draw();
-            });
-        })
-        .catch(error => console.error('Error fetching appointments:', error));
+                    dataTable.row.add([
+                        index + 1,
+                        appointmentDate.format('MMMM D, YYYY'),
+                        appointment.appointment_start_time + ' - ' + appointment.appointment_end_time,
+                        appointment.respondent_name,
+                        appointment.respondent_email,
+                        appointment.complainant_name,
+                        appointment.complainant_email,
+                        badgeHtml
+                    ]);
+                });
+    
+                dataTable.draw(); 
+            })
+            .catch(error => console.error('Error fetching appointments:', error));
     }
 
     function getBadgeClass(status) {
@@ -258,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function () {
             case 'Rescheduled':
                 return 'rescheduled';
             default:
-                return 'bg-secondary'; // Default class for unrecognized statuses
+                return 'bg-secondary';
         }
     }
 });

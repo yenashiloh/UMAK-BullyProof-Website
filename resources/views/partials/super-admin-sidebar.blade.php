@@ -4,7 +4,7 @@
         <div class="sidebar-logo">
             <!-- Logo Header -->
             <div class="logo-header" data-background-color="dark">
-                <a href="{{route ('admin.dashboard')}}" class="logo d-flex align-items-center">
+                <a href="" class="logo d-flex align-items-center">
                     <img src="../../../../assets/img/logo-2.png" alt="navbar brand" class="navbar-brand" height="40" />
                     <span class="ms-2" style="font-size: 18px; font-weight: bold; color: white;">BullyProof</span>
                 </a>
@@ -31,8 +31,8 @@
                         </span>
                         <h4 class="text-section">Menu</h4>
                     </li>
-                    <li class="nav-item {{ Route::currentRouteName() === 'admin.dashboard' ? 'active' : '' }}">
-                        <a href="{{ route('admin.dashboard') }}" class="collapsed">
+                    <li class="nav-item ">
+                        <a href="" class="collapsed">
                             <i class="fas fa-home"></i>
                             <p>Dashboard</p>
                         </a>
@@ -43,14 +43,14 @@
                         </span>
                         <h4 class="text-section">Report Management</h4>
                     </li>
-                    <li class="nav-item {{ in_array(Route::currentRouteName(), ['admin.reports.incident-reports', 'admin.reports.view']) ? 'active' : '' }}">
-                        <a href="{{ route('admin.reports.incident-reports') }}">
+                    <li class="nav-item ">
+                        <a href="">
                             <i class="fas fa-file-alt"></i>
                             <p>Incidents Report</p>
                         </a>
                     </li>
-                    <li class="nav-item  {{ in_array(Route::currentRouteName(), ['admin.list.list-perpetrators', 'admin.reports.byIdNumber', 'admin.list.view-report']) ? 'active' : '' }}">
-                        <a href="{{ route('admin.list.list-perpetrators') }}">
+                    <li class="nav-item ">
+                        <a href="">
                             <i class="fas fa-users"></i>
                             <p>Complainees</p>
                         </a>
@@ -61,30 +61,24 @@
                         </span>
                         <h4 class="text-section">Appointment Management</h4>
                     </li>
-                    <li class="nav-item {{ Route::currentRouteName() === 'admin.email.email-management' ? 'active' : '' }}">
-                        <a href="{{ route('admin.email.email-management') }}">
-                            <i class="fas fa-envelope"></i>
-                            <p>Email Content</p>
-                        </a>
-                    </li>
-                    <li class="nav-item {{ Route::currentRouteName() === 'admin.appointment.appointment' ? 'active' : '' }}">
-                        <a href="{{ route('admin.appointment.appointment') }}">
-                            <i class="fas fa-calendar"></i>
-                            <p>Appointments</p>
-                        </a>
-                    </li>
-                    <li class="nav-item {{ Route::currentRouteName() === 'admin.appointment.summary' ? 'active' : '' }}">
-                        <a href="{{ route('admin.appointment.summary') }}">
-                            <i class="fas fa-calendar-check"></i>
-                            <p>Appointments Summary</p>
-                        </a>
-                    </li>
-                    {{-- <li class="nav-item ">
+                    <li class="nav-item ">
                         <a href="">
                             <i class="fas fa-envelope"></i>
                             <p>Email Content</p>
                         </a>
-                    </li> --}}
+                    </li>
+                    <li class="nav-item">
+                        <a href="">
+                            <i class="fas fa-calendar"></i>
+                            <p>Appointments</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">
+                            <i class="fas fa-calendar-check"></i>
+                            <p>Appointments Summary</p>
+                        </a>
+                    </li>
                   
                     <li class="nav-section">
                         <span class="sidebar-mini-icon">
@@ -92,20 +86,18 @@
                         </span>
                         <h4 class="text-section">User Management</h4>
                     </li>
-                    <li class="nav-item {{ Route::currentRouteName() === 'admin.users.users' ? 'active' : '' }}">
-                        <a href="{{ route('admin.users.users') }}">
+                    <li class="nav-item">
+                        <a href="">
+                            <i class="fas fa-user"></i>
+                            <p>Create Account</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">
                             <i class="fas fa-user"></i>
                             <p>Users</p>
                         </a>
                     </li>
-                    @if(session('admin_role') === 'superadmin')
-                    <li class="nav-item {{ Route::currentRouteName() === 'admin.users.create-account' ? 'active' : '' }}">
-                        <a href="{{ route('admin.users.create-account') }}">
-                            <i class="fas fa-user-plus"></i>
-                            <p>Create Account</p>
-                        </a>
-                    </li>
-                @endif
                 </ul>
             </div>
         </div>

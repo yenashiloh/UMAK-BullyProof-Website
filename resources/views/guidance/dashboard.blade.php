@@ -7,11 +7,15 @@
     @include('partials.guidance-link')
   </head>
   <body>
+  
     <div id="loading-overlay">
+      <img id="loading-logo" src="{{ asset('assets/img/logo-4.png') }}" alt="Loading Logo">
       <div class="spinner"></div>
   </div>
+  
     @include('partials.guidance-sidebar')
       @include('partials.guidance-header')
+      
         <div class="container">
           <div class="page-inner">
             <div

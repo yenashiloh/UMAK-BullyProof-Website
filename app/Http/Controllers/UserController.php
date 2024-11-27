@@ -4,9 +4,20 @@ namespace App\Http\Controllers;
 use MongoDB\Client;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use App\Services\CyberbullyingDetectionService;
+use Illuminate\Support\Facades\Hash;
+use MongoDB\BSON\UTCDateTime;
 
 class UserController extends Controller
 {
+    protected $detectionService;
+
+    public function __construct(CyberbullyingDetectionService $detectionService) 
+    {
+        $this->detectionService = $detectionService;
+    }
+
+    //show users table
     public function showUsers()
     {
         $client = new Client(env('MONGODB_URI'));
@@ -34,7 +45,7 @@ class UserController extends Controller
         $userCollection = $client->bullyproof->users;
         $adminCollection = $client->bullyproof->admins;
 
-    $adminId = session('admin_id');
+        $adminId = session('admin_id');
         $admin = $adminCollection->findOne(['_id' => new \MongoDB\BSON\ObjectId($adminId)]);
 
         $firstName = $admin->first_name ?? '';
@@ -49,45 +60,156 @@ class UserController extends Controller
             'users')); 
     }
 
+    //change status of user disabled acc and active acc
     public function changeStatus($id, Request $request)
     {
         try {
-            // Initialize the MongoDB client
             $client = new Client(env('MONGODB_URI'));
     
-            // Select the appropriate collection
             $userCollection = $client->bullyproof->users;
     
-            // Get the new status from the request
             $status = $request->status;
     
-            // Find the user by their _id
             $user = $userCollection->findOne(['_id' => new \MongoDB\BSON\ObjectId($id)]);
     
             if ($user) {
-                // Update the user's status
                 $updateResult = $userCollection->updateOne(
                     ['_id' => new \MongoDB\BSON\ObjectId($id)],
                     ['$set' => ['status' => $status]]
                 );
     
-                // Check if the update was successful
                 if ($updateResult->getModifiedCount() > 0) {
                     return response()->json(['success' => true, 'status' => $status]);
                 } else {
-                    // Return failure if no rows were modified
                     return response()->json(['success' => false, 'message' => 'No changes made to the user status.']);
                 }
             } else {
-                // Return failure if the user is not found
                 return response()->json(['success' => false, 'message' => 'User not found.']);
             }
     
         } catch (\Exception $e) {
-            // Return error response in case of an exception
             return response()->json(['success' => false, 'message' => 'Error updating status: ' . $e->getMessage()]);
         }
     }
     
+    //show create account
+    public function showCreateAccountPage()
+    {
+        $client = new Client(env('MONGODB_URI'));
+        $userCollection = $client->bullyproof->users;
+        $adminCollection = $client->bullyproof->admins;
 
+        $adminId = session('admin_id');
+        $admin = $adminCollection->findOne(['_id' => new \MongoDB\BSON\ObjectId($adminId)]);
+
+        $firstName = $admin->first_name ?? '';
+        $lastName = $admin->last_name ?? '';
+        $email = $admin->email ?? '';
+
+        $users = $userCollection->find()->toArray();
+        return view ('admin.users.create-account', compact(
+            'firstName', 
+            'lastName', 
+            'email',
+        )); 
+    }
+
+    //store account 
+    public function storeAccount(Request $request)
+    {
+        // Updated validation rules to match frontend requirements
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:admins,email',
+            'contact_number' => 'required|string|max:20',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*\.\-_\+])[A-Za-z\d!@#$%^&*\.\-_\+]{8,}$/'
+            ],
+            'password_confirmation' => 'required'
+        ]);
+    
+        if ($validator->fails()) {
+            return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+    
+        try {
+            // Create MongoDB connection with proper error handling
+            $mongoClient = new Client(env('MONGODB_URI'), [
+                'retryWrites' => true,
+                'w' => 'majority',
+                'timeout' => 5000
+            ]);
+    
+            // Select database and collection
+            $database = $mongoClient->selectDatabase('bullyproof');
+            $collection = $database->selectCollection('admins');
+    
+            // Generate username from email
+            $username = strtolower(explode('@', $request->email)[0]) . '-admin';
+    
+            // Prepare admin document
+            $admin = [
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'username' => $username,
+                'email' => strtolower($request->email),
+                'contact_number' => $request->contact_number,
+                'password' => Hash::make($request->password),
+                'role' => 'discipline',
+                'created_at' => new UTCDateTime(now()->timestamp * 1000)
+            ];
+    
+            // Insert with write concern
+            $result = $collection->insertOne($admin, [
+                'writeConcern' => new \MongoDB\Driver\WriteConcern(\MongoDB\Driver\WriteConcern::MAJORITY)
+            ]);
+    
+            if ($result->getInsertedCount() > 0) {
+                // Log successful creation
+                \Log::info('Admin account created successfully', [
+                    'email' => $admin['email'],
+                    'username' => $admin['username']
+                ]);
+    
+                return redirect()
+                    ->route('admin.users.create-account')
+                    ->with('success', 'Admin account created successfully.');
+            } else {
+                \Log::error('Failed to create admin account - No document inserted');
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->with('error', 'Failed to create admin account. Please try again.');
+            }
+    
+        } catch (\MongoDB\Driver\Exception\ConnectionTimeoutException $e) {
+            \Log::error('MongoDB connection timeout: ' . $e->getMessage());
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Database connection timeout. Please try again.');
+                
+        } catch (\MongoDB\Driver\Exception\AuthenticationException $e) {
+            \Log::error('MongoDB authentication failed: ' . $e->getMessage());
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Database authentication failed. Please contact system administrator.');
+                
+        } catch (\Exception $e) {
+            \Log::error('Error creating admin account: ' . $e->getMessage());
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'An error occurred while creating the admin account. Please try again.');
+        }
+    }
 }

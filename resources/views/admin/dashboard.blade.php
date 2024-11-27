@@ -10,11 +10,15 @@
 
 
 <body>
+
     <div id="loading-overlay">
+        <img id="loading-logo" src="{{ asset('assets/img/logo-4.png') }}" alt="Loading Logo">
         <div class="spinner"></div>
     </div>
+    
     @include('partials.admin-sidebar')
     @include('partials.admin-header')
+    
     <div class="container">
         <div class="page-inner">
             <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
@@ -26,7 +30,6 @@
                     <a href="#" class="btn btn-secondary btn-round me-2" data-bs-toggle="modal" data-bs-target="#filterModal">
                         <i class="fas fa-sliders-h"></i>  Filters 
                     </a>
-                    {{-- <a href="#" class="btn btn-primary btn-round">Generate Report</a> --}}
                 </div>
             </div>
         
@@ -187,6 +190,28 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="col-12 col-md-4">
+                    <div class="card card-stats card-round">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-icon">
+                                    <div class="icon-big text-center icon-danger bubble-shadow-small">
+                                        <i class="fas fa-clock"></i>
+
+
+                                    </div>
+                                </div>
+                                <div class="col col-stats ms-3 ms-sm-0">
+                                    <div class="numbers">
+                                        <p class="card-category">Waiting for Confirmation</p>
+                                        <h4 class="card-title">{{ $waitingForConfirmationCount }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <input type="hidden" id="reportMonths" value="{{ json_encode($reportMonthData) }}">
@@ -220,7 +245,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     <!-- End Custom template -->
