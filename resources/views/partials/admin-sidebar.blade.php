@@ -98,6 +98,12 @@
                             <p>Users</p>
                         </a>
                     </li>
+                    <li class="nav-item {{ Route::currentRouteName() === 'admin.users.audit-log' ? 'active' : '' }}">
+                        <a href="{{ route('admin.users.audit-log') }}">
+                            <i class="fas fa-book"></i>
+                            <p>Audit Log</p>
+                        </a>
+                    </li>
                     @if(session('admin_role') === 'superadmin')
                     <li class="nav-item {{ Route::currentRouteName() === 'admin.users.create-account' ? 'active' : '' }}">
                         <a href="{{ route('admin.users.create-account') }}">

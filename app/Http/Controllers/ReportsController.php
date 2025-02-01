@@ -160,9 +160,7 @@ class ReportsController extends Controller
         $incidentDetails = $report->incidentDetails ?? '';
         
         $analysisResult = $this->detectionService->analyze($incidentDetails);
-    
-        
-        //victim relationship and others
+ 
         $displayedVictimRelationship = '';
 
         if (!empty($report->otherVictimRelationship)) {

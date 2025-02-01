@@ -13,33 +13,33 @@ class CyberbullyingDetectionService
 
     public function __construct()
     {
-        // Store both the script path and Python interpreter path from .env
+        // store both the script path and Python interpreter path from .env
         $this->pythonScript = base_path('app/python/app.py');
-        $this->pythonInterpreter = env('PYTHON_PATH');  // Fetch from .env file
+        $this->pythonInterpreter = env('PYTHON_PATH');  
     }
 
     /**
-     * Analyze text for cyberbullying
+     * analyze text for cyberbullying
      */
     public function analyze($text)
     {
         try {
-            // Input validation
+            // input validation
             if (empty($text)) {
                 throw new Exception('Empty input text provided');
             }
 
-            // Verify Python script exists
+            // verify Python script exists
             if (!file_exists($this->pythonScript)) {
                 throw new Exception("Python script not found at: {$this->pythonScript}");
             }
 
-            // Verify Python interpreter exists
+            // verify Python interpreter exists
             if (empty($this->pythonInterpreter) || !file_exists($this->pythonInterpreter)) {
                 throw new Exception("Python interpreter not found at: {$this->pythonInterpreter}");
             }
 
-            // Build the command with proper escaping and input from file
+            // build the command with proper escaping and input from file
             $command = sprintf(
                 '%s %s %s 2>&1',
                 escapeshellarg($this->pythonInterpreter),
@@ -47,45 +47,44 @@ class CyberbullyingDetectionService
                 escapeshellarg($text)
             );
 
-            // Execute Python script with increased memory limit and timeout
+            // execute Python script with increased memory limit and timeout
             $output = null;
             $returnVar = null;
             
-            // Set resource limits
+            // set resource limits
             $descriptorSpec = [
                 0 => ['pipe', 'r'],  // stdin
                 1 => ['pipe', 'w'],  // stdout
                 2 => ['pipe', 'w']   // stderr
             ];
             
-            // Execute the command
+            // execute the command
             $process = proc_open($command, $descriptorSpec, $pipes);
             
             if (is_resource($process)) {
-                // Read output
+                // read output
                 $output = stream_get_contents($pipes[1]);
                 $errors = stream_get_contents($pipes[2]);
                 
-                // Close pipes
+                // close pipes
                 foreach ($pipes as $pipe) {
                     fclose($pipe);
                 }
                 
-                // Close process
+                // close process
                 $returnVar = proc_close($process);
             }
 
-            // Check for execution errors
             if ($returnVar !== 0) {
                 throw new Exception("Python script execution failed with code $returnVar: " . ($errors ?? 'Unknown error'));
             }
 
-            // Handle empty output
+            // handle empty output
             if (empty($output)) {
                 throw new Exception('No output from Python script');
             }
 
-            // Parse JSON response
+            // parse JSON response
             $result = json_decode($output, true);
             
             if (json_last_error() !== JSON_ERROR_NONE) {

@@ -17,6 +17,56 @@ class UserController extends Controller
         $this->detectionService = $detectionService;
     }
 
+    //show audit log 
+    public function showAuditLog()
+    {
+        $client = new Client(env('MONGODB_URI'));
+        $userCollection = $client->bullyproof->users;
+        $auditCollection = $client->bullyproof->audit_trail;
+    
+        $adminId = session('admin_id');
+        $admin = $client->bullyproof->admins->findOne(['_id' => new \MongoDB\BSON\ObjectId($adminId)]);
+    
+        $firstName = $admin->first_name ?? '';
+        $lastName = $admin->last_name ?? '';
+        $email = $admin->email ?? '';
+    
+        // Fetch audit logs and join with users
+        $auditLogs = $auditCollection->aggregate([
+            [
+                '$lookup' => [
+                    'from' => 'users', // Collection to join
+                    'localField' => 'userId', // Field from audit_trail
+                    'foreignField' => '_id', // Field from users
+                    'as' => 'user_info'
+                ]
+            ],
+            [
+                '$unwind' => [
+                    'path' => '$user_info',
+                    'preserveNullAndEmptyArrays' => true // Keeps logs even if user info is missing
+                ]
+            ],
+            [
+                '$project' => [
+                    'date' => '$created_at',
+                    'action' => 1,
+                    'ip_address' => 1, // Include ip_address field
+                    'full_name' => ['$concat' => ['$user_info.fullname']],
+                ]
+            ],
+            ['$sort' => ['created_at' => -1]] // Sort by latest logs
+        ])->toArray();
+    
+        return view('admin.users.audit-log', compact(
+            'firstName', 
+            'lastName', 
+            'email', 
+            'auditLogs'
+        ));
+    }
+    
+
     //show users table
     public function showUsers()
     {

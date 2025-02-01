@@ -7,10 +7,10 @@ from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 import json
 
-# Get the directory containing the script
+# get the directory containing the script
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Download required NLTK data
+# download required NLTK data
 try:
     nltk.download('wordnet', quiet=True)
     nltk.download('stopwords', quiet=True)
@@ -22,7 +22,7 @@ except Exception as e:
     }))
     sys.exit(1)
 
-# Load model and vectorizer
+# load model and vectorizer
 try:
     model_path = os.path.join(script_dir, 'models', 'logistic_regression_model.pkl')
     vectorizer_path = os.path.join(script_dir, 'models', 'tfidf_vectorizer.pkl')
@@ -44,7 +44,7 @@ except Exception as e:
     }))
     sys.exit(1)
 
-# Define stopwords and keywords
+# stopwords and keywords
 stopwords = set(ENGLISH_STOP_WORDS).union({
    "ang", "sa", "ng", "para", "at", "ito", "ay", "na", "ako", "ni",
     "is", "kung", "hindi", "mga", "may", "ko", "kami", "kayo", "nila",

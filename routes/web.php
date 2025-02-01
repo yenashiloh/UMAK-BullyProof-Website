@@ -57,6 +57,8 @@ Route::middleware([PreventBackHistory::class, 'discipline'])->group(function () 
 
     Route::post('/admin-logout', [AdminAuthController::class, 'logoutAdmin'])->name('admin.logout');
 
+    Route::get('/audit-log', [UserController::class, 'showAuditLog'])->name('admin.users.audit-log');
+
 });
 
 
