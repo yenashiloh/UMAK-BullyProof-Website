@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Users</title>
+    <title>Email Content</title>
 
     @include('partials.admin-link')
     <!-- Toastify CSS -->
@@ -24,8 +24,6 @@
         <div class="spinner"></div>
     </div>
     
-    
-
     @include('partials.admin-sidebar')
     @include('partials.admin-header')
 
@@ -60,14 +58,24 @@
                         <div class="card-body">
                             <ul class="nav nav-tabs nav-line nav-color-secondary" id="line-tab" role="tablist">
                                 <li class="nav-item">
+                                    <a class="nav-link" id="line-profile-tab" data-bs-toggle="pill" href="#line-profile"
+                                        role="tab" aria-controls="pills-profile"
+                                        aria-selected="false">Complainee</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="complainee-department-email-tab" data-bs-toggle="pill" href="#department-email"
+                                        role="tab" aria-controls="pills-profile"
+                                        aria-selected="false">Complainee's Department</a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link active" id="line-home-tab" data-bs-toggle="pill"
                                         href="#line-home" role="tab" aria-controls="pills-home"
                                         aria-selected="true">Complainants</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" id="line-profile-tab" data-bs-toggle="pill" href="#line-profile"
+                                    <a class="nav-link" id="complainant-department-email-tab" data-bs-toggle="pill" href="#complainant-department-email"
                                         role="tab" aria-controls="pills-profile"
-                                        aria-selected="false">Complainee</a>
+                                        aria-selected="false">Complainant's Department</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="line-contact-tab" data-bs-toggle="pill" href="#line-contact"
@@ -95,6 +103,15 @@
                                             </div>
                                         </div>
 
+                                        <!-- Complainant Department Tab -->
+                                        <div class="tab-pane fade" id="complainant-department-email" role="tabpanel"
+                                            aria-labelledby="complainant-department-email-tab">
+                                            <div class="form-group">
+                                                <!-- Textarea for CKEditor -->
+                                                <textarea id="complainantDepartmentEmailContent" name="complainant_department_email_content" class="form-control ms-3">{{ $complainantDepartmentEmailContent }}</textarea>
+                                            </div>
+                                        </div>
+
                                         <!-- Complainee Tab -->
                                         <div class="tab-pane fade" id="line-profile" role="tabpanel"
                                             aria-labelledby="line-profile-tab">
@@ -104,6 +121,15 @@
                                             </div>
                                         </div>
 
+                                        <!-- Complainee Department Tab -->
+                                        <div class="tab-pane fade" id="department-email" role="tabpanel"
+                                            aria-labelledby="complainee-department-email-tab">
+                                            <div class="form-group">
+                                                <!-- Textarea for CKEditor -->
+                                                <textarea id="complaineeDepartmentEmailContent" name="complainee_department_email_content" class="form-control ms-3">{{ $complaineeDepartmentEmailContent }}</textarea>
+                                            </div>
+                                        </div>
+                                        
                                         <!-- Cancelled Tab -->
                                         <div class="tab-pane fade" id="line-contact" role="tabpanel"
                                             aria-labelledby="line-contact-tab">
@@ -146,7 +172,19 @@
             });
 
         ClassicEditor
+            .create(document.querySelector('#complainantDepartmentEmailContent'))
+            .catch(error => {
+                console.error(error);
+            });
+
+        ClassicEditor
             .create(document.querySelector('#complaineeEmailContent'))
+            .catch(error => {
+                console.error(error);
+            });
+        
+         ClassicEditor
+            .create(document.querySelector('#complaineeDepartmentEmailContent'))
             .catch(error => {
                 console.error(error);
             });
@@ -168,67 +206,67 @@
         createCustomToast(successMessage, "success");
         sessionStorage.removeItem('successMessage');  // Clear after showing
     }
-});
+    });
 
-// Function to show success message toast
-function createCustomToast(message, type = 'info') {
-    const toastContainer = document.getElementById('toastContainer');
-    if (!toastContainer) {
-        console.error('Toast container not found');
-        return;
+    // Function to show success message toast
+    function createCustomToast(message, type = 'info') {
+        const toastContainer = document.getElementById('toastContainer');
+        if (!toastContainer) {
+            console.error('Toast container not found');
+            return;
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-white bg-${type} border-0`;
+        toast.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        `;
+
+        toastContainer.appendChild(toast);
+
+        const bsToast = new bootstrap.Toast(toast, {
+            delay: 5000
+        });
+        bsToast.show();
+
+        toast.addEventListener('hidden.bs.toast', () => {
+            toast.remove();
+        });
     }
 
-    const toast = document.createElement('div');
-    toast.className = `toast align-items-center text-white bg-${type} border-0`;
-    toast.innerHTML = `
-        <div class="d-flex">
-            <div class="toast-body">${message}</div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    `;
 
-    toastContainer.appendChild(toast);
-
-    const bsToast = new bootstrap.Toast(toast, {
-        delay: 5000
-    });
-    bsToast.show();
-
-    toast.addEventListener('hidden.bs.toast', () => {
-        toast.remove();
-    });
-}
-
-
-document.addEventListener("DOMContentLoaded", function () {
-    const lineTab = document.getElementById('line-tab');
-    const activeTab = localStorage.getItem('activeTab'); // Retrieve the active tab from local storage
-    
-    if (activeTab) {
-        // Activate the tab from local storage
-        const triggerEl = document.querySelector(`a[href="${activeTab}"]`);
-        if (triggerEl) {
-            const tab = new bootstrap.Tab(triggerEl);
-            tab.show();
+    document.addEventListener("DOMContentLoaded", function () {
+        const lineTab = document.getElementById('line-tab');
+        const activeTab = localStorage.getItem('activeTab'); // Retrieve the active tab from local storage
+        
+        if (activeTab) {
+            // Activate the tab from local storage
+            const triggerEl = document.querySelector(`a[href="${activeTab}"]`);
+            if (triggerEl) {
+                const tab = new bootstrap.Tab(triggerEl);
+                tab.show();
+            }
+        } else {
+            // Default to the first tab if no tab is stored
+            const firstTab = lineTab.querySelector('a[data-bs-toggle="pill"]');
+            if (firstTab) {
+                const tab = new bootstrap.Tab(firstTab);
+                tab.show();
+            }
         }
-    } else {
-        // Default to the first tab if no tab is stored
-        const firstTab = lineTab.querySelector('a[data-bs-toggle="pill"]');
-        if (firstTab) {
-            const tab = new bootstrap.Tab(firstTab);
-            tab.show();
-        }
-    }
 
-    // Store the active tab on click
-    const tabs = lineTab.querySelectorAll('a[data-bs-toggle="pill"]');
-    tabs.forEach(tab => {
-        tab.addEventListener('shown.bs.tab', function (e) {
-            const activeTabHref = e.target.getAttribute('href');
-            localStorage.setItem('activeTab', activeTabHref); // Save the active tab in local storage
+        // Store the active tab on click
+        const tabs = lineTab.querySelectorAll('a[data-bs-toggle="pill"]');
+        tabs.forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function (e) {
+                const activeTabHref = e.target.getAttribute('href');
+                localStorage.setItem('activeTab', activeTabHref); // Save the active tab in local storage
+            });
         });
     });
-});
     </script>
 
     <!-- Bootstrap JS (Optional) -->

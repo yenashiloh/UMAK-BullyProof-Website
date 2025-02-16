@@ -124,160 +124,177 @@
                 </div>
 
                 <!-- Modal Add New Appointment-->
-                <div class="modal fade" id="newAppointmentModal" tabindex="-1"
-                    aria-labelledby="newAppointmentModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
+                <div class="modal fade" id="newAppointmentModal" tabindex="-1" aria-labelledby="newAppointmentModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title fw-bold" id="newAppointmentModalLabel">New Appointment</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body" style="max-height: 70vh; overflow-y: auto; overflow-x: hidden;">
-
-                                <form method="POST" action="{{ route('appointments.store') }}" id="appointmentForm"
-                                    novalidate>
+                                <form method="POST" action="{{ route('appointments.store') }}" id="appointmentForm" novalidate>
                                     @csrf
-
-                                    <!-- Respondent Name -->
-                                    <div class="mb-3">
-                                        <label for="respondentName" class="form-label fw-bold">Complainee Name <span
-                                                class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="respondentName"
-                                            name="respondent_name" placeholder="Enter respondent name" required>
-                                        <div class="invalid-feedback"></div>
+                                    
+                                    <!-- Complainee Information Section -->
+                                    <h6 class="fw-bold mb-3">Complainee Information</h6>
+                                    <div class="row mb-3">
+                                        <!-- Two columns for name and email -->
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="respondentName" class="form-label">Complainee Name <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="respondentName" name="respondent_name" placeholder="Enter Complainee Name" required>
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="respondentEmail" class="form-label">Complainee Email <span class="text-danger">*</span></label>
+                                                <input type="email" class="form-control" id="respondentEmail" placeholder="Enter Complainee Email" name="respondent_email" required>
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                        </div>
+                
+                                        <!-- Full width for department email -->
+                                        <div class="col-12">
+                                            <div class="mb-3">
+                                                <label for="complaineeDepartmentEmail" class="form-label">Complainee's Department Email <span class="text-danger">*</span></label>
+                                                <input type="email" class="form-control" id="complaineeDepartmentEmail" placeholder="Enter Department Email" name="complainee_department_email" required>
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                        </div>
                                     </div>
-
-                                    <!-- Respondent Email -->
-                                    <div class="mb-3">
-                                        <label for="respondentEmail" class="form-label fw-bold">Complainee Email <span
-                                                class="text-danger">*</span></label>
-                                        <input type="email" class="form-control" id="respondentEmail"
-                                            placeholder="Enter respondent email" name="respondent_email" required>
-                                        <div class="invalid-feedback"></div>
+                
+                                    <!-- Complainant Information Section -->
+                                    <h6 class="fw-bold mb-3">Complainant Information</h6>
+                                    <div class="row mb-4">
+                                        <!-- Two columns for name and email -->
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="complainantName" class="form-label">Complainant Name <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="complainantName" placeholder="Enter Complainant Name" name="complainant_name" required>
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="complainantEmail" class="form-label">Complainant Email <span class="text-danger">*</span></label>
+                                                <input type="email" class="form-control" id="complainantEmail" placeholder="Enter Complainant email" name="complainant_email" required>
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                        </div>
+                
+                                        <!-- Full width for department email -->
+                                        <div class="col-12">
+                                            <div class="mb-3">
+                                                <label for="complainantDepartmentEmail" class="form-label">Complainant's Department Email <span class="text-danger">*</span></label>
+                                                <input type="email" class="form-control" id="complainantDepartmentEmail" placeholder="Enter Complainant's Department Email" name="complainant_department_email" required>
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                        </div>
                                     </div>
-
-                                    <!-- Complainant Name -->
-                                    <div class="mb-3">
-                                        <label for="complainantName" class="form-label fw-bold">Complainant Name <span
-                                                class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="complainantName"
-                                            placeholder="Enter complainant name" name="complainant_name" required>
-                                        <div class="invalid-feedback"></div>
-                                    </div>
-
-                                    <!-- Complainant Email -->
-                                    <div class="mb-3">
-                                        <label for="complainantEmail" class="form-label fw-bold">Complainant Email
-                                            <span class="text-danger">*</span></label>
-                                        <input type="email" class="form-control" id="complainantEmail"
-                                            placeholder="Enter complainant email" name="complainant_email" required>
-                                        <div class="invalid-feedback"></div>
-                                    </div>
-
-                                    <!-- Appointment Date -->
-                                    <div class="mb-3">
-                                        <label for="appointmentDate" class="form-label fw-bold">Appointment Date <span
-                                                class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="appointmentDate"
-                                            name="appointment_date" placeholder="Select date">
-                                        <div class="invalid-feedback"></div>
-                                    </div>
-
-                                    <!-- Appointment Times -->
-                                    <div class="mb-3">
-                                        <label for="appointmentStartTime" class="form-label fw-bold">Start Time <span
-                                                class="text-danger">*</span></label>
-                                        <select class="form-control" id="appointmentStartTime"
-                                            name="appointment_start_time">
-                                            <option value="">Select start time</option>
-                                        </select>
-                                        <div class="invalid-feedback"></div>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="appointmentEndTime" class="form-label fw-bold">End Time <span
-                                                class="text-danger">*</span></label>
-                                        <select class="form-control" id="appointmentEndTime"
-                                            name="appointment_end_time" disabled>
-                                            <option value="">Select end time</option>
-                                        </select>
-                                        <div class="invalid-feedback"></div>
+                
+                                    <!-- Schedule Details Section -->
+                                    <h6 class="fw-bold mb-3">Schedule Details</h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="appointmentDate" class="form-label">Appointment Date <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="appointmentDate" name="appointment_date" placeholder="Select date">
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="appointmentStartTime" class="form-label">Start Time <span class="text-danger">*</span></label>
+                                                <select class="form-control" id="appointmentStartTime" name="appointment_start_time">
+                                                    <option value="">Select start time</option>
+                                                </select>
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                        </div>
+                
+                                        <div class="col-12">
+                                            <div class="mb-3">
+                                                <label for="appointmentEndTime" class="form-label">End Time <span class="text-danger">*</span></label>
+                                                <select class="form-control" id="appointmentEndTime" name="appointment_end_time" disabled>
+                                                    <option value="">Select end time</option>
+                                                </select>
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-outline-dark"
-                                    data-bs-dismiss="modal">Close</button>
-                                <button type="submit" form="appointmentForm" class="btn btn-secondary">Submit
-                                    Appointment</button>
+                                <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" form="appointmentForm" class="btn btn-secondary">Submit Appointment</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Modal Appointment Details-->
-                <div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog" role="document">
+                <div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-scrollable" role="document">
                         <div class="modal-content">
-                            <div class="modal-header">
+                            <div class="modal-header py-3 px-4">
                                 <h5 class="modal-title fw-bold" id="appointmentModalLabel">Appointment Details</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <div class="modal-body">
-                                <div class="form-group row">
-                                    <label class="col-md-4 col-form-label text-right fw-bold">Complainant:</label>
-                                    <div class="col-md-8 mt-2">
-                                        <div id="modalDescription"></div>
-                                    </div>
+                            <div class="modal-body" style="max-height: 75vh; overflow-y: auto; overflow-x: hidden; padding: 20px;">
+                                <h6 class="fw-bold mb-4 mt-2">Complainant Information</h6>
+                                <div class="d-flex justify-content-between mb-3 px-2">
+                                    <span class="fw-bold">Full Name:</span>
+                                    <span id="modalDescription"></span>
                                 </div>
-                                <div class="form-group row">
-                                    <label class="col-md-4 col-form-label text-right fw-bold">Complainant
-                                        Email:</label>
-                                    <div class="col-md-8 mt-2">
-                                        <div id="modalComplainantEmail"></div>
-                                    </div>
+                                <div class="d-flex justify-content-between mb-3 px-2">
+                                    <span class="fw-bold">Email Address:</span>
+                                    <span id="modalComplainantEmail"></span>
                                 </div>
-                                <div class="form-group row">
-                                    <label class="col-md-4 col-form-label text-right fw-bold">Complainee:</label>
-                                    <div class="col-md-8 mt-2">
-                                        <div id="modalRespondent"></div>
-                                    </div>
+                                <div class="d-flex justify-content-between mb-3 px-2">
+                                    <span class="fw-bold">Department Email Address:</span>
+                                    <span id="modalDepartmentComplainantEmail"></span>
                                 </div>
-                                <div class="form-group row">
-                                    <label class="col-md-4 col-form-label text-right fw-bold">Complainee Email:</label>
-                                    <div class="col-md-8 mt-2">
-                                        <div id="modalRespondentEmail"></div>
-                                    </div>
+                 
+                                <hr class="my-4">
+                 
+                                <h6 class="fw-bold mb-4 mt-3">Complainee Information</h6>
+                                <div class="d-flex justify-content-between mb-3 px-2">
+                                    <span class="fw-bold">Full Name:</span>
+                                    <span id="modalRespondent"></span>
                                 </div>
-
-                                <div class="form-group row">
-                                    <label class="col-md-4 col-form-label text-right fw-bold">Status:</label>
-                                    <div class="col-md-8 mt-2">
-                                        <div id="modalStatus" class="status-badge"
-                                            style="text-transform: capitalize;">
-                                        </div>
-                                    </div>
+                                <div class="d-flex justify-content-between mb-3 px-2">
+                                    <span class="fw-bold">Email Address:</span>
+                                    <span id="modalRespondentEmail"></span>
                                 </div>
-                                <div class="form-group row">
-                                    <label class="col-md-4 col-form-label text-right fw-bold">Date & Time:</label>
-                                    <div class="col-md-8 mt-2">
-                                        <div id="modalTime"></div>
-                                    </div>
+                                <div class="d-flex justify-content-between mb-3 px-2">
+                                    <span class="fw-bold">Department Email Address:</span>
+                                    <span id="modalDepartmentComplaineeEmail"></span>
+                                </div>
+                 
+                                <hr class="my-4">
+                 
+                                <h6 class="fw-bold mb-4 mt-3">Schedule Details</h6>
+                                <div class="d-flex justify-content-between mb-3 px-2">
+                                    <span class="fw-bold">Status:</span>
+                                    <span id="modalStatus" class="status-badge" style="text-transform: capitalize;"></span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3 px-2">
+                                    <span class="fw-bold">Date & Time:</span>
+                                    <span id="modalTime"></span>
                                 </div>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary"
-                                    data-bs-dismiss="modal">Close</button>
+                            <div class="modal-footer py-3 px-4">
+                                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                             </div>
                         </div>
                     </div>
-                </div>
+                 </div>
             </div>
         </div>
-
         <!-- End Custom template -->
     </div>
 

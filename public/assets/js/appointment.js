@@ -79,8 +79,10 @@ $(document).ready(function() {
             
             $('#modalRespondent').text(event.title);
             $('#modalRespondentEmail').text(event.respondent_email);
+            $('#modalDepartmentComplainantEmail').text(event.complainant_department_email);
             $('#modalDescription').text(complainantName);
             $('#modalComplainantEmail').text(event.complainant_email);
+            $('#modalDepartmentComplaineeEmail').text(event.complainee_department_email);
             $('#modalStatus').text(event.status);
             $('#modalTime').text(
                 `${moment(event.start).format('MMMM Do YYYY, h:mm A')} - ${moment(event.end).format('h:mm A')}`
@@ -250,6 +252,18 @@ $(document).ready(function() {
             isValid = false;
         }
     
+        const complaineeDepartmentEmail = document.getElementById('complaineeDepartmentEmail');
+        if (!validateEmail(complaineeDepartmentEmail.value)) {
+            showError(complaineeDepartmentEmail, 'Please enter a valid email address');
+            isValid = false;
+        }
+
+        const complainantDepartmentEmail = document.getElementById('complainantDepartmentEmail');
+        if (!validateEmail(complainantDepartmentEmail.value)) {
+            showError(complainantDepartmentEmail, 'Please enter a valid email address');
+            isValid = false;
+        }
+
         const complainantName = document.getElementById('complainantName');
         if (!complainantName.value.trim()) {
             showError(complainantName, 'Complainant name is required');
@@ -306,6 +320,12 @@ $(document).ready(function() {
     document.getElementById('respondentEmail').addEventListener('input', function () {
         clearError(this);
     });
+    document.getElementById('complaineeDepartmentEmail').addEventListener('input', function () {
+        clearError(this);
+    });
+    document.getElementById('complainantDepartmentEmail').addEventListener('input', function () {
+        clearError(this);
+    });
     document.getElementById('complainantName').addEventListener('input', function () {
         clearError(this);
     });
@@ -342,7 +362,9 @@ $(document).ready(function() {
             description: 'Complainant: ' + appointmentData.complainant_name,
             status: appointmentData.status,
             respondent_email: appointmentData.respondent_email,
-            complainant_email: appointmentData.complainant_email
+            complainant_email: appointmentData.complainant_email,
+            complainant_department_email: appointmentData.complainant_department_email,
+            complainee_department_email: appointmentData.complainee_department_email
         };
         
         $('#calendar').fullCalendar('renderEvent', event, true);
@@ -367,8 +389,12 @@ $(document).ready(function() {
             submitForm({
                 respondent_name: document.getElementById('respondentName').value,
                 respondent_email: document.getElementById('respondentEmail').value,
+                complainee_department_email: document.getElementById('complaineeDepartmentEmail').value,
+
                 complainant_name: document.getElementById('complainantName').value,
                 complainant_email: document.getElementById('complainantEmail').value,
+                complainant_department_email: document.getElementById('complainantDepartmentEmail').value,
+
                 appointment_date: document.getElementById('appointmentDate').value,
                 appointment_start_time: startTime,
                 appointment_end_time: endTime
@@ -412,8 +438,12 @@ $(document).ready(function() {
                     appointment_id: data.appointment_id,
                     respondent_name: document.getElementById('respondentName').value,
                     respondent_email: document.getElementById('respondentEmail').value,
+                    complainee_department_email: document.getElementById('complaineeDepartmentEmail').value,
+
                     complainant_name: document.getElementById('complainantName').value,
                     complainant_email: document.getElementById('complainantEmail').value,
+                    complainant_department_email: document.getElementById('complainantDepartmentEmail').value,
+                    
                     appointment_date: document.getElementById('appointmentDate').value,
                     appointment_start_time: document.getElementById('appointmentStartTime').value,
                     appointment_end_time: document.getElementById('appointmentEndTime').value,

@@ -25,7 +25,9 @@ class EmailController extends Controller
         $latestEmailContent = $emailContentCollection->findOne([], ['sort' => ['created_at' => -1]]);  
     
         $complainantEmailContent = $latestEmailContent['complainant_email_content'] ?? '';
+        $complainantDepartmentEmailContent = $latestEmailContent['complainant_department_email_content'] ?? '';
         $complaineeEmailContent = $latestEmailContent['complainee_email_content'] ?? '';
+        $complaineeDepartmentEmailContent = $latestEmailContent['complainee_department_email_content'] ?? '';
         $cancelledEmailContent = $latestEmailContent['cancelled_email_content'] ?? '';
         $rescheduleEmailContent = $latestEmailContent['reschedule_email_content'] ?? '';
     
@@ -34,6 +36,8 @@ class EmailController extends Controller
             'lastName',
             'email',
             'complainantEmailContent',
+            'complainantDepartmentEmailContent',
+            'complaineeDepartmentEmailContent',
             'complaineeEmailContent',
             'cancelledEmailContent',
             'rescheduleEmailContent'
@@ -47,13 +51,17 @@ class EmailController extends Controller
         $emailContentCollection = $client->bullyproof->emailContent;  
     
         $complainantEmailContent = $request->input('complainant_email_content');
+        $complainantDepartmentEmailContent = $request->input('complainant_department_email_content');
         $complaineeEmailContent = $request->input('complainee_email_content');
+        $complaineeDepartmentEmailContent = $request->input('complainee_department_email_content');
         $cancelledEmailContent = $request->input('cancelled_email_content');
         $rescheduleEmailContent = $request->input('reschedule_email_content');
         
         $result = $emailContentCollection->insertOne([
             'complainant_email_content' => $complainantEmailContent,
+            'complainant_department_email_content' => $complainantDepartmentEmailContent,
             'complainee_email_content' => $complaineeEmailContent,
+            'complainee_department_email_content' => $complaineeDepartmentEmailContent,
             'cancelled_email_content' => $cancelledEmailContent,
             'reschedule_email_content' => $rescheduleEmailContent,
             'created_at' => new \MongoDB\BSON\UTCDateTime(),  

@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Incidents Report</title>
+    <title>Appointment Summary</title>
 
     @include('partials.admin-link')
 </head>
@@ -20,6 +20,7 @@
     <!-- Toastr CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 
 
     <!-- jQuery (required for Toastr) -->
@@ -91,11 +92,10 @@
                                             <th>#</th>
                                             <th>Appointment Date</th>
                                             <th>Time</th>
-                                            <th>Respondent Name</th>
-                                            <th>Respondent Email</th>
+                                            <th>Complainee Name</th>                                         
                                             <th>Complainant Name</th>
-                                            <th>Complainant Email</th>
                                             <th>Status</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody id="appointmentsTableBody">
@@ -107,9 +107,9 @@
                                                 <td>{{ \Carbon\Carbon::parse($appointment['start'])->format('g:i A') }} -  {{ \Carbon\Carbon::parse($appointment['appointment_end_time'])->format('g:i A') }}
                                                 </td>
                                                 <td>{{ $appointment['title'] }}</td>
-                                                <td>{{ $appointment['respondent_email'] }}</td>
+                                               
                                                 <td>{{ $appointment['description'] }}</td>
-                                                <td>{{ $appointment['complainant_email'] }}</td>
+                                               
                                                 <td>
                                                     <div class="dropdown">
                                                         <span class="badge
@@ -145,6 +145,19 @@
                                                         @endif
                                                     </div>
                                                 </td>
+                                                
+                                                <td>
+                                                    <div class="form-button-action d-grid gap-2">
+                                                        <a href="#" 
+                                                           class="btn btn-link btn-secondary" 
+                                                           data-bs-toggle="modal"
+                                                           data-bs-target="#appointmentModal"
+                                                           onclick="viewAppointment({{ json_encode($appointment) }})"
+                                                           title="View Appointment">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -155,8 +168,68 @@
                 </div>
             </div>
         </div>
+
+        <!-- Appointment Details Modal -->
+        <div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable" role="document">
+                <div class="modal-content">
+                    <div class="modal-header py-3 px-4">
+                        <h5 class="modal-title fw-bold" id="appointmentModalLabel">Appointment Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="max-height: 75vh; overflow-y: auto; overflow-x: hidden; padding: 20px;">
+                        <h6 class="fw-bold mb-4 mt-2">Complainant Information</h6>
+                        <div class="d-flex justify-content-between mb-3 px-2">
+                            <span class="fw-bold">Full Name:</span>
+                            <span id="modal-complainant-name"></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3 px-2">
+                            <span class="fw-bold">Email Address:</span>
+                            <span id="modal-complainant-email"></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3 px-2">
+                            <span class="fw-bold">Department Email Address:</span>
+                            <span id="modal-complainant-dept"></span>
+                        </div>
+        
+                        <hr class="my-4">
+        
+                        <h6 class="fw-bold mb-4 mt-3">Complainee Information</h6>
+                        <div class="d-flex justify-content-between mb-3 px-2">
+                            <span class="fw-bold">Full Name:</span>
+                            <span id="modal-complainee-name"></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3 px-2">
+                            <span class="fw-bold">Email Address:</span>
+                            <span id="modal-complainee-email"></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3 px-2">
+                            <span class="fw-bold">Department Email Address:</span>
+                            <span id="modal-complainee-dept"></span>
+                        </div>
+        
+                        <hr class="my-4">
+        
+                        <h6 class="fw-bold mb-4 mt-3">Schedule Details</h6>
+                        <div class="d-flex justify-content-between mb-3 px-2">
+                            <span class="fw-bold">Status:</span>
+                            <span id="modal-status" class="status-badge" style="text-transform: capitalize;"></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3 px-2">
+                            <span class="fw-bold">Date & Time:</span>
+                            <span id="modal-time"></span>
+                        </div>
+                    </div>
+                    <div class="modal-footer py-3 px-4">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- End Custom template -->
     </div>
+    
+    
 
     @include('partials.admin-footer')
     <script src="../../../../assets/js/appointment-summary.js"></script>
@@ -165,3 +238,35 @@
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+    <script>
+    function viewAppointment(appointment) {
+        const appointmentDate = new Date(appointment.start).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        const startTime = new Date(appointment.start).toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+        const endTime = new Date(appointment.appointment_end_time).toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+
+        document.getElementById('modal-complainant-name').textContent = appointment.description;
+        document.getElementById('modal-complainant-email').textContent = appointment.complainant_email;
+        document.getElementById('modal-complainant-dept').textContent = appointment.complainant_department_email;
+        
+        document.getElementById('modal-complainee-name').textContent = appointment.title;
+        document.getElementById('modal-complainee-email').textContent = appointment.respondent_email;
+        document.getElementById('modal-complainee-dept').textContent = appointment.complainee_department_email;
+        
+        document.getElementById('modal-status').textContent = appointment.status;
+        document.getElementById('modal-time').textContent = `${appointmentDate} ${startTime} - ${endTime}`;
+    }
+    </script>

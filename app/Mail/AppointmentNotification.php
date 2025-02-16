@@ -14,13 +14,13 @@ class AppointmentNotification extends Mailable
     use Queueable, SerializesModels;
 
     public $appointmentData;
-    public $isComplainant;
+    public $recipientType;
     private $emailContent;
 
-    public function __construct($appointmentData, $isComplainant = true)
+    public function __construct($appointmentData, $recipientType = true)
     {
         $this->appointmentData = $appointmentData;
-        $this->isComplainant = $isComplainant;
+        $this->recipientType = $recipientType;
         
         $client = new Client(env('MONGODB_URI'));
         $database = $client->selectDatabase(env('DB_DATABASE', 'bullyproof'));
@@ -37,14 +37,18 @@ class AppointmentNotification extends Mailable
                         'sort' => ['created_at' => -1],
                         'projection' => [
                             'complainant_email_content' => 1,
-                            'complainee_email_content' => 1
+                            'complainee_email_content' => 1,
+                            'complainee_department_email_content' => 1,
+                            'complainant_department_email_content' => 1
                         ]
                     ]
                 );
 
             return $latestEmail ?: [
                 'complainant_email_content' => 'Default complainant email content',
-                'complainee_email_content' => 'Default complainee email content'
+                'complainee_email_content' => 'Default complainee email content',
+                'complainee_department_email_content' => 'Default complainee department email content',
+                'complainant_department_email_content' => 'Default complainant department email content'
             ];
         } catch (\Exception $e) {
             Log::error('Failed to fetch email content', [
@@ -53,7 +57,9 @@ class AppointmentNotification extends Mailable
             ]);
             return [
                 'complainant_email_content' => 'Default complainant email content',
-                'complainee_email_content' => 'Default complainee email content'
+                'complainee_email_content' => 'Default complainee email content',
+                'complainee_department_email_content' => 'Default complainee department email content',
+                'complainant_department_email_content' => 'Default complainant department email content'
             ];
         }
     }
@@ -67,19 +73,29 @@ class AppointmentNotification extends Mailable
         } else {
             $carbonDate = Carbon::parse($appointmentDate);
         }
-
+    
         $startTime = $this->appointmentData['appointment_start_time'];
         $endTime = $this->appointmentData['appointment_end_time'];
         
         $startDateTime = $carbonDate->copy()->setTimeFromTimeString($startTime);
         $endDateTime = $carbonDate->copy()->setTimeFromTimeString($endTime);
-
+    
         $latestEmail = $this->getLatestEmailContent();
-        
-        $emailContent = $this->isComplainant 
-            ? ($latestEmail['complainant_email_content'] ?? 'No content available')
-            : ($latestEmail['complainee_email_content'] ?? 'No content available');
-
+    
+        $emailContent = match($this->recipientType) {
+            true => $latestEmail['complainant_email_content'] ?? 'No content available',
+            false => $latestEmail['complainee_email_content'] ?? 'No content available',
+            'complainant_department' => $latestEmail['complainant_department_email_content'] ?? 'No department content available',
+            'complainee_department' => $latestEmail['complainee_department_email_content'] ?? 'No department content available',
+            default => 'No content available'
+        };
+    
+        $recipientName = match($this->recipientType) {
+            true, 'complainant_department' => $this->appointmentData['complainant_name'],
+            false, 'complainee_department' => $this->appointmentData['respondent_name'],
+            default => ''
+        };
+    
         return $this->subject('Notice of Invitation')
                     ->view('emails.appointment-notification')
                     ->with([
@@ -87,9 +103,7 @@ class AppointmentNotification extends Mailable
                         'appointmentStartTime' => $startDateTime->format('h:i A'),
                         'appointmentEndTime' => $endDateTime->format('h:i A'),
                         'emailContent' => $emailContent,
-                        'recipientName' => $this->isComplainant 
-                            ? $this->appointmentData['complainant_name']
-                            : $this->appointmentData['respondent_name'],
+                        'recipientName' => $recipientName,
                     ]);
-    }
+    }    
 }
