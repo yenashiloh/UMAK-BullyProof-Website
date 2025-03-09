@@ -56,7 +56,7 @@
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h4 class="card-title">List of Complainees</h4>
                             <div class="ms-auto d-flex align-items-center">
-                                <div class="dropdown">
+                                {{-- <div class="dropdown">
                                     <a href="#" class="btn btn-primary btn-round dropdown-toggle" id="exportDropdown"
                                         role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         <i class="fas fa-file-export"></i> Export
@@ -73,7 +73,7 @@
                                             </a>
                                         </li>
                                     </ul>
-                                </div>
+                                </div> --}}
                                 
                             </div>
                         </div>
@@ -86,26 +86,34 @@
                                             <th>Complainee's Name</th>
                                             <th>ID Number</th>
                                             <th>Role</th>
-                                            <th>Incident Count</th>
-                                            <th>View</th>
+                                            <th>Violation Count</th>
+                                            {{-- <th>View</th> --}}
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($filteredReports as $index => $report)
+                                        @foreach($filteredPerpetrators as $index => $perpetrator)
                                             <tr>
                                                 <td>{{ $index + 1 }}</td>
-                                                <td>{{ $report->perpetratorName ?? 'N/A' }}</td>
-                                                <td>{{ $report->idNumber ?? 'N/A' }}</td>
-                                                <td>{{ $report->perpetratorRole ?? 'N/A' }}</td>
-                                                <td class="text-center">{{ $report->incidentCount ?? 0 }}</td>
-                                              
-                                                <td class="text-center">
-                                                    <a href="{{ route('admin.reports.byIdNumber', ['idNumber' => $report->idNumber]) }}"
-                                                       class="btn btn-link btn-primary me-2" data-bs-toggle="tooltip"
-                                                       title="View" data-original-title="View">
-                                                        <i class="fa fa-eye"></i>
-                                                    </a>
-                                                </td>
+                                                <td>{{ $perpetrator['name'] }}</td>
+                                                <td>{{ $perpetrator['idNumber'] ? ucfirst($perpetrator['idNumber']) : 'Not identified' }}</td>
+
+                                                <td>{{ $perpetrator['role'] }}</td>
+                                                <td>{{ $perpetrator['count'] }}</td>
+                                                {{-- <td class="text-center">
+                                                    @if(!empty($perpetrator['idNumber']))
+                                                        <a href="{{ route('admin.list.view-perpertrators', ['id' => $perpetrator['idNumber']]) }}"
+                                                           class="btn btn-link btn-primary" data-bs-toggle="tooltip"
+                                                           title="View" data-original-title="View">
+                                                            <i class="fa fa-eye"></i>
+                                                        </a>
+                                                    @else
+                                                        <a href="{{ route('admin.list.view-perpertrators', ['id' => $perpetrator['reports'][0]]) }}"
+                                                           class="btn btn-link btn-primary" data-bs-toggle="tooltip"
+                                                           title="View" data-original-title="View">
+                                                            <i class="fa fa-eye"></i>
+                                                        </a>
+                                                    @endif
+                                                </td> --}}
                                             </tr>
                                         @endforeach
                                     </tbody>

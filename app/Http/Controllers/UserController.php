@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Services\CyberbullyingDetectionService;
 use Illuminate\Support\Facades\Hash;
 use MongoDB\BSON\UTCDateTime;
+use DateTime;
+use DateTimeZone;
 
 class UserController extends Controller
 {
@@ -22,7 +24,7 @@ class UserController extends Controller
     {
         $client = new Client(env('MONGODB_URI'));
         $userCollection = $client->bullyproof->users;
-        $auditCollection = $client->bullyproof->audit_trail;
+        $auditCollection = $client->bullyproof->audit_trails;
     
         $adminId = session('admin_id');
         $admin = $client->bullyproof->admins->findOne(['_id' => new \MongoDB\BSON\ObjectId($adminId)]);
@@ -31,41 +33,54 @@ class UserController extends Controller
         $lastName = $admin->last_name ?? '';
         $email = $admin->email ?? '';
     
-        // Fetch audit logs and join with users
-        $auditLogs = $auditCollection->aggregate([
+        $auditTrails = $auditCollection->aggregate([
             [
                 '$lookup' => [
-                    'from' => 'users', // Collection to join
-                    'localField' => 'userId', // Field from audit_trail
-                    'foreignField' => '_id', // Field from users
+                    'from' => 'users', 
+                    'localField' => 'userId', 
+                    'foreignField' => '_id',
                     'as' => 'user_info'
                 ]
             ],
             [
                 '$unwind' => [
                     'path' => '$user_info',
-                    'preserveNullAndEmptyArrays' => true // Keeps logs even if user info is missing
+                    'preserveNullAndEmptyArrays' => true 
                 ]
             ],
             [
                 '$project' => [
-                    'date' => '$created_at',
+                    'timestamp' => 1,  
                     'action' => 1,
-                    'ip_address' => 1, // Include ip_address field
                     'full_name' => ['$concat' => ['$user_info.fullname']],
                 ]
             ],
-            ['$sort' => ['created_at' => -1]] // Sort by latest logs
+            ['$sort' => ['timestamp' => -1]] 
         ])->toArray();
+        
+        foreach ($auditTrails as &$log) {
+            if (isset($log['timestamp'])) {
+                if ($log['timestamp'] instanceof \MongoDB\BSON\UTCDateTime) {
+                    $dateTime = $log['timestamp']->toDateTime();
+                } else {
+                    $dateTime = new DateTime($log['timestamp']);
+                }
+                
+                $dateTime->setTimezone(new DateTimeZone('Asia/Manila'));
+                
+                $log['formatted_date'] = $dateTime->format('F j, Y, g:iA');
+            } else {
+                $log['formatted_date'] = 'N/A';
+            }
+        }
     
         return view('admin.users.audit-log', compact(
             'firstName', 
             'lastName', 
             'email', 
-            'auditLogs'
+            'auditTrails'
         ));
     }
-    
 
     //show users table
     public function showUsers()

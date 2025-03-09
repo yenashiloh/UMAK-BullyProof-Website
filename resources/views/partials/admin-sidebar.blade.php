@@ -101,7 +101,7 @@
                     <li class="nav-item {{ Route::currentRouteName() === 'admin.users.audit-log' ? 'active' : '' }}">
                         <a href="{{ route('admin.users.audit-log') }}">
                             <i class="fas fa-book"></i>
-                            <p>Audit Log</p>
+                            <p>Audit Trails</p>
                         </a>
                     </li>
                     @if(session('admin_role') === 'superadmin')

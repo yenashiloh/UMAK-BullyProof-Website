@@ -171,21 +171,28 @@ class ReportsController extends Controller
             $displayedVictimRelationship = $report->victimRelationship;
         }
 
+        // Reporter data
+        $reporterData = [
+            'fullname' => $reporter->fullname ?? '',
+            'idnumber' => $reporter->idnumber ?? '',
+            'type' => $reporter->type ?? '',
+            'position' => $reporter->position ?? ''
+        ];
+
+        // Support types
         $reportData = [
             '_id' => (string)$report->_id, 
             'reportDate' => $report->reportDate->toDateTime()->format('Y-m-d H:i:s'),
             'victimRelationship' => $displayedVictimRelationship,
-            'otherVictimRelationship' => $report->otherVictimRelationship,
-            'victimName' => $report->victimName,
-            'victimType' => $report->victimType,
-            'gradeYearLevel' => $report->gradeYearLevel,
             'idNumber' => $report->idNumber ?? '',  
             'remarks' => $report->remarks ?? '',  
             'reporterFullName' => $reporter->fullname,
             'reporterEmail' => $reporter->email,
             'hasReportedBefore' => $report->hasReportedBefore ?? 'N/A',
+            'submitAs'=> $report->submitAs ?? 'N/A',
             'reportedTo' => $report->reportedTo ?? 'N/A',
             'platformUsed' => $report->platformUsed instanceof \MongoDB\Model\BSONArray ? $report->platformUsed->getArrayCopy() : [],
+            'cyberbullyingTypes' => $report->cyberbullyingTypes instanceof \MongoDB\Model\BSONArray ? $report->cyberbullyingTypes->getArrayCopy() : [],
             'otherPlatformUsed' => $report->otherPlatformUsed,
             'supportTypes' => $report->supportTypes instanceof \MongoDB\Model\BSONArray ? $report->supportTypes->getArrayCopy() : [],
             'otherSupportTypes' => $report->otherSupportTypes,
@@ -195,9 +202,19 @@ class ReportsController extends Controller
             'perpetratorGradeYearLevel' => $report->perpetratorGradeYearLevel,
             'actionsTaken' => $report->actionsTaken ?? 'N/A',
             'describeActions' => $report->describeActions ?? 'N/A',
-            'incidentEvidence' => $report->incidentEvidence instanceof \MongoDB\Model\BSONArray ? $report->incidentEvidence->getArrayCopy() : [],
+
+            'incidentEvidence' => $report->incidentEvidence,
+
+
+
             'analysisResult' => $analysisResult['analysisResult'],
-            'analysisProbability' => $analysisResult['analysisProbability']
+            'analysisProbability' => $analysisResult['analysisProbability'],
+
+            'departmentCollege' => $report->departmentCollege,
+
+            'witnessChoice' => $report->witnessChoice,
+            'contactChoice' => $report->contactChoice,
+            
         ];
 
         if (!empty($reportData['otherPlatformUsed'])) {
@@ -225,13 +242,67 @@ class ReportsController extends Controller
 
         $reportData['supportTypes'] = array_values($reportData['supportTypes']);
 
+        // Perpetrator school ID
+        $perpetratorSchoolId = '';
+        if (!empty($report->perpetratorName)) {
+            $perpetratorName = trim(strtoupper($report->perpetratorName));
+            $studentsCollection = $client->bullyproof->students;
+            $allStudents = $studentsCollection->find()->toArray();
+            
+            foreach ($allStudents as $student) {
+                $studentName = trim(strtoupper($student->name));
+                
+                $perpetratorName = str_replace('"', '', $perpetratorName);
+                $studentName = str_replace('"', '', $studentName);
+                
+                $perpParts = explode(',', $perpetratorName);
+                $perpLastName = trim($perpParts[0] ?? '');
+                
+                if (!empty($perpLastName) && strpos($studentName, $perpLastName) !== false) {
+                    $perpFirstNames = '';
+                    if (isset($perpParts[1])) {
+                        $perpFirstNames = trim($perpParts[1]);
+                    }
+                    
+                    if (empty($perpFirstNames) || $this->hasAnyNamePartMatch($perpFirstNames, $studentName)) {
+                        $perpetratorSchoolId = $student->schoolId;
+                        break;
+                    }
+                }
+                
+                if (empty($perpetratorSchoolId) && !str_contains($perpetratorName, ',')) {
+                    $perpWords = preg_split('/\s+/', $perpetratorName);
+                    $studentWords = preg_split('/\s+/', $studentName);
+                    
+                    $commonWords = array_intersect($perpWords, $studentWords);
+                    
+                    if (count($commonWords) >= 2) {
+                        $perpetratorSchoolId = $student->schoolId;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        $reportData['perpetratorSchoolId'] = $perpetratorSchoolId;
 
         return view('admin.reports.view', compact(
             'firstName',
             'lastName',
             'email',
-            'reportData'
+            'reportData',
+            'reporterData'
         ));
+    }
+    
+    private function hasAnyNamePartMatch($nameString, $targetString) {
+        $nameParts = preg_split('/\s+/', $nameString);
+        foreach ($nameParts as $part) {
+            if (strlen($part) > 1 && strpos($targetString, $part) !== false) {
+                return true;
+            }
+        }
+        return false;
     }
     
     //update the remarks and id number of complainee
@@ -313,28 +384,30 @@ class ReportsController extends Controller
         $reportData = [
             'reportDate' => $report->reportDate->toDateTime()->format('Y-m-d H:i:s'),
             'victimRelationship' => $report->victimRelationship,
-            'otherVictimRelationship' => $otherVictimRelationship, //
+            'otherVictimRelationship' => $otherVictimRelationship, 
             'victimName' => $report->victimName,
-            'victimType' => $report->victimType, //
+            'victimType' => $report->victimType, 
             'gradeYearLevel' => $report->gradeYearLevel,
             'reporterFullName' => $reporter->fullname,
             'reporterEmail' => $reporter->email,
             'hasReportedBefore' => $report->hasReportedBefore ?? 'N/A', 
-            'departmentCollege' => $report->departmentCollege, //
+            'departmentCollege' => $report->departmentCollege, 
             'reportedTo' => $report->reportedTo ?? 'N/A', 
             'platformUsed' => $report->platformUsed instanceof \MongoDB\Model\BSONArray ? $report->platformUsed->getArrayCopy() : [],
-            'otherPlatformUsed' => $report->otherPlatformUsed, //
-            'hasWitness' => $hasWitness, //
-            'witnessInfo' => $witnessInfo, //
+            'otherPlatformUsed' => $report->otherPlatformUsed, 
+            'hasWitness' => $hasWitness, 
+            'witnessInfo' => $witnessInfo, 
             'incidentDetails' => $report->incidentDetails ?? 'N/A',
             'perpetratorName' => $report->perpetratorName,
             'perpetratorRole' => $report->perpetratorRole,
             'perpetratorGradeYearLevel' => $report->perpetratorGradeYearLevel,
             'supportTypes' => $supportTypes,
-            'otherSupportTypes' => $otherSupportTypes, //
+            'otherSupportTypes' => $otherSupportTypes, 
             'actionsTaken' => $report->actionsTaken ?? 'N/A',
             'describeActions' => $report->describeActions ?? 'N/A',
             'incidentEvidence' => $report->incidentEvidence instanceof \MongoDB\Model\BSONArray ? $report->incidentEvidence->getArrayCopy() : [],
+
+
         ];
  
         return view('guidance.reports.view', compact(
@@ -393,5 +466,162 @@ class ReportsController extends Controller
             \Log::error('Failed to create notification: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Status updated but failed to create notification.')->with('toastType', 'danger');
         }
+    }
+
+    //direct print report
+    public function directPrint($id)
+    {
+        $report = $this->printReport($id);
+        return $report; 
+    }
+
+
+    //print report
+    public function getPrintContent(Request $request)
+    {
+        $id = $request->input('id');
+        
+        if (!$id) {
+            return response()->json(['error' => 'No report ID provided'], 400);
+        }
+        
+        $client = new Client(env('MONGODB_URI'));
+        $reportCollection = $client->bullyproof->reports;
+        $userCollection = $client->bullyproof->users;
+        
+        $report = $reportCollection->findOne(['_id' => new \MongoDB\BSON\ObjectId($id)]);
+        if (!$report) {
+            return response()->json(['error' => 'Report not found'], 404);
+        }
+        
+        $reporter = $userCollection->findOne(['_id' => $report->reportedBy]);
+        if (!$reporter) {
+            return response()->json(['error' => 'Reporter not found'], 404);
+        }
+        $incidentDetails = $report->incidentDetails ?? '';
+        
+        $analysisResult = $this->detectionService->analyze($incidentDetails);
+
+        $displayedVictimRelationship = '';
+
+        if (!empty($report->otherVictimRelationship)) {
+            $displayedVictimRelationship = $report->otherVictimRelationship;
+        } elseif ($report->victimRelationship === "Other" && !empty($report->otherVictimRelationship)) {
+            $displayedVictimRelationship = $report->otherVictimRelationship;
+        } else {
+            $displayedVictimRelationship = $report->victimRelationship;
+        }
+
+        // Reporter data
+        $reporterData = [
+            'fullname' => $reporter->fullname ?? '',
+            'idnumber' => $reporter->idnumber ?? '',
+            'type' => $reporter->type ?? '',
+            'position' => $reporter->position ?? ''
+        ];
+
+        // Support types
+        $reportData = [
+            '_id' => (string)$report->_id, 
+            'reportDate' => $report->reportDate->toDateTime()->format('Y-m-d H:i:s'),
+            'victimRelationship' => $displayedVictimRelationship,
+            'idNumber' => $report->idNumber ?? '',  
+            'remarks' => $report->remarks ?? '',  
+            'reporterFullName' => $reporter->fullname,
+            'reporterEmail' => $reporter->email,
+            'hasReportedBefore' => $report->hasReportedBefore ?? 'N/A',
+            'submitAs'=> $report->submitAs ?? 'N/A',
+            'reportedTo' => $report->reportedTo ?? 'N/A',
+            'platformUsed' => $report->platformUsed instanceof \MongoDB\Model\BSONArray ? $report->platformUsed->getArrayCopy() : [],
+            'cyberbullyingTypes' => $report->cyberbullyingTypes instanceof \MongoDB\Model\BSONArray ? $report->cyberbullyingTypes->getArrayCopy() : [],
+            'otherPlatformUsed' => $report->otherPlatformUsed,
+            'supportTypes' => $report->supportTypes instanceof \MongoDB\Model\BSONArray ? $report->supportTypes->getArrayCopy() : [],
+            'otherSupportTypes' => $report->otherSupportTypes,
+            'incidentDetails' => $incidentDetails,
+            'perpetratorName' => $report->perpetratorName,
+            'perpetratorRole' => $report->perpetratorRole,
+            'perpetratorGradeYearLevel' => $report->perpetratorGradeYearLevel,
+            'actionsTaken' => $report->actionsTaken ?? 'N/A',
+            'describeActions' => $report->describeActions ?? 'N/A',
+            'incidentEvidence' => $report->incidentEvidence,
+            'analysisResult' => $analysisResult['analysisResult'],
+            'analysisProbability' => $analysisResult['analysisProbability'],
+            'departmentCollege' => $report->departmentCollege,
+            'witnessChoice' => $report->witnessChoice,
+            'contactChoice' => $report->contactChoice,
+        ];
+
+        if (!empty($reportData['otherPlatformUsed'])) {
+            $reportData['platformUsed'][] = $reportData['otherPlatformUsed'];
+        }
+        
+        $reportData['platformUsed'] = array_filter($reportData['platformUsed'], function($platform) {
+            return $platform !== "Others (Please Specify)";
+        });
+        $reportData['platformUsed'] = array_values($reportData['platformUsed']);
+
+        if (!empty($analysisResult['error'])) {
+            $reportData['error'] = $analysisResult['error'];
+        }
+
+        //otherSupportTypes
+        if (!empty($report->otherSupportTypes)) {
+            $reportData['supportTypes'][] = $report->otherSupportTypes;
+        }
+
+        //remove "Others (Please Specify"
+        $reportData['supportTypes'] = array_filter($reportData['supportTypes'], function($supportType) {
+            return $supportType !== "Others (Please Specify)";
+        });
+
+        $reportData['supportTypes'] = array_values($reportData['supportTypes']);
+
+        // Perpetrator school ID
+        $perpetratorSchoolId = '';
+        if (!empty($report->perpetratorName)) {
+            $perpetratorName = trim(strtoupper($report->perpetratorName));
+            $studentsCollection = $client->bullyproof->students;
+            $allStudents = $studentsCollection->find()->toArray();
+            
+            foreach ($allStudents as $student) {
+                $studentName = trim(strtoupper($student->name));
+                
+                $perpetratorName = str_replace('"', '', $perpetratorName);
+                $studentName = str_replace('"', '', $studentName);
+                
+                $perpParts = explode(',', $perpetratorName);
+                $perpLastName = trim($perpParts[0] ?? '');
+                
+                if (!empty($perpLastName) && strpos($studentName, $perpLastName) !== false) {
+                    $perpFirstNames = '';
+                    if (isset($perpParts[1])) {
+                        $perpFirstNames = trim($perpParts[1]);
+                    }
+                    
+                    if (empty($perpFirstNames) || $this->hasAnyNamePartMatch($perpFirstNames, $studentName)) {
+                        $perpetratorSchoolId = $student->schoolId;
+                        break;
+                    }
+                }
+                
+                if (empty($perpetratorSchoolId) && !str_contains($perpetratorName, ',')) {
+                    $perpWords = preg_split('/\s+/', $perpetratorName);
+                    $studentWords = preg_split('/\s+/', $studentName);
+                    
+                    $commonWords = array_intersect($perpWords, $studentWords);
+                    
+                    if (count($commonWords) >= 2) {
+                        $perpetratorSchoolId = $student->schoolId;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        $reportData['perpetratorSchoolId'] = $perpetratorSchoolId;
+
+        $html = view('admin.reports.print-report', compact('reportData', 'reporterData'))->render();
+    
+        return response($html);
     }
 }

@@ -46,6 +46,8 @@ Route::middleware([PreventBackHistory::class, 'discipline'])->group(function () 
 
     Route::get('/complainees', [ListController::class, 'showListOfPerpetrators'])->name('admin.list.list-perpetrators');
     Route::get('/list-of-perpetrators/view/{id}', [ListController::class, 'viewPerpetratorDiscipline'])->name('admin.list.view-perpertrators');
+
+
     Route::get('/complainees/reports/{idNumber}', [ListController::class, 'viewReportsByIdNumber'])->name('admin.reports.byIdNumber');
     Route::get('/complainees/reports/view/{id}', [ListController::class, 'viewReportForComplainee'])->name('admin.list.view-report');
     Route::get('/complainee/add', [ListController::class, 'showAddComplainee'])->name('admin.list.add-complainee');
@@ -57,7 +59,9 @@ Route::middleware([PreventBackHistory::class, 'discipline'])->group(function () 
 
     Route::post('/admin-logout', [AdminAuthController::class, 'logoutAdmin'])->name('admin.logout');
 
-    Route::get('/audit-log', [UserController::class, 'showAuditLog'])->name('admin.users.audit-log');
+    Route::get('/audit-trails', [UserController::class, 'showAuditLog'])->name('admin.users.audit-log');
+
+    Route::post('/admin/reports/get-print-content', [ReportsController::class, 'getPrintContent'])->name('admin.reports.get-print-content');
 
 });
 

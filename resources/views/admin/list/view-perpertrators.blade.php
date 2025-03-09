@@ -53,10 +53,7 @@
                     <li class="separator">
                         <i class="icon-arrow-right"></i>
                     </li>
-                    <li class="nav-item fw-bold">
-                        <a href="{{ route('admin.reports.byIdNumber', ['idNumber' => $idNumber]) }}">View All Reports</a>
-                    </li>
-
+                 
                 </ul>
             </div>
 
@@ -70,40 +67,39 @@
                         <div class="card-body">
                             <div class="row mb-3">
                             </div>
+                            <h5>All Reports</h5>
                             <div class="table-responsive">
                                 <table id="basic-datatables" class="display table table-striped table-hover">
                                     <thead>
                                         <tr>
                                             <th>#</th>
                                             <th>Date Filed</th>
-                                            <th>Complainee's Name</th>
                                             <th>Complainant's Name</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="reportsTableBody">
                                         @foreach ($reports as $index => $report)
                                             <tr>
                                                 <td>{{ $index + 1 }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($report['reportDate']->toDateTime())->setTimezone('Asia/Manila')->format('F j, Y, g:i a') }}
                                                 </td>
-                                                <td>{{ $report['perpetratorName'] ?? 'N/A' }}</td>
-                                                <td>{{ $report['victimName'] ?? 'N/A' }}</td>
+                                                <td>{{ ucwords(strtolower($report['reporterFullName'])) }}</td>                                             
                                                 <td>
-                                                    <span
-                                                        class="badge bg-{{ $report['status'] == 'For Review'
-                                                            ? 'primary'
-                                                            : ($report['status'] == 'Under Investigation'
-                                                                ? 'warning text-white'
-                                                                : ($report['status'] == 'Resolved'
-                                                                    ? 'success'
-                                                                    : 'secondary')) }}">
-                                                        {{ $report['status'] }}
-                                                    </span>
-                                                </td>
+                                                    <div class="badge status-badge bg-{{ $report['status'] == 'For Review'
+                                                        ? 'primary'
+                                                        : ($report['status'] == 'Under Investigation'
+                                                            ? 'warning text-white'
+                                                            : ($report['status'] == 'Resolved'
+                                                                ? 'success'
+                                                                : 'secondary')) }} d-flex justify-content-center align-items-center w-100"
+                                                        style="min-width: 130px; cursor: default;">
+                                                        <span>{{ $report['status'] }}</span>
+                                                    </div>
+                                                </td>                                                
                                                 <td>
-                                                    <div class="form-button-action d-grid gap-2">
+                                                    <div class="form-button-action d-flex">
                                                         <a href="{{ route('admin.list.view-report', ['id' => $report['_id']]) }}"
                                                             class="btn btn-link btn-secondary" data-bs-toggle="tooltip"
                                                             title="View Report">
@@ -117,6 +113,7 @@
                                 </table>
                             </div>
                         </div>
+                        
                     </div>
                 </div>
             </div>

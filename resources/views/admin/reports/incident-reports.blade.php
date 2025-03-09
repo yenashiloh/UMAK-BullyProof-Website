@@ -33,6 +33,10 @@
         .dropdown-menu {
             min-width: 100%;
         }
+        .status-badge {
+               padding: 6px 10px;
+               font-size: 13px;
+        }
     </style>
     <div class="container">
         <div class="page-inner">
@@ -59,7 +63,7 @@
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h4 class="card-title">List of Incident Reports</h4>
-                            <div class="dropdown">
+                            {{-- <div class="dropdown">
                                 <a href="#" class="btn btn-primary btn-round dropdown-toggle" id="exportDropdown"
                                     role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fas fa-file-export"></i> Export
@@ -78,7 +82,7 @@
                                         </a>
                                     </li>
                                 </ul>
-                            </div>
+                            </div> --}}
                         </div>
                         <div id="toastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;">
                            
@@ -116,29 +120,27 @@
                                                 <td>{{ $index + 1 }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($report['reportDate']->toDateTime())->setTimezone('Asia/Manila')->format('F j, Y, g:i a') }}
                                                 </td>
-                                                <td>{{ $report['victimName'] }}</td>
-                                                <td>{{ $report['perpetratorName'] }}</td>
-
+                                                <td>{{ ucwords(strtolower($report['reporterFullName'])) }}</td>
+                                                <td>{{ ucwords(strtolower($report['perpetratorName'])) }}</td>                                                
                                                 <td>
                                                     <div class="dropdown">
                                                         <span
-                                                            class="badge bg-{{ $report['status'] == 'For Review'
+                                                            class="badge status-badge bg-{{ $report['status'] == 'For Review'
                                                                 ? 'primary'
                                                                 : ($report['status'] == 'Under Investigation'
                                                                     ? 'warning text-white'
                                                                     : ($report['status'] == 'Resolved'
                                                                         ? 'success'
-                                                                        : 'secondary')) }}"
-                                                            @if ($report['status'] != 'Resolved') data-bs-toggle="dropdown"
-                                                                aria-expanded="false"
-                                                                style="cursor: pointer;" @endif>
-                                                            {{ $report['status'] }}
+                                                                        : 'secondary')) }} d-flex justify-content-between align-items-center w-100"
+                                                            style="min-width: 180px; cursor: {{ $report['status'] != 'Resolved' ? 'pointer' : 'default' }};"
+                                                            @if ($report['status'] != 'Resolved') data-bs-toggle="dropdown" aria-expanded="false" @endif>
+                                                            <span>{{ $report['status'] }}</span>
                                                             @if ($report['status'] != 'Resolved')
-                                                                <i class="fas fa-chevron-down ms-2"></i>
+                                                                <i class="fas fa-chevron-down ms-auto"></i>
                                                             @endif
                                                         </span>
                                                         @if ($report['status'] != 'Resolved')
-                                                            <ul class="dropdown-menu">
+                                                            <ul class="dropdown-menu w-100">
                                                                 @if ($report['status'] == 'For Review')
                                                                     <form
                                                                         action="{{ route('admin.reports.changeStatus', ['id' => $report['_id']]) }}"
@@ -173,14 +175,20 @@
                                                 </td>
 
                                                 <td>
-                                                    <div class="form-button-action d-grid gap-2">
+                                                    <div class="form-button-action d-flex gap-2">
                                                         <a href="{{ route('admin.reports.view', ['id' => $report['_id']]) }}"
                                                             class="btn btn-link btn-secondary" data-bs-toggle="tooltip"
                                                             title="View Report">
                                                             <i class="fas fa-eye"></i>
                                                         </a>
+                                                        <a href="javascript:void(0)"
+                                                        class="btn btn-link btn-secondary" data-bs-toggle="tooltip"
+                                                        title="Print Report" onclick="printReportDirectly('{{ $report['_id'] }}')">
+                                                        <i class="fas fa-print"></i>
+                                                    </a>
                                                     </div>
                                                 </td>
+                                                 
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -193,7 +201,7 @@
         </div>
         <!-- End Custom template -->
     </div>
-
+    <iframe id="printFrame" style="display:none;"></iframe>
     @include('partials.admin-footer')
     <script>
         $(document).ready(function() {
@@ -290,5 +298,41 @@
             toastContainer.appendChild(toastElement); 
             const toast = new bootstrap.Toast(toastElement); 
             toast.show(); 
+        }
+
+        // Print report directly
+        function printReportDirectly(id) {
+            var loadingDiv = document.createElement('div');
+            loadingDiv.id = 'printLoadingIndicator';
+            loadingDiv.innerHTML = '<div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; display: flex; justify-content: center; align-items: center;"><span style="font-size: 18px;"><i class="fas fa-spinner fa-spin"></i> Preparing print...</span></div>';
+            document.body.appendChild(loadingDiv);
+            
+            var iframe = document.getElementById('printFrame');
+            
+            $.ajax({
+                url: "{{ route('admin.reports.get-print-content') }}",
+                type: "POST",
+                data: {
+                    id: id,
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    iframe.srcdoc = response;
+
+                    iframe.onload = function() {
+                        iframe.contentWindow.print();
+                        
+                        setTimeout(function() {
+                            document.body.removeChild(loadingDiv);
+                        }, 1000); 
+                    };
+                },
+                error: function(xhr) {
+                    console.error("Error loading print content:", xhr.responseText);
+                    document.body.removeChild(loadingDiv);
+                    
+                    alert("There was an error preparing the print. Please try again.");
+                }
+            });
         }
     </script>

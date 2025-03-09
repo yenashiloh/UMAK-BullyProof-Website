@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Audit Logs</title>
+    <title>Audit Trails</title>
 
     @include('partials.admin-link')
 </head>
@@ -21,7 +21,7 @@
     <div class="container">
         <div class="page-inner">
             <div class="page-header">
-                <h3 class="fw-bold mb-3">Audit Logs</h3>
+                <h3 class="fw-bold mb-3">Audit Trails</h3>
                 <ul class="breadcrumbs mb-3">
                     <li class="nav-home">
                         <a href="{{ route('admin.users.users') }}">
@@ -32,7 +32,7 @@
                         <i class="icon-arrow-right"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('admin.users.users') }}">Audit Logs</a>
+                        <a href="{{ route('admin.users.users') }}">Audit Trails</a>
                     </li>
                 </ul>
             </div>
@@ -41,7 +41,7 @@
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title">List of Audit Logs</h4>
+                            <h4 class="card-title">List of Audit Trails</h4>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -51,22 +51,18 @@
                                             <th>Date and Time</th>
                                             <th>Full Name</th>
                                             <th>Activity</th>
-                                            <th>Ip Address</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($auditLogs as $log)
+                                        @foreach($auditTrails as $log)
                                             <tr>
-                                                <td>
-                                                    {{ isset($log['date']) ? $log['date']->toDateTime()->format('F j, Y, g:iA') : 'N/A' }}
-                                                </td>
+                                                <td>{{ $log['formatted_date'] }}</td>
                                                 <td>{{ $log['full_name'] ?? 'Unknown User' }}</td>
-                                                <td>{{ $log['action'] }}</td>
-                                                <td>{{ $log['ip_address'] ?? 'N/A' }}</td>
+                                                <td>{{ ucfirst(Str::lower(preg_replace('/[^A-Za-z0-9]+/', ' ', $log['action']))) }}</td>
+
                                             </tr>
                                         @endforeach
                                     </tbody>
-                                    
                                 </table>
                             </div>
                         </div>
