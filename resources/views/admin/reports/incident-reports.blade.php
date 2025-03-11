@@ -125,54 +125,49 @@
                                                 <td>
                                                     <div class="dropdown">
                                                         <span
-                                                            class="badge status-badge bg-{{ $report['status'] == 'For Review'
-                                                                ? 'primary'
-                                                                : ($report['status'] == 'Under Investigation'
-                                                                    ? 'warning text-white'
-                                                                    : ($report['status'] == 'Resolved'
-                                                                        ? 'success'
-                                                                        : 'secondary')) }} d-flex justify-content-between align-items-center w-100"
-                                                            style="min-width: 180px; cursor: {{ $report['status'] != 'Resolved' ? 'pointer' : 'default' }};"
-                                                            @if ($report['status'] != 'Resolved') data-bs-toggle="dropdown" aria-expanded="false" @endif>
+                                                        class="badge status-badge bg-{{ 
+                                                            $report['status'] == 'For Review' ? 'primary' : 
+                                                            ($report['status'] == 'Under Investigation' ? 'warning text-white' : 
+                                                            ($report['status'] == 'Resolved' ? 'success' : 
+                                                            ($report['status'] == 'Dismissed' ? 'danger' :
+                                                            ($report['status'] == 'Under Mediation' ? 'info' :
+                                                            ($report['status'] == 'Reopened' ? 'dark' :
+                                                            ($report['status'] == 'Awaiting Response' ? 'secondary' :
+                                                            ($report['status'] == 'Withdrawn' ? 'muted' : 'secondary'))))))) 
+                                                        }} d-flex justify-content-between align-items-center w-100" 
+                                                        style="min-width: 180px; cursor: {{ in_array($report['status'], ['Resolved', 'Withdrawn', 'Dismissed']) ? 'default' : 'pointer' }};"
+                                                        @if (!in_array($report['status'], ['Resolved', 'Withdrawn', 'Dismissed'])) data-bs-toggle="dropdown" aria-expanded="false" @endif>
                                                             <span>{{ $report['status'] }}</span>
-                                                            @if ($report['status'] != 'Resolved')
+                                                            @if (!in_array($report['status'], ['Resolved', 'Withdrawn', 'Dismissed']))
                                                                 <i class="fas fa-chevron-down ms-auto"></i>
                                                             @endif
                                                         </span>
-                                                        @if ($report['status'] != 'Resolved')
+                                                        @if (!in_array($report['status'], ['Resolved', 'Withdrawn', 'Dismissed']))
                                                             <ul class="dropdown-menu w-100">
-                                                                @if ($report['status'] == 'For Review')
-                                                                    <form
-                                                                        action="{{ route('admin.reports.changeStatus', ['id' => $report['_id']]) }}"
-                                                                        method="POST">
-                                                                        @csrf
-                                                                        @method('PUT')
-                                                                        <li>
-                                                                            <button class="dropdown-item" type="submit"
-                                                                                name="status"
-                                                                                value="Under Investigation">
-                                                                                Mark as Under Investigation
-                                                                            </button>
-                                                                        </li>
-                                                                    </form>
-                                                                @elseif($report['status'] == 'Under Investigation')
-                                                                    <form
-                                                                        action="{{ route('admin.reports.changeStatus', ['id' => $report['_id']]) }}"
-                                                                        method="POST">
-                                                                        @csrf
-                                                                        @method('PUT')
-                                                                        <li>
-                                                                            <button class="dropdown-item" type="submit"
-                                                                                name="status" value="Resolved">
-                                                                                Mark as Resolved
-                                                                            </button>
-                                                                        </li>
-                                                                    </form>
-                                                                @endif
+                                                                <form action="{{ route('admin.reports.changeStatus', ['id' => $report['_id']]) }}" method="POST">
+                                                                    @csrf
+                                                                    @method('PUT')
+                                                                    @if ($report['status'] == 'For Review')
+                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Under Investigation">Under Investigation</button></li>
+                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Dismissed">Dismiss Report</button></li>
+                                                                    @elseif ($report['status'] == 'Under Investigation')
+                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Resolved">Resolved</button></li>
+                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Under Mediation">Mediation</button></li>
+                                                                    @elseif ($report['status'] == 'Under Mediation')
+                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Awaiting Response">Awaiting Response</button></li>
+                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Reopened">Reopen Report</button></li>
+                                                                    @elseif ($report['status'] == 'Awaiting Response')
+                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Resolved">Resolved</button></li>
+                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Withdrawn">Withdraw Report</button></li>
+                                                                    @elseif ($report['status'] == 'Reopened')
+                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Under Investigation">Investigation</button></li>
+                                                                    @endif
+                                                                </form>
                                                             </ul>
                                                         @endif
                                                     </div>
                                                 </td>
+                                                
 
                                                 <td>
                                                     <div class="form-button-action d-flex gap-2">
@@ -302,37 +297,37 @@
 
         // Print report directly
         function printReportDirectly(id) {
-            var loadingDiv = document.createElement('div');
-            loadingDiv.id = 'printLoadingIndicator';
-            loadingDiv.innerHTML = '<div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; display: flex; justify-content: center; align-items: center;"><span style="font-size: 18px;"><i class="fas fa-spinner fa-spin"></i> Preparing print...</span></div>';
-            document.body.appendChild(loadingDiv);
-            
-            var iframe = document.getElementById('printFrame');
-            
-            $.ajax({
-                url: "{{ route('admin.reports.get-print-content') }}",
-                type: "POST",
-                data: {
-                    id: id,
-                    _token: "{{ csrf_token() }}"
-                },
-                success: function(response) {
-                    iframe.srcdoc = response;
+    var loadingDiv = document.createElement('div');
+    loadingDiv.id = 'printLoadingIndicator';
+    loadingDiv.innerHTML = '<div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; display: flex; justify-content: center; align-items: center;"><span style="font-size: 18px;"><i class="fas fa-spinner fa-spin"></i> Preparing print...</span></div>';
+    document.body.appendChild(loadingDiv);
+    
+    var iframe = document.getElementById('printFrame');
+    
+    $.ajax({
+        url: "{{ route('admin.reports.get-print-content') }}",
+        type: "POST",
+        data: {
+            id: id,
+            _token: "{{ csrf_token() }}"
+        },
+        success: function(response) {
+            iframe.srcdoc = response;
 
-                    iframe.onload = function() {
-                        iframe.contentWindow.print();
-                        
-                        setTimeout(function() {
-                            document.body.removeChild(loadingDiv);
-                        }, 1000); 
-                    };
-                },
-                error: function(xhr) {
-                    console.error("Error loading print content:", xhr.responseText);
+            iframe.onload = function() {
+                iframe.contentWindow.print();
+                
+                setTimeout(function() {
                     document.body.removeChild(loadingDiv);
-                    
-                    alert("There was an error preparing the print. Please try again.");
-                }
-            });
+                }, 1000); // Remove the loading indicator after 1 second
+            };
+        },
+        error: function(xhr) {
+            console.error("Error loading print content:", xhr.responseText);
+            document.body.removeChild(loadingDiv);
+            
+            alert("There was an error preparing the print. Please try again.");
         }
+    });
+}
     </script>

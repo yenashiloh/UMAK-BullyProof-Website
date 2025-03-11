@@ -45,11 +45,15 @@ Route::middleware([PreventBackHistory::class, 'discipline'])->group(function () 
     Route::post('/appointments/filter', [AppointmentController::class, 'filterAppointments']);
 
     Route::get('/complainees', [ListController::class, 'showListOfPerpetrators'])->name('admin.list.list-perpetrators');
-    Route::get('/list-of-perpetrators/view/{id}', [ListController::class, 'viewPerpetratorDiscipline'])->name('admin.list.view-perpertrators');
+    Route::get('/complainees/{identifier}', [ListController::class, 'viewPerpetratorDiscipline'])
+    ->name('admin.perpetrator.discipline');
+
 
 
     Route::get('/complainees/reports/{idNumber}', [ListController::class, 'viewReportsByIdNumber'])->name('admin.reports.byIdNumber');
+    
     Route::get('/complainees/reports/view/{id}', [ListController::class, 'viewReportForComplainee'])->name('admin.list.view-report');
+
     Route::get('/complainee/add', [ListController::class, 'showAddComplainee'])->name('admin.list.add-complainee');
     Route::get('/export-complainees-csv', [ListComplaineeController::class, 'exportComplaineesCSV'])->name('export.csv');
     Route::get('/export-complainees-xlsx', [ListComplaineeController::class, 'exportComplaineesXLSX'])->name('export.xlsx');

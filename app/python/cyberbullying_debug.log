@@ -13081,3 +13081,675 @@ ML prediction: label=1, probability=0.9399785119254883
 Detection reasons: keyword: 'bully', keyword: 'walang kwenta', keyword: 'pangit', keyword: 'bobo', keyword set: pangit, bully, bobo
 Final result: Cyberbullying Detected, probability: 87.69935535776466
 Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 87.7, "reasons": ["keyword: 'bully'", "keyword: 'walang kwenta'", "keyword: 'pangit'", "keyword: 'bobo'", "keyword set: pangit, bully, bobo"]}
+
+
+--- New Detection Run ---
+Received text from stdin: I am reporting an incident of cyberbullying that I personally experienced. It started on [insert date] when I posted [describe the post or comment you made]. After that I received multiple messages and comments from [name or username of the bully]. They started calling me names like bobo pangit and walang kwenta. They also made fun of my appearance by commenting Mukha kang ewan wag ka nang magpost.
+
+The situation got worse when they started sending me direct messages. They said things like
+
+Wala kang kwenta dapat di ka na nageexist.
+
+Lahat ng tao inis sayo feeling close ka masyado
+Kahit anong gawin mo di ka naman papansinin ng iba
+Some of their friends also joined in laughing at their comments and adding more hurtful words. One of them even edited my picture and spread it in a group chat adding insulting captions like Ang pangit niya guys tignan niyo hahahaha
+Input text for detection: I am reporting an incident of cyberbullying that I personally experienced. It started on [insert date] when I posted [describe the post or comment you made]. After that I received multiple messages and comments from [name or username of the bully]. They started calling me names like bobo pangit and walang kwenta. They also made fun of my appearance by commenting Mukha kang ewan wag ka nang magpost.
+
+The situation got worse when they started sending me direct messages. They said things like
+
+Wala kang kwenta dapat di ka na nageexist.
+
+Lahat ng tao inis sayo feeling close ka masyado
+Kahit anong gawin mo di ka naman papansinin ng iba
+Some of their friends also joined in laughing at their comments and adding more hurtful words. One of them even edited my picture and spread it in a group chat adding insulting captions like Ang pangit niya guys tignan niyo hahahaha
+Cyberbullying keyword found directly: pangit
+Cyberbullying keyword found directly: bobo
+Cyberbullying keyword found directly: bully
+Cyberbullying keyword found directly: walang kwenta
+Original text: I am reporting an incident of cyberbullying that I personally experienced. It started on [insert date] when I posted [describe the post or comment you made]. After that I received multiple messages and comments from [name or username of the bully]. They started calling me names like bobo pangit and walang kwenta. They also made fun of my appearance by commenting Mukha kang ewan wag ka nang magpost.
+
+The situation got worse when they started sending me direct messages. They said things like
+
+Wala kang kwenta dapat di ka na nageexist.
+
+Lahat ng tao inis sayo feeling close ka masyado
+Kahit anong gawin mo di ka naman papansinin ng iba
+Some of their friends also joined in laughing at their comments and adding more hurtful words. One of them even edited my picture and spread it in a group chat adding insulting captions like Ang pangit niya guys tignan niyo hahahaha
+After basic cleaning: i am reporting an incident of cyberbullying that i personally experienced  it started on  insert date  when i posted  describe the post or comment you made   after that i received multiple messages and comments from  name or username of the bully   they started calling me names like bobo pangit and walang kwenta  they also made fun of my appearance by commenting mukha kang ewan wag ka nang magpost 
+
+the situation got worse when they started sending me direct messages  they said things like
+
+wala kang kwenta dapat di ka na nageexist 
+
+lahat ng tao inis sayo feeling close ka masyado
+kahit anong gawin mo di ka naman papansinin ng iba
+some of their friends also joined in laughing at their comments and adding more hurtful words  one of them even edited my picture and spread it in a group chat adding insulting captions like ang pangit niya guys tignan niyo hahahaha
+After preprocessing: reporting incident cyberbullying personally experienced started insert date posted post comment received multiple message comment username bully started calling name like bobo pangit kwenta fun appearance commenting mukha kang ewan wag magpost situation got worse started sending direct message said thing like kang kwenta dapat di nageexist inis sayo feeling close anong gawin di papansinin friend joined laughing comment adding hurtful word edited picture spread group chat adding insulting caption like pangit guy tignan hahahaha
+Non-cyberbullying matches: set()
+Cyberbullying matches: {'pangit', 'bobo', 'bully'}
+Cyberbullying detected by keywords: {'pangit', 'bobo', 'bully'}
+ML prediction: label=1, probability=0.9399785119254883
+Detection reasons: keyword: 'pangit', keyword: 'bobo', keyword: 'bully', keyword: 'walang kwenta', keyword set: pangit, bobo, bully
+Final result: Cyberbullying Detected, probability: 87.69935535776466
+Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 87.7, "reasons": ["keyword: 'pangit'", "keyword: 'bobo'", "keyword: 'bully'", "keyword: 'walang kwenta'", "keyword set: pangit, bobo, bully"]}
+
+
+--- New Detection Run ---
+Received text from stdin: I am reporting an incident of cyberbullying that I personally experienced. It started on [insert date] when I posted [describe the post or comment you made]. After that I received multiple messages and comments from [name or username of the bully]. They started calling me names like bobo pangit and walang kwenta. They also made fun of my appearance by commenting Mukha kang ewan wag ka nang magpost.
+
+The situation got worse when they started sending me direct messages. They said things like
+
+Wala kang kwenta dapat di ka na nageexist.
+
+Lahat ng tao inis sayo feeling close ka masyado
+Kahit anong gawin mo di ka naman papansinin ng iba
+Some of their friends also joined in laughing at their comments and adding more hurtful words. One of them even edited my picture and spread it in a group chat adding insulting captions like Ang pangit niya guys tignan niyo hahahaha
+Input text for detection: I am reporting an incident of cyberbullying that I personally experienced. It started on [insert date] when I posted [describe the post or comment you made]. After that I received multiple messages and comments from [name or username of the bully]. They started calling me names like bobo pangit and walang kwenta. They also made fun of my appearance by commenting Mukha kang ewan wag ka nang magpost.
+
+The situation got worse when they started sending me direct messages. They said things like
+
+Wala kang kwenta dapat di ka na nageexist.
+
+Lahat ng tao inis sayo feeling close ka masyado
+Kahit anong gawin mo di ka naman papansinin ng iba
+Some of their friends also joined in laughing at their comments and adding more hurtful words. One of them even edited my picture and spread it in a group chat adding insulting captions like Ang pangit niya guys tignan niyo hahahaha
+Cyberbullying keyword found directly: walang kwenta
+Cyberbullying keyword found directly: bully
+Cyberbullying keyword found directly: pangit
+Cyberbullying keyword found directly: bobo
+Original text: I am reporting an incident of cyberbullying that I personally experienced. It started on [insert date] when I posted [describe the post or comment you made]. After that I received multiple messages and comments from [name or username of the bully]. They started calling me names like bobo pangit and walang kwenta. They also made fun of my appearance by commenting Mukha kang ewan wag ka nang magpost.
+
+The situation got worse when they started sending me direct messages. They said things like
+
+Wala kang kwenta dapat di ka na nageexist.
+
+Lahat ng tao inis sayo feeling close ka masyado
+Kahit anong gawin mo di ka naman papansinin ng iba
+Some of their friends also joined in laughing at their comments and adding more hurtful words. One of them even edited my picture and spread it in a group chat adding insulting captions like Ang pangit niya guys tignan niyo hahahaha
+After basic cleaning: i am reporting an incident of cyberbullying that i personally experienced  it started on  insert date  when i posted  describe the post or comment you made   after that i received multiple messages and comments from  name or username of the bully   they started calling me names like bobo pangit and walang kwenta  they also made fun of my appearance by commenting mukha kang ewan wag ka nang magpost 
+
+the situation got worse when they started sending me direct messages  they said things like
+
+wala kang kwenta dapat di ka na nageexist 
+
+lahat ng tao inis sayo feeling close ka masyado
+kahit anong gawin mo di ka naman papansinin ng iba
+some of their friends also joined in laughing at their comments and adding more hurtful words  one of them even edited my picture and spread it in a group chat adding insulting captions like ang pangit niya guys tignan niyo hahahaha
+After preprocessing: reporting incident cyberbullying personally experienced started insert date posted post comment received multiple message comment username bully started calling name like bobo pangit kwenta fun appearance commenting mukha kang ewan wag magpost situation got worse started sending direct message said thing like kang kwenta dapat di nageexist inis sayo feeling close anong gawin di papansinin friend joined laughing comment adding hurtful word edited picture spread group chat adding insulting caption like pangit guy tignan hahahaha
+Non-cyberbullying matches: set()
+Cyberbullying matches: {'bobo', 'pangit', 'bully'}
+Cyberbullying detected by keywords: {'bobo', 'pangit', 'bully'}
+ML prediction: label=1, probability=0.9399785119254883
+Detection reasons: keyword: 'walang kwenta', keyword: 'bully', keyword: 'pangit', keyword: 'bobo', keyword set: bobo, pangit, bully
+Final result: Cyberbullying Detected, probability: 87.69935535776466
+Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 87.7, "reasons": ["keyword: 'walang kwenta'", "keyword: 'bully'", "keyword: 'pangit'", "keyword: 'bobo'", "keyword set: bobo, pangit, bully"]}
+
+
+--- New Detection Run ---
+Received text from stdin: ksksks
+Input text for detection: ksksks
+Original text: ksksks
+After basic cleaning: ksksks
+After preprocessing: ksksks
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.29712320652447605
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: +
+4:53 O Xâ€¢
+THESIS - INTEL..
+Nll l38
+started receiving hateful messages
+on Facebook Messenger from my
+classmate, Mark Reyes. At first, he
+was just making sarcastic remarks
+about my recent class presentation,
+saying:
+"Ang bobo mo talaga mag-report,
+sayang oras namin."
+lignored it, thinking he was just
+joking, but the messages continued.
+After a few minutes, he sent another
+message:
+"Paano ka nakapasok sa school
+natin? Wala kang ambag, hindi ka
+marunong makisama. Mas okay
+siguro kung mag-drop ka na lang."
+Later that evening, I saw a Facebook
+post from an anonymous account,
+but I knew it was him because of the
+way it was written. The post
+contained a meme about someone
+embarrassing themselves in class,
+and the caption said:
+"Yung may nagreport pero wala
+namang alam! Sino na to? Clue:
+Laging mukhang lutang HAHAHA."
+Several of my classmates reacted
+and commented with laughing
+emojis, making me feel embarrassed
+and isolated. Some even tagged me,
+asking if the post was about me.
+Message
+i
+Input text for detection: +
+4:53 O Xâ€¢
+THESIS - INTEL..
+Nll l38
+started receiving hateful messages
+on Facebook Messenger from my
+classmate, Mark Reyes. At first, he
+was just making sarcastic remarks
+about my recent class presentation,
+saying:
+"Ang bobo mo talaga mag-report,
+sayang oras namin."
+lignored it, thinking he was just
+joking, but the messages continued.
+After a few minutes, he sent another
+message:
+"Paano ka nakapasok sa school
+natin? Wala kang ambag, hindi ka
+marunong makisama. Mas okay
+siguro kung mag-drop ka na lang."
+Later that evening, I saw a Facebook
+post from an anonymous account,
+but I knew it was him because of the
+way it was written. The post
+contained a meme about someone
+embarrassing themselves in class,
+and the caption said:
+"Yung may nagreport pero wala
+namang alam! Sino na to? Clue:
+Laging mukhang lutang HAHAHA."
+Several of my classmates reacted
+and commented with laughing
+emojis, making me feel embarrassed
+and isolated. Some even tagged me,
+asking if the post was about me.
+Message
+i
+Cyberbullying keyword found directly: bobo
+Original text: +
+4:53 O Xâ€¢
+THESIS - INTEL..
+Nll l38
+started receiving hateful messages
+on Facebook Messenger from my
+classmate, Mark Reyes. At first, he
+was just making sarcastic remarks
+about my recent class presentation,
+saying:
+"Ang bobo mo talaga mag-report,
+sayang oras namin."
+lignored it, thinking he was just
+joking, but the messages continued.
+After a few minutes, he sent another
+message:
+"Paano ka nakapasok sa school
+natin? Wala kang ambag, hindi ka
+marunong makisama. Mas okay
+siguro kung mag-drop ka na lang."
+Later that evening, I saw a Facebook
+post from an anonymous account,
+but I knew it was him because of the
+way it was written. The post
+contained a meme about someone
+embarrassing themselves in class,
+and the caption said:
+"Yung may nagreport pero wala
+namang alam! Sino na to? Clue:
+Laging mukhang lutang HAHAHA."
+Several of my classmates reacted
+and commented with laughing
+emojis, making me feel embarrassed
+and isolated. Some even tagged me,
+asking if the post was about me.
+Message
+i
+After basic cleaning:  
+4 53 o xâ  
+thesis   intel  
+nll l38
+started receiving hateful messages
+on facebook messenger from my
+classmate  mark reyes  at first  he
+was just making sarcastic remarks
+about my recent class presentation 
+saying 
+ ang bobo mo talaga mag report 
+sayang oras namin  
+lignored it  thinking he was just
+joking  but the messages continued 
+after a few minutes  he sent another
+message 
+ paano ka nakapasok sa school
+natin  wala kang ambag  hindi ka
+marunong makisama  mas okay
+siguro kung mag drop ka na lang  
+later that evening  i saw a facebook
+post from an anonymous account 
+but i knew it was him because of the
+way it was written  the post
+contained a meme about someone
+embarrassing themselves in class 
+and the caption said 
+ yung may nagreport pero wala
+namang alam  sino na to  clue 
+laging mukhang lutang hahaha  
+several of my classmates reacted
+and commented with laughing
+emojis  making me feel embarrassed
+and isolated  some even tagged me 
+asking if the post was about me 
+message
+i
+After preprocessing: 4 53 xâ thesis intel nll l38 started receiving hateful message facebook messenger classmate mark reyes just making sarcastic remark recent class presentation saying bobo mag report sayang oras namin lignored thinking just joking message continued minute sent message nakapasok school natin kang ambag marunong makisama okay siguro mag drop lang later evening saw facebook post anonymous account knew way written post contained meme embarrassing class caption said nagreport namang clue laging mukhang lutang hahaha classmate reacted commented laughing emojis making feel embarrassed isolated tagged asking post message
+Non-cyberbullying matches: set()
+Cyberbullying matches: {'bobo'}
+Cyberbullying detected by keywords: {'bobo'}
+ML prediction: label=1, probability=0.6077221879703543
+Detection reasons: keyword: 'bobo', keyword set: bobo
+Final result: Cyberbullying Detected, probability: 77.73166563911063
+Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 77.73, "reasons": ["keyword: 'bobo'", "keyword set: bobo"]}
+
+
+--- New Detection Run ---
+Received text from stdin: Hello
+Input text for detection: Hello
+Original text: Hello
+After basic cleaning: hello
+After preprocessing: hello
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.1868996521609451
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Hello
+Input text for detection: Hello
+Original text: Hello
+After basic cleaning: hello
+After preprocessing: hello
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.1868996521609451
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Hello
+Input text for detection: Hello
+Original text: Hello
+After basic cleaning: hello
+After preprocessing: hello
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.1868996521609451
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: I am reporting an incident of cyberbullying that I personally experienced. It started on [insert date] when I posted [describe the post or comment you made]. After that I received multiple messages and comments from [name or username of the bully]. They started calling me names like bobo pangit and walang kwenta. They also made fun of my appearance by commenting Mukha kang ewan wag ka nang magpost.
+
+The situation got worse when they started sending me direct messages. They said things like
+
+Wala kang kwenta dapat di ka na nageexist.
+
+Lahat ng tao inis sayo feeling close ka masyado
+Kahit anong gawin mo di ka naman papansinin ng iba
+Some of their friends also joined in laughing at their comments and adding more hurtful words. One of them even edited my picture and spread it in a group chat adding insulting captions like Ang pangit niya guys tignan niyo hahahaha
+Input text for detection: I am reporting an incident of cyberbullying that I personally experienced. It started on [insert date] when I posted [describe the post or comment you made]. After that I received multiple messages and comments from [name or username of the bully]. They started calling me names like bobo pangit and walang kwenta. They also made fun of my appearance by commenting Mukha kang ewan wag ka nang magpost.
+
+The situation got worse when they started sending me direct messages. They said things like
+
+Wala kang kwenta dapat di ka na nageexist.
+
+Lahat ng tao inis sayo feeling close ka masyado
+Kahit anong gawin mo di ka naman papansinin ng iba
+Some of their friends also joined in laughing at their comments and adding more hurtful words. One of them even edited my picture and spread it in a group chat adding insulting captions like Ang pangit niya guys tignan niyo hahahaha
+Cyberbullying keyword found directly: bully
+Cyberbullying keyword found directly: walang kwenta
+Cyberbullying keyword found directly: pangit
+Cyberbullying keyword found directly: bobo
+Original text: I am reporting an incident of cyberbullying that I personally experienced. It started on [insert date] when I posted [describe the post or comment you made]. After that I received multiple messages and comments from [name or username of the bully]. They started calling me names like bobo pangit and walang kwenta. They also made fun of my appearance by commenting Mukha kang ewan wag ka nang magpost.
+
+The situation got worse when they started sending me direct messages. They said things like
+
+Wala kang kwenta dapat di ka na nageexist.
+
+Lahat ng tao inis sayo feeling close ka masyado
+Kahit anong gawin mo di ka naman papansinin ng iba
+Some of their friends also joined in laughing at their comments and adding more hurtful words. One of them even edited my picture and spread it in a group chat adding insulting captions like Ang pangit niya guys tignan niyo hahahaha
+After basic cleaning: i am reporting an incident of cyberbullying that i personally experienced  it started on  insert date  when i posted  describe the post or comment you made   after that i received multiple messages and comments from  name or username of the bully   they started calling me names like bobo pangit and walang kwenta  they also made fun of my appearance by commenting mukha kang ewan wag ka nang magpost 
+
+the situation got worse when they started sending me direct messages  they said things like
+
+wala kang kwenta dapat di ka na nageexist 
+
+lahat ng tao inis sayo feeling close ka masyado
+kahit anong gawin mo di ka naman papansinin ng iba
+some of their friends also joined in laughing at their comments and adding more hurtful words  one of them even edited my picture and spread it in a group chat adding insulting captions like ang pangit niya guys tignan niyo hahahaha
+After preprocessing: reporting incident cyberbullying personally experienced started insert date posted post comment received multiple message comment username bully started calling name like bobo pangit kwenta fun appearance commenting mukha kang ewan wag magpost situation got worse started sending direct message said thing like kang kwenta dapat di nageexist inis sayo feeling close anong gawin di papansinin friend joined laughing comment adding hurtful word edited picture spread group chat adding insulting caption like pangit guy tignan hahahaha
+Non-cyberbullying matches: set()
+Cyberbullying matches: {'bully', 'bobo', 'pangit'}
+Cyberbullying detected by keywords: {'bully', 'bobo', 'pangit'}
+ML prediction: label=1, probability=0.9399785119254883
+Detection reasons: keyword: 'bully', keyword: 'walang kwenta', keyword: 'pangit', keyword: 'bobo', keyword set: bully, bobo, pangit
+Final result: Cyberbullying Detected, probability: 87.69935535776466
+Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 87.7, "reasons": ["keyword: 'bully'", "keyword: 'walang kwenta'", "keyword: 'pangit'", "keyword: 'bobo'", "keyword set: bully, bobo, pangit"]}
+
+
+--- New Detection Run ---
+Received text from stdin: (0)
+)
+GLOBE oWiFi
+GLOBE
+BonApple
+Business chat
+DIuetOOtn settings.
+Sige po.
+MON AT 10:07 AM
+pa try ko po, will give feedback if gumana po
+MON AT 11:05 PM
+good evening po, same pa din daw po
+mabilis daw po ma lowbat naka 3 charge
+daw po sya ng case this day unlike po dun sa
+friend nya na 2days po inaabot from
+bonapple din po binili. and then yung cable
+nya po pala na kasama hindi po working
+pero yung charger nya po sa iphone gumana
+naman po
+9:41 AM
+Unread messages
+Hi po. Pwede po ipa check ang item sa
+shop.
+May distributor po kami ng selected items
+namin na may physical store located po sa
+EspaÃ±a, Manila
+Pwede po sila mag walk-in sa store
+ESPANA, MANILA
+(10AM-8:00PM)
+St Thomas Square Mall, Espana Blvd.
+corner P. Campa St Sampaloc, Manila (Bon
+Gadgets Store-1st floor)
+9:42
+Message
+Edited
+Input text for detection: (0)
+)
+GLOBE oWiFi
+GLOBE
+BonApple
+Business chat
+DIuetOOtn settings.
+Sige po.
+MON AT 10:07 AM
+pa try ko po, will give feedback if gumana po
+MON AT 11:05 PM
+good evening po, same pa din daw po
+mabilis daw po ma lowbat naka 3 charge
+daw po sya ng case this day unlike po dun sa
+friend nya na 2days po inaabot from
+bonapple din po binili. and then yung cable
+nya po pala na kasama hindi po working
+pero yung charger nya po sa iphone gumana
+naman po
+9:41 AM
+Unread messages
+Hi po. Pwede po ipa check ang item sa
+shop.
+May distributor po kami ng selected items
+namin na may physical store located po sa
+EspaÃ±a, Manila
+Pwede po sila mag walk-in sa store
+ESPANA, MANILA
+(10AM-8:00PM)
+St Thomas Square Mall, Espana Blvd.
+corner P. Campa St Sampaloc, Manila (Bon
+Gadgets Store-1st floor)
+9:42
+Message
+Edited
+Original text: (0)
+)
+GLOBE oWiFi
+GLOBE
+BonApple
+Business chat
+DIuetOOtn settings.
+Sige po.
+MON AT 10:07 AM
+pa try ko po, will give feedback if gumana po
+MON AT 11:05 PM
+good evening po, same pa din daw po
+mabilis daw po ma lowbat naka 3 charge
+daw po sya ng case this day unlike po dun sa
+friend nya na 2days po inaabot from
+bonapple din po binili. and then yung cable
+nya po pala na kasama hindi po working
+pero yung charger nya po sa iphone gumana
+naman po
+9:41 AM
+Unread messages
+Hi po. Pwede po ipa check ang item sa
+shop.
+May distributor po kami ng selected items
+namin na may physical store located po sa
+EspaÃ±a, Manila
+Pwede po sila mag walk-in sa store
+ESPANA, MANILA
+(10AM-8:00PM)
+St Thomas Square Mall, Espana Blvd.
+corner P. Campa St Sampaloc, Manila (Bon
+Gadgets Store-1st floor)
+9:42
+Message
+Edited
+After basic cleaning:  0 
+ 
+globe owifi
+globe
+bonapple
+business chat
+diuetootn settings 
+sige po 
+mon at 10 07 am
+pa try ko po  will give feedback if gumana po
+mon at 11 05 pm
+good evening po  same pa din daw po
+mabilis daw po ma lowbat naka 3 charge
+daw po sya ng case this day unlike po dun sa
+friend nya na 2days po inaabot from
+bonapple din po binili  and then yung cable
+nya po pala na kasama hindi po working
+pero yung charger nya po sa iphone gumana
+naman po
+9 41 am
+unread messages
+hi po  pwede po ipa check ang item sa
+shop 
+may distributor po kami ng selected items
+namin na may physical store located po sa
+espaã a  manila
+pwede po sila mag walk in sa store
+espana  manila
+ 10am 8 00pm 
+st thomas square mall  espana blvd 
+corner p  campa st sampaloc  manila  bon
+gadgets store 1st floor 
+9 42
+message
+edited
+After preprocessing: 0 globe owifi globe bonapple business chat diuetootn setting sige po mon 10 07 try po feedback gumana po mon 11 05 pm good evening po po mabilis po ma lowbat naka 3 charge po sya case day unlike po dun friend nya 2days po inaabot bonapple po binili cable nya po po working charger nya po iphone gumana po 9 41 unread message hi po po ipa check item shop distributor po selected item namin physical store located po espaã manila po mag walk store espana manila 10am 8 00pm st thomas square mall espana blvd corner p campa st sampaloc manila bon gadget store 1st floor 9 42 message edited
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.36131811032486344
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: I am reporting an incident of cyberbullying that I personally experienced. It started on [insert date] when I posted [describe the post or comment you made]. After that I received multiple messages and comments from [name or username of the bully]. They started calling me names like bobo pangit and walang kwenta. They also made fun of my appearance by commenting Mukha kang ewan wag ka nang magpost.
+
+The situation got worse when they started sending me direct messages. They said things like
+
+Wala kang kwenta dapat di ka na nageexist.
+
+Lahat ng tao inis sayo feeling close ka masyado
+Kahit anong gawin mo di ka naman papansinin ng iba
+Some of their friends also joined in laughing at their comments and adding more hurtful words. One of them even edited my picture and spread it in a group chat adding insulting captions like Ang pangit niya guys tignan niyo hahahaha
+Input text for detection: I am reporting an incident of cyberbullying that I personally experienced. It started on [insert date] when I posted [describe the post or comment you made]. After that I received multiple messages and comments from [name or username of the bully]. They started calling me names like bobo pangit and walang kwenta. They also made fun of my appearance by commenting Mukha kang ewan wag ka nang magpost.
+
+The situation got worse when they started sending me direct messages. They said things like
+
+Wala kang kwenta dapat di ka na nageexist.
+
+Lahat ng tao inis sayo feeling close ka masyado
+Kahit anong gawin mo di ka naman papansinin ng iba
+Some of their friends also joined in laughing at their comments and adding more hurtful words. One of them even edited my picture and spread it in a group chat adding insulting captions like Ang pangit niya guys tignan niyo hahahaha
+Cyberbullying keyword found directly: bobo
+Cyberbullying keyword found directly: pangit
+Cyberbullying keyword found directly: bully
+Cyberbullying keyword found directly: walang kwenta
+Original text: I am reporting an incident of cyberbullying that I personally experienced. It started on [insert date] when I posted [describe the post or comment you made]. After that I received multiple messages and comments from [name or username of the bully]. They started calling me names like bobo pangit and walang kwenta. They also made fun of my appearance by commenting Mukha kang ewan wag ka nang magpost.
+
+The situation got worse when they started sending me direct messages. They said things like
+
+Wala kang kwenta dapat di ka na nageexist.
+
+Lahat ng tao inis sayo feeling close ka masyado
+Kahit anong gawin mo di ka naman papansinin ng iba
+Some of their friends also joined in laughing at their comments and adding more hurtful words. One of them even edited my picture and spread it in a group chat adding insulting captions like Ang pangit niya guys tignan niyo hahahaha
+After basic cleaning: i am reporting an incident of cyberbullying that i personally experienced  it started on  insert date  when i posted  describe the post or comment you made   after that i received multiple messages and comments from  name or username of the bully   they started calling me names like bobo pangit and walang kwenta  they also made fun of my appearance by commenting mukha kang ewan wag ka nang magpost 
+
+the situation got worse when they started sending me direct messages  they said things like
+
+wala kang kwenta dapat di ka na nageexist 
+
+lahat ng tao inis sayo feeling close ka masyado
+kahit anong gawin mo di ka naman papansinin ng iba
+some of their friends also joined in laughing at their comments and adding more hurtful words  one of them even edited my picture and spread it in a group chat adding insulting captions like ang pangit niya guys tignan niyo hahahaha
+After preprocessing: reporting incident cyberbullying personally experienced started insert date posted post comment received multiple message comment username bully started calling name like bobo pangit kwenta fun appearance commenting mukha kang ewan wag magpost situation got worse started sending direct message said thing like kang kwenta dapat di nageexist inis sayo feeling close anong gawin di papansinin friend joined laughing comment adding hurtful word edited picture spread group chat adding insulting caption like pangit guy tignan hahahaha
+Non-cyberbullying matches: set()
+Cyberbullying matches: {'pangit', 'bully', 'bobo'}
+Cyberbullying detected by keywords: {'pangit', 'bully', 'bobo'}
+ML prediction: label=1, probability=0.9399785119254883
+Detection reasons: keyword: 'bobo', keyword: 'pangit', keyword: 'bully', keyword: 'walang kwenta', keyword set: pangit, bully, bobo
+Final result: Cyberbullying Detected, probability: 87.69935535776466
+Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 87.7, "reasons": ["keyword: 'bobo'", "keyword: 'pangit'", "keyword: 'bully'", "keyword: 'walang kwenta'", "keyword set: pangit, bully, bobo"]}
+
+
+--- New Detection Run ---
+Received text from stdin: I am reporting an incident of cyberbullying that I personally experienced. It started on [insert date] when I posted [describe the post or comment you made]. After that I received multiple messages and comments from [name or username of the bully]. They started calling me names like bobo pangit and walang kwenta. They also made fun of my appearance by commenting Mukha kang ewan wag ka nang magpost.
+
+The situation got worse when they started sending me direct messages. They said things like
+
+Wala kang kwenta dapat di ka na nageexist.
+
+Lahat ng tao inis sayo feeling close ka masyado
+Kahit anong gawin mo di ka naman papansinin ng iba
+Some of their friends also joined in laughing at their comments and adding more hurtful words. One of them even edited my picture and spread it in a group chat adding insulting captions like Ang pangit niya guys tignan niyo hahahaha
+Input text for detection: I am reporting an incident of cyberbullying that I personally experienced. It started on [insert date] when I posted [describe the post or comment you made]. After that I received multiple messages and comments from [name or username of the bully]. They started calling me names like bobo pangit and walang kwenta. They also made fun of my appearance by commenting Mukha kang ewan wag ka nang magpost.
+
+The situation got worse when they started sending me direct messages. They said things like
+
+Wala kang kwenta dapat di ka na nageexist.
+
+Lahat ng tao inis sayo feeling close ka masyado
+Kahit anong gawin mo di ka naman papansinin ng iba
+Some of their friends also joined in laughing at their comments and adding more hurtful words. One of them even edited my picture and spread it in a group chat adding insulting captions like Ang pangit niya guys tignan niyo hahahaha
+Cyberbullying keyword found directly: walang kwenta
+Cyberbullying keyword found directly: bobo
+Cyberbullying keyword found directly: bully
+Cyberbullying keyword found directly: pangit
+Original text: I am reporting an incident of cyberbullying that I personally experienced. It started on [insert date] when I posted [describe the post or comment you made]. After that I received multiple messages and comments from [name or username of the bully]. They started calling me names like bobo pangit and walang kwenta. They also made fun of my appearance by commenting Mukha kang ewan wag ka nang magpost.
+
+The situation got worse when they started sending me direct messages. They said things like
+
+Wala kang kwenta dapat di ka na nageexist.
+
+Lahat ng tao inis sayo feeling close ka masyado
+Kahit anong gawin mo di ka naman papansinin ng iba
+Some of their friends also joined in laughing at their comments and adding more hurtful words. One of them even edited my picture and spread it in a group chat adding insulting captions like Ang pangit niya guys tignan niyo hahahaha
+After basic cleaning: i am reporting an incident of cyberbullying that i personally experienced  it started on  insert date  when i posted  describe the post or comment you made   after that i received multiple messages and comments from  name or username of the bully   they started calling me names like bobo pangit and walang kwenta  they also made fun of my appearance by commenting mukha kang ewan wag ka nang magpost 
+
+the situation got worse when they started sending me direct messages  they said things like
+
+wala kang kwenta dapat di ka na nageexist 
+
+lahat ng tao inis sayo feeling close ka masyado
+kahit anong gawin mo di ka naman papansinin ng iba
+some of their friends also joined in laughing at their comments and adding more hurtful words  one of them even edited my picture and spread it in a group chat adding insulting captions like ang pangit niya guys tignan niyo hahahaha
+After preprocessing: reporting incident cyberbullying personally experienced started insert date posted post comment received multiple message comment username bully started calling name like bobo pangit kwenta fun appearance commenting mukha kang ewan wag magpost situation got worse started sending direct message said thing like kang kwenta dapat di nageexist inis sayo feeling close anong gawin di papansinin friend joined laughing comment adding hurtful word edited picture spread group chat adding insulting caption like pangit guy tignan hahahaha
+Non-cyberbullying matches: set()
+Cyberbullying matches: {'bobo', 'bully', 'pangit'}
+Cyberbullying detected by keywords: {'bobo', 'bully', 'pangit'}
+ML prediction: label=1, probability=0.9399785119254883
+Detection reasons: keyword: 'walang kwenta', keyword: 'bobo', keyword: 'bully', keyword: 'pangit', keyword set: bobo, bully, pangit
+Final result: Cyberbullying Detected, probability: 87.69935535776466
+Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 87.7, "reasons": ["keyword: 'walang kwenta'", "keyword: 'bobo'", "keyword: 'bully'", "keyword: 'pangit'", "keyword set: bobo, bully, pangit"]}
+
+
+--- New Detection Run ---
+Received text from stdin: I am reporting an incident of cyberbullying that I personally experienced. It started on [insert date] when I posted [describe the post or comment you made]. After that I received multiple messages and comments from [name or username of the bully]. They started calling me names like bobo pangit and walang kwenta. They also made fun of my appearance by commenting Mukha kang ewan wag ka nang magpost.
+
+The situation got worse when they started sending me direct messages. They said things like
+
+Wala kang kwenta dapat di ka na nageexist.
+
+Lahat ng tao inis sayo feeling close ka masyado
+Kahit anong gawin mo di ka naman papansinin ng iba
+Some of their friends also joined in laughing at their comments and adding more hurtful words. One of them even edited my picture and spread it in a group chat adding insulting captions like Ang pangit niya guys tignan niyo hahahaha
+Input text for detection: I am reporting an incident of cyberbullying that I personally experienced. It started on [insert date] when I posted [describe the post or comment you made]. After that I received multiple messages and comments from [name or username of the bully]. They started calling me names like bobo pangit and walang kwenta. They also made fun of my appearance by commenting Mukha kang ewan wag ka nang magpost.
+
+The situation got worse when they started sending me direct messages. They said things like
+
+Wala kang kwenta dapat di ka na nageexist.
+
+Lahat ng tao inis sayo feeling close ka masyado
+Kahit anong gawin mo di ka naman papansinin ng iba
+Some of their friends also joined in laughing at their comments and adding more hurtful words. One of them even edited my picture and spread it in a group chat adding insulting captions like Ang pangit niya guys tignan niyo hahahaha
+Cyberbullying keyword found directly: bobo
+Cyberbullying keyword found directly: pangit
+Cyberbullying keyword found directly: walang kwenta
+Cyberbullying keyword found directly: bully
+Original text: I am reporting an incident of cyberbullying that I personally experienced. It started on [insert date] when I posted [describe the post or comment you made]. After that I received multiple messages and comments from [name or username of the bully]. They started calling me names like bobo pangit and walang kwenta. They also made fun of my appearance by commenting Mukha kang ewan wag ka nang magpost.
+
+The situation got worse when they started sending me direct messages. They said things like
+
+Wala kang kwenta dapat di ka na nageexist.
+
+Lahat ng tao inis sayo feeling close ka masyado
+Kahit anong gawin mo di ka naman papansinin ng iba
+Some of their friends also joined in laughing at their comments and adding more hurtful words. One of them even edited my picture and spread it in a group chat adding insulting captions like Ang pangit niya guys tignan niyo hahahaha
+After basic cleaning: i am reporting an incident of cyberbullying that i personally experienced  it started on  insert date  when i posted  describe the post or comment you made   after that i received multiple messages and comments from  name or username of the bully   they started calling me names like bobo pangit and walang kwenta  they also made fun of my appearance by commenting mukha kang ewan wag ka nang magpost 
+
+the situation got worse when they started sending me direct messages  they said things like
+
+wala kang kwenta dapat di ka na nageexist 
+
+lahat ng tao inis sayo feeling close ka masyado
+kahit anong gawin mo di ka naman papansinin ng iba
+some of their friends also joined in laughing at their comments and adding more hurtful words  one of them even edited my picture and spread it in a group chat adding insulting captions like ang pangit niya guys tignan niyo hahahaha
+After preprocessing: reporting incident cyberbullying personally experienced started insert date posted post comment received multiple message comment username bully started calling name like bobo pangit kwenta fun appearance commenting mukha kang ewan wag magpost situation got worse started sending direct message said thing like kang kwenta dapat di nageexist inis sayo feeling close anong gawin di papansinin friend joined laughing comment adding hurtful word edited picture spread group chat adding insulting caption like pangit guy tignan hahahaha
+Non-cyberbullying matches: set()
+Cyberbullying matches: {'pangit', 'bobo', 'bully'}
+Cyberbullying detected by keywords: {'pangit', 'bobo', 'bully'}
+ML prediction: label=1, probability=0.9399785119254883
+Detection reasons: keyword: 'bobo', keyword: 'pangit', keyword: 'walang kwenta', keyword: 'bully', keyword set: pangit, bobo, bully
+Final result: Cyberbullying Detected, probability: 87.69935535776466
+Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 87.7, "reasons": ["keyword: 'bobo'", "keyword: 'pangit'", "keyword: 'walang kwenta'", "keyword: 'bully'", "keyword set: pangit, bobo, bully"]}

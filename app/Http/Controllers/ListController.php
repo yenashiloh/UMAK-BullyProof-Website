@@ -13,69 +13,111 @@ class ListController extends Controller
     {
         $this->detectionService = $detectionService;
     }
-    
+
+    //show list of perpetrators
     public function showListOfPerpetrators()
     {
         $client = new Client(env('MONGODB_URI'));
         $reportCollection = $client->bullyproof->reports;
         $adminCollection = $client->bullyproof->admins;
         $studentsCollection = $client->bullyproof->students;
-        
-        // Get all reports
-        $reports = $reportCollection->find()->toArray();
-        
-        // Get all students
-        $allStudents = $studentsCollection->find()->toArray();
-        
-        // Track perpetrators and their violation counts
+    
+        $reports = $reportCollection->find([
+            'perpetratorName' => ['$exists' => true, '$ne' => '']
+        ])->toArray();
+    
+        $allStudents = $studentsCollection->find([], [
+            'projection' => ['name' => 1, 'schoolId' => 1]
+        ])->toArray();
+    
+        $studentsMap = [];
+        foreach ($allStudents as $student) {
+            if (!isset($student->name) || !isset($student->schoolId)) continue;
+    
+            $studentName = trim(strtoupper($student->name));
+            $studentName = str_replace('"', '', $studentName);
+            $studentsMap[$studentName] = $student->schoolId;
+    
+            $nameParts = preg_split('/\s+|,\s*/', $studentName);
+            foreach ($nameParts as $part) {
+                if (strlen($part) > 2) {
+                    if (!isset($studentsMap['PART:' . $part])) {
+                        $studentsMap['PART:' . $part] = [];
+                    }
+                    $studentsMap['PART:' . $part][] = [
+                        'fullName' => $studentName,
+                        'schoolId' => $student->schoolId
+                    ];
+                }
+            }
+        }
+    
         $perpetrators = [];
-        
+    
         foreach ($reports as $report) {
             if (!empty($report->perpetratorName)) {
                 $perpetratorName = trim(strtoupper($report->perpetratorName));
                 $perpetratorRole = $report->perpetratorRole ?? 'Unknown';
                 $perpetratorSchoolId = '';
-                
-                // Try to match perpetrator with a student record to get ID
-                foreach ($allStudents as $student) {
-                    $studentName = trim(strtoupper($student->name));
-                    
-                    $perpetratorName = str_replace('"', '', $perpetratorName);
-                    $studentName = str_replace('"', '', $studentName);
-                    
-                    // Try with lastname, firstname format
+    
+                $perpetratorName = str_replace('"', '', $perpetratorName);
+    
+                if (isset($studentsMap[$perpetratorName])) {
+                    $perpetratorSchoolId = $studentsMap[$perpetratorName];
+                } else {
                     $perpParts = explode(',', $perpetratorName);
                     $perpLastName = trim($perpParts[0] ?? '');
-                    
-                    if (!empty($perpLastName) && strpos($studentName, $perpLastName) !== false) {
-                        $perpFirstNames = '';
-                        if (isset($perpParts[1])) {
-                            $perpFirstNames = trim($perpParts[1]);
-                        }
-                        
-                        if (empty($perpFirstNames) || $this->hasAnyNamePartMatch($perpFirstNames, $studentName)) {
-                            $perpetratorSchoolId = $student->schoolId;
-                            break;
+    
+                    if (!empty($perpLastName) && isset($studentsMap['PART:' . $perpLastName])) {
+                        foreach ($studentsMap['PART:' . $perpLastName] as $possibleMatch) {
+                            $studentFullName = $possibleMatch['fullName'];
+    
+                            if (isset($perpParts[1])) {
+                                $perpFirstNames = trim($perpParts[1]);
+                                $perpFirstParts = preg_split('/\s+/', $perpFirstNames);
+    
+                                foreach ($perpFirstParts as $firstPart) {
+                                    if (strlen($firstPart) > 2 && strpos($studentFullName, $firstPart) !== false) {
+                                        $perpetratorSchoolId = $possibleMatch['schoolId'];
+                                        break 2;
+                                    }
+                                }
+                            } else {
+                                $perpetratorSchoolId = $possibleMatch['schoolId'];
+                                break;
+                            }
                         }
                     }
-                    
-                    // Try with space-separated names
-                    if (empty($perpetratorSchoolId) && !str_contains($perpetratorName, ',')) {
+    
+                    if (empty($perpetratorSchoolId)) {
                         $perpWords = preg_split('/\s+/', $perpetratorName);
-                        $studentWords = preg_split('/\s+/', $studentName);
-                        
-                        $commonWords = array_intersect($perpWords, $studentWords);
-                        
-                        if (count($commonWords) >= 2) {
-                            $perpetratorSchoolId = $student->schoolId;
-                            break;
+                        $matchScores = [];
+    
+                        foreach ($perpWords as $word) {
+                            if (strlen($word) <= 2) continue;
+    
+                            if (isset($studentsMap['PART:' . $word])) {
+                                foreach ($studentsMap['PART:' . $word] as $possibleMatch) {
+                                    $studentId = $possibleMatch['schoolId'];
+                                    if (!isset($matchScores[$studentId])) {
+                                        $matchScores[$studentId] = 0;
+                                    }
+                                    $matchScores[$studentId]++;
+                                }
+                            }
+                        }
+    
+                        arsort($matchScores);
+                        $bestMatches = array_keys($matchScores);
+    
+                        if (!empty($bestMatches) && $matchScores[$bestMatches[0]] >= 2) {
+                            $perpetratorSchoolId = $bestMatches[0];
                         }
                     }
                 }
-                
-                // Use school ID as the key if available, otherwise use name
+    
                 $key = !empty($perpetratorSchoolId) ? $perpetratorSchoolId : $perpetratorName;
-                
+    
                 if (!isset($perpetrators[$key])) {
                     $perpetrators[$key] = [
                         'name' => $report->perpetratorName,
@@ -90,20 +132,18 @@ class ListController extends Controller
                 }
             }
         }
-        
-        // Convert to array format for view
+    
         $filteredPerpetrators = array_values($perpetrators);
-        
-        // Get admin info
+    
         $adminId = session('admin_id');
         $admin = $adminCollection->findOne(['_id' => new \MongoDB\BSON\ObjectId($adminId)]);
         $firstName = $admin->first_name ?? '';
         $lastName = $admin->last_name ?? '';
         $email = $admin->email ?? '';
-
+    
         return view('admin.list.list-perpetrators', compact('filteredPerpetrators', 'firstName', 'lastName', 'email'));
     }
-
+    
     // Add this helper function if it doesn't exist already
     private function hasAnyNamePartMatch($namePartsStr, $fullName)
     {
@@ -137,7 +177,7 @@ class ListController extends Controller
     }
 
 
-    public function viewPerpetratorDiscipline($id)
+    public function viewPerpetratorDiscipline($identifier)
     {
         $client = new Client(env('MONGODB_URI'));
         $reportCollection = $client->bullyproof->reports;
@@ -156,85 +196,178 @@ class ListController extends Controller
         $lastName = $admin->last_name ?? '';
         $email = $admin->email ?? '';
         
-        // Check if the ID is a report ID or a perpetrator's ID number
-        if (strlen($id) == 24 && ctype_xdigit($id)) {
-            // This is likely a MongoDB ObjectId (report ID)
-            $report = $reportCollection->findOne(['_id' => new \MongoDB\BSON\ObjectId($id)]);
-            if (!$report) {
-                abort(404, 'Report not found');
-            }
+        // Initialize variables
+        $perpetratorName = '';
+        $perpetratorRole = '';
+        $perpetratorIdNumber = '';
+        $student = null;
+        
+        // Special handling for "Not identified" cases
+        if ($identifier === 'Not identified') {
+            // This is a special case where we only have a name, no ID
+            // We'll need to use additional information to identify the perpetrator
+            // This will be handled in subsequent queries
+            $perpetratorIdNumber = 'Not identified';
+        }
+        // Check if identifier is a URL-encoded name (decode it)
+        else if (strpos($identifier, '%') !== false) {
+            $decodedName = urldecode($identifier);
+            $perpetratorName = $decodedName;
             
-            $perpetratorName = $report->perpetratorName ?? '';
-            $perpetratorIdNumber = $report->perpetratorSchoolId ?? '';
-            $perpetratorRole = $report->perpetratorRole ?? '';
-            
-            // Find all reports with this perpetrator
-            if (!empty($perpetratorName)) {
-                $reports = $reportCollection->find([
-                    'perpetratorName' => ['$regex' => $perpetratorName, '$options' => 'i']
-                ])->toArray();
-            } else {
-                $reports = [$report];
-            }
-        } else {
-            // This is a perpetrator's ID number
-            $perpetratorIdNumber = $id;
-            
-            // Find student/perpetrator details from students collection
-            $perpetrator = $studentsCollection->findOne(['schoolId' => $perpetratorIdNumber]);
-            
-            if ($perpetrator) {
-                $perpetratorName = $perpetrator->name ?? 'Unknown';
+            // Try to find the student by name
+            $student = $studentsCollection->findOne(['name' => new \MongoDB\BSON\Regex('^'.preg_quote($decodedName).'$', 'i')]);
+            if ($student) {
+                $perpetratorIdNumber = $student->schoolId ?? 'Not identified';
                 $perpetratorRole = 'Student';
-                
-                // Find all reports with this perpetrator name
-                $reports = $reportCollection->find([
-                    '$or' => [
-                        ['perpetratorSchoolId' => $perpetratorIdNumber],
-                        ['perpetratorName' => ['$regex' => $perpetratorName, '$options' => 'i']]
-                    ]
-                ])->toArray();
+            }
+        } 
+        // Check if identifier is a school ID (k prefix or A prefix or numeric)
+        else if (preg_match('/^[kKaA][0-9]/i', $identifier) || is_numeric($identifier)) {
+            $perpetratorIdNumber = $identifier;
+            $student = $studentsCollection->findOne(['schoolId' => $identifier]);
+            
+            if ($student) {
+                $perpetratorName = $student->name ?? '';
+                $perpetratorRole = 'Student';
             } else {
-                // If not found in students, search directly in reports
-                $reports = $reportCollection->find([
-                    'perpetratorSchoolId' => $perpetratorIdNumber
-                ])->toArray();
+                // Try to find from reports if not found in students
+                $report = $reportCollection->findOne(['perpetratorSchoolId' => $identifier]);
+                if ($report) {
+                    $perpetratorName = $report->perpetratorName ?? '';
+                    $perpetratorRole = $report->perpetratorRole ?? 'Unknown';
+                }
+            }
+        } 
+        // Check if identifier is a MongoDB Object ID
+        else if (strlen($identifier) == 24 && ctype_xdigit($identifier)) {
+            try {
+                $report = $reportCollection->findOne(['_id' => new \MongoDB\BSON\ObjectId($identifier)]);
                 
-                // Get first report to extract perpetrator details
-                $firstReport = !empty($reports) ? $reports[0] : null;
-                $perpetratorName = $firstReport->perpetratorName ?? 'Unknown';
-                $perpetratorRole = $firstReport->perpetratorRole ?? 'Unknown';
+                if ($report) {
+                    $perpetratorName = $report->perpetratorName ?? '';
+                    $perpetratorIdNumber = $report->perpetratorSchoolId ?? 'Not identified';
+                    $perpetratorRole = $report->perpetratorRole ?? 'Unknown';
+                }
+            } catch (\Exception $e) {
+                // Handle exception
+            }
+        }
+        // Assume identifier is a plain name
+        else {
+            $perpetratorName = $identifier;
+            
+            // Try to find in students collection
+            $student = $studentsCollection->findOne([
+                'name' => new \MongoDB\BSON\Regex('^'.preg_quote($identifier).'$', 'i')
+            ]);
+            
+            if ($student) {
+                $perpetratorIdNumber = $student->schoolId ?? 'Not identified';
+                $perpetratorRole = 'Student';
+            } else {
+                // Check reports for this name
+                $report = $reportCollection->findOne([
+                    'perpetratorName' => new \MongoDB\BSON\Regex('^'.preg_quote($identifier).'$', 'i')
+                ]);
+                
+                if ($report) {
+                    $perpetratorIdNumber = $report->perpetratorSchoolId ?? 'Not identified';
+                    $perpetratorRole = $report->perpetratorRole ?? 'Unknown';
+                } else {
+                    $perpetratorIdNumber = 'Not identified';
+                }
             }
         }
         
-        // Format the reports data
-        $formattedReports = [];
-        foreach ($reports as $report) {
-            // Find reporter details
-            $reporterId = $report->reportedBy ?? null;
-            $reporter = null;
+        // Now get all reports related to this perpetrator by name or school ID
+        $allReports = [];
+        
+        // Find by exact ID match (if we have an ID and it's not "Not identified")
+        if (!empty($perpetratorIdNumber) && $perpetratorIdNumber !== 'Not identified') {
+            $reportsByID = $reportCollection->find(['perpetratorSchoolId' => $perpetratorIdNumber])->toArray();
+            foreach ($reportsByID as $report) {
+                $allReports[(string)$report->_id] = $report;
+            }
+        }
+        
+        // Find by name (case insensitive) - this is crucial for "Not identified" cases
+        if (!empty($perpetratorName)) {
+            $reportsByName = $reportCollection->find([
+                'perpetratorName' => new \MongoDB\BSON\Regex('^'.preg_quote($perpetratorName).'$', 'i')
+            ])->toArray();
             
-            if ($reporterId) {
-                if ($reporterId instanceof \MongoDB\BSON\ObjectId) {
-                    $reporter = $userCollection->findOne(['_id' => $reporterId]);
-                } else {
-                    $reporter = $userCollection->findOne(['_id' => new \MongoDB\BSON\ObjectId((string)$reporterId)]);
-                }
+            foreach ($reportsByName as $report) {
+                $allReports[(string)$report->_id] = $report;
             }
             
-            $reporterName = '';
-            if ($reporter) {
-                $reporterName = $reporter->fullname ?? '';
+            // Also try with name parts (more flexible matching)
+            $nameParts = preg_split('/\s+/', $perpetratorName);
+            if (count($nameParts) > 1) {
+                foreach ($nameParts as $part) {
+                    if (strlen($part) < 3) continue; // Skip short parts
+                    
+                    $partialReports = $reportCollection->find([
+                        'perpetratorName' => new \MongoDB\BSON\Regex(preg_quote($part), 'i')
+                    ])->toArray();
+                    
+                    foreach ($partialReports as $report) {
+                        $allReports[(string)$report->_id] = $report;
+                    }
+                }
+            }
+        }
+        
+        // If we still have no reports and have only a plain name (like single names in your list)
+        // Do a more flexible search
+        if (empty($allReports) && !empty($perpetratorName) && !str_contains($perpetratorName, ' ')) {
+            $looseReports = $reportCollection->find([
+                'perpetratorName' => new \MongoDB\BSON\Regex($perpetratorName, 'i')
+            ])->toArray();
+            
+            foreach ($looseReports as $report) {
+                $allReports[(string)$report->_id] = $report;
+            }
+        }
+        
+        // Format the reports for display
+        $formattedReports = [];
+        $reporterCache = [];
+        
+        foreach ($allReports as $report) {
+            $reporterId = isset($report->reportedBy) ? (string)$report->reportedBy : null;
+            $reporterName = 'Unknown';
+            
+            if ($reporterId) {
+                if (isset($reporterCache[$reporterId])) {
+                    $reporterName = $reporterCache[$reporterId];
+                } else {
+                    try {
+                        $reporter = $userCollection->findOne(['_id' => new \MongoDB\BSON\ObjectId($reporterId)]);
+                        if ($reporter) {
+                            $reporterName = $reporter->fullname ?? 'Unknown';
+                            $reporterCache[$reporterId] = $reporterName;
+                        } else {
+                            $reporterName = $report->reporterFullName ?? 'Unknown';
+                        }
+                    } catch (\Exception $e) {
+                        $reporterName = $report->reporterFullName ?? 'Unknown';
+                    }
+                }
             } else {
                 $reporterName = $report->reporterFullName ?? 'Unknown';
             }
             
+            // Handle date formats
             $reportDate = null;
             if (isset($report->reportDate)) {
                 if ($report->reportDate instanceof \MongoDB\BSON\UTCDateTime) {
                     $reportDate = $report->reportDate->toDateTime();
                 } else {
-                    $reportDate = new \DateTime($report->reportDate);
+                    try {
+                        $reportDate = new \DateTime($report->reportDate);
+                    } catch (\Exception $e) {
+                        $reportDate = new \DateTime();
+                    }
                 }
             } else {
                 $reportDate = new \DateTime();
@@ -242,12 +375,13 @@ class ListController extends Controller
             
             $formattedReports[] = [
                 '_id' => (string)$report->_id,
-                'reportDate' => $reportDate,
+                'reportDate' => $reportDate->format('Y-m-d H:i:s'),
                 'reporterFullName' => $reporterName,
                 'status' => $report->status ?? 'For Review',
                 'perpetratorName' => $report->perpetratorName ?? $perpetratorName,
                 'perpetratorRole' => $report->perpetratorRole ?? $perpetratorRole,
                 'perpetratorSchoolId' => $report->perpetratorSchoolId ?? $perpetratorIdNumber,
+                'description' => $report->description ?? '',
             ];
         }
         
@@ -258,20 +392,14 @@ class ListController extends Controller
             'count' => count($formattedReports)
         ];
         
-        // Set null values for variables that may be expected by the view
-        $reportData = null;
-        $reporterData = null;
-        
         return view('admin.list.view-perpertrators', compact(
             'firstName',
             'lastName',
             'email',
             'perpetratorDetails',
-            'reportData',
-            'reporterData'
-        ) + ['reports' => $formattedReports]);
+            'formattedReports'
+        ));
     }
-
     //show complainee page
     public function showAddComplainee()
     {

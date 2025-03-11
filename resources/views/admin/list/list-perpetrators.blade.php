@@ -87,7 +87,7 @@
                                             <th>ID Number</th>
                                             <th>Role</th>
                                             <th>Violation Count</th>
-                                            {{-- <th>View</th> --}}
+                                            <th>View</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -99,21 +99,20 @@
 
                                                 <td>{{ $perpetrator['role'] }}</td>
                                                 <td>{{ $perpetrator['count'] }}</td>
-                                                {{-- <td class="text-center">
-                                                    @if(!empty($perpetrator['idNumber']))
-                                                        <a href="{{ route('admin.list.view-perpertrators', ['id' => $perpetrator['idNumber']]) }}"
-                                                           class="btn btn-link btn-primary" data-bs-toggle="tooltip"
-                                                           title="View" data-original-title="View">
-                                                            <i class="fa fa-eye"></i>
-                                                        </a>
-                                                    @else
-                                                        <a href="{{ route('admin.list.view-perpertrators', ['id' => $perpetrator['reports'][0]]) }}"
-                                                           class="btn btn-link btn-primary" data-bs-toggle="tooltip"
-                                                           title="View" data-original-title="View">
-                                                            <i class="fa fa-eye"></i>
-                                                        </a>
-                                                    @endif
-                                                </td> --}}
+                                                <td class="text-center">
+                                                    <a href="{{ route('admin.perpetrator.discipline', [
+                                                        'identifier' => $perpetrator['idNumber'] && $perpetrator['idNumber'] != 'Not identified' 
+                                                            ? $perpetrator['idNumber'] 
+                                                            : urlencode($perpetrator['name'])
+                                                        ]) }}"
+                                                        class="btn btn-link btn-primary" 
+                                                        data-bs-toggle="tooltip"
+                                                        title="View" 
+                                                        data-original-title="View">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+                                        
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>

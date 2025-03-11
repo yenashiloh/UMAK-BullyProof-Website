@@ -49,7 +49,7 @@
                             <p>Incidents Report</p>
                         </a>
                     </li>
-                    <li class="nav-item  {{ in_array(Route::currentRouteName(), ['admin.list.list-perpetrators', 'admin.reports.byIdNumber', 'admin.list.view-report']) ? 'active' : '' }}">
+                    <li class="nav-item  {{ in_array(Route::currentRouteName(), ['admin.list.list-perpetrators', 'admin.reports.byIdNumber', 'admin.list.view-report', 'admin.perpetrator.discipline']) ? 'active' : '' }}">
                         <a href="{{ route('admin.list.list-perpetrators') }}">
                             <i class="fas fa-users"></i>
                             <p>Complainees</p>

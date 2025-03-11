@@ -418,7 +418,7 @@ class ReportsController extends Controller
     }
 
     //change status
-    public function changeStatus($id)
+    public function changeStatus($id, Request $request)
     {
         $client = new Client(env('MONGODB_URI'));
         $reportCollection = $client->bullyproof->reports;
@@ -430,19 +430,28 @@ class ReportsController extends Controller
             return redirect()->back()->with('error', 'Report not found.');
         }
     
-        $currentStatus = $report->status;
-        $newStatus = '';
-        $notificationMessage = '';
+        $newStatus = $request->input('status');
+        $validStatuses = [
+            'For Review', 'Under Investigation', 'Resolved', 
+            'Dismissed', 'Under Mediation', 'Reopened', 
+            'Awaiting Response', 'Withdrawn'
+        ];
     
-        if ($currentStatus == 'For Review') {
-            $newStatus = 'Under Investigation';
-            $notificationMessage = 'Your report is now under investigation.';
-        } elseif ($currentStatus == 'Under Investigation') {
-            $newStatus = 'Resolved';
-            $notificationMessage = 'Your report has been resolved.';
-        } else {
-            return redirect()->back()->with('error', 'Invalid status change.');
+        if (!in_array($newStatus, $validStatuses)) {
+            return redirect()->back()->with('error', 'Invalid status update.');
         }
+    
+        $statusMessages = [
+            'Under Investigation' => 'Your report is now under investigation.',
+            'Resolved' => 'Your report has been resolved.',
+            'Dismissed' => 'Your report has been dismissed.',
+            'Under Mediation' => 'Your report is under mediation.',
+            'Reopened' => 'Your report has been reopened.',
+            'Awaiting Response' => 'Awaiting response for your report.',
+            'Withdrawn' => 'Your report has been withdrawn.'
+        ];
+    
+        $notificationMessage = $statusMessages[$newStatus] ?? 'Your report status has been updated.';
     
         $reportCollection->updateOne(
             ['_id' => new \MongoDB\BSON\ObjectId($id)],
@@ -467,7 +476,7 @@ class ReportsController extends Controller
             return redirect()->back()->with('error', 'Status updated but failed to create notification.')->with('toastType', 'danger');
         }
     }
-
+    
     //direct print report
     public function directPrint($id)
     {
