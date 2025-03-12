@@ -50,6 +50,9 @@
                     <li class="nav-item">
                         <a href="{{route ('admin.list.list-perpetrators')}}">Complainees</a>
                     </li>
+                    <li class="nav-item">
+                        <a href="">Complainees</a>
+                    </li>
                     <li class="separator">
                         <i class="icon-arrow-right"></i>
                     </li>

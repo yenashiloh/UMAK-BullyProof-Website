@@ -38,6 +38,14 @@ class DashboardController extends Controller
         $toReviewCount = $reportsCollection->countDocuments(['status' => 'For Review'] + $dateFilter);
         $underInvestigationCount = $reportsCollection->countDocuments(['status' => 'Under Investigation'] + $dateFilter);
         $resolvedCount = $reportsCollection->countDocuments(['status' => 'Resolved'] + $dateFilter);
+        
+        // New status counts
+        $dismissedCount = $reportsCollection->countDocuments(['status' => 'Dismissed'] + $dateFilter);
+        $underMediationCount = $reportsCollection->countDocuments(['status' => 'Under Mediation'] + $dateFilter);
+        $reopenedCount = $reportsCollection->countDocuments(['status' => 'Reopened'] + $dateFilter);
+        $awaitingResponseCount = $reportsCollection->countDocuments(['status' => 'Awaiting Response'] + $dateFilter);
+        $withdrawnCount = $reportsCollection->countDocuments(['status' => 'Withdrawn'] + $dateFilter);
+        
         $waitingForConfirmationCount = $appointmentsCollection->countDocuments([
             'status' => 'Waiting for Confirmation',
             'created_at' => [
@@ -166,7 +174,12 @@ class DashboardController extends Controller
             'platformLabels',
             'startDate',
             'endDate',
-            'waitingForConfirmationCount'
+            'waitingForConfirmationCount',
+            'dismissedCount',
+            'underMediationCount',
+            'reopenedCount',
+            'awaitingResponseCount',
+            'withdrawnCount'
           
         ));
     }

@@ -13753,3 +13753,17 @@ ML prediction: label=1, probability=0.9399785119254883
 Detection reasons: keyword: 'bobo', keyword: 'pangit', keyword: 'walang kwenta', keyword: 'bully', keyword set: pangit, bobo, bully
 Final result: Cyberbullying Detected, probability: 87.69935535776466
 Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 87.7, "reasons": ["keyword: 'bobo'", "keyword: 'pangit'", "keyword: 'walang kwenta'", "keyword: 'bully'", "keyword set: pangit, bobo, bully"]}
+
+
+--- New Detection Run ---
+Received text from stdin: Hello pows
+Input text for detection: Hello pows
+Original text: Hello pows
+After basic cleaning: hello pows
+After preprocessing: hello pow
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.22630958205706536
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}

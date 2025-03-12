@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>List of Perpetrator</title>
+    <title>List of Complainees</title>
 
     @include('partials.admin-link')
     <style>

@@ -98,7 +98,12 @@
                                         <option value="all">All</option>
                                         <option value="For Review">For Review</option>
                                         <option value="Under Investigation">Under Investigation</option>
+                                        <option value="Under Mediation">Under Mediation</option>
+                                        <option value="Awaiting Response">Awaiting Response</option>
                                         <option value="Resolved">Resolved</option>
+                                        <option value="Dismissed">Dismissed</option>
+                                        <option value="Reopened">Reopened</option>
+      
                                     </select>
                                 </div>
                             </div>
@@ -124,8 +129,7 @@
                                                 <td>{{ ucwords(strtolower($report['perpetratorName'])) }}</td>                                                
                                                 <td>
                                                     <div class="dropdown">
-                                                        <span
-                                                        class="badge status-badge bg-{{ 
+                                                        <span class="badge status-badge bg-{{ 
                                                             $report['status'] == 'For Review' ? 'primary' : 
                                                             ($report['status'] == 'Under Investigation' ? 'warning text-white' : 
                                                             ($report['status'] == 'Resolved' ? 'success' : 
@@ -142,31 +146,45 @@
                                                                 <i class="fas fa-chevron-down ms-auto"></i>
                                                             @endif
                                                         </span>
+                                                
                                                         @if (!in_array($report['status'], ['Resolved', 'Withdrawn', 'Dismissed']))
                                                             <ul class="dropdown-menu w-100">
                                                                 <form action="{{ route('admin.reports.changeStatus', ['id' => $report['_id']]) }}" method="POST">
                                                                     @csrf
                                                                     @method('PUT')
+                                                
                                                                     @if ($report['status'] == 'For Review')
                                                                         <li><button class="dropdown-item" type="submit" name="status" value="Under Investigation">Under Investigation</button></li>
+                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Under Mediation">Mediation</button></li>
                                                                         <li><button class="dropdown-item" type="submit" name="status" value="Dismissed">Dismiss Report</button></li>
+                                                
                                                                     @elseif ($report['status'] == 'Under Investigation')
                                                                         <li><button class="dropdown-item" type="submit" name="status" value="Resolved">Resolved</button></li>
                                                                         <li><button class="dropdown-item" type="submit" name="status" value="Under Mediation">Mediation</button></li>
+                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Awaiting Response">Awaiting Response</button></li>
+                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Dismissed">Dismiss Report</button></li>
+                                                
                                                                     @elseif ($report['status'] == 'Under Mediation')
                                                                         <li><button class="dropdown-item" type="submit" name="status" value="Awaiting Response">Awaiting Response</button></li>
                                                                         <li><button class="dropdown-item" type="submit" name="status" value="Reopened">Reopen Report</button></li>
+                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Resolved">Resolved</button></li>
+                                                
                                                                     @elseif ($report['status'] == 'Awaiting Response')
                                                                         <li><button class="dropdown-item" type="submit" name="status" value="Resolved">Resolved</button></li>
                                                                         <li><button class="dropdown-item" type="submit" name="status" value="Withdrawn">Withdraw Report</button></li>
+                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Reopened">Reopen Report</button></li>
+                                                
                                                                     @elseif ($report['status'] == 'Reopened')
                                                                         <li><button class="dropdown-item" type="submit" name="status" value="Under Investigation">Investigation</button></li>
+                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Under Mediation">Mediation</button></li>
+                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Awaiting Response">Awaiting Response</button></li>
                                                                     @endif
                                                                 </form>
                                                             </ul>
                                                         @endif
                                                     </div>
                                                 </td>
+                                                
                                                 
 
                                                 <td>
@@ -236,23 +254,25 @@
             // Status filter change event
             $('#statusFilter').on('change', function() {
                 const selectedStatus = $(this).val();
-
-                // Custom filtering function
-                $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-                    if (selectedStatus === 'all') return true;
-
-                    // Extract status text from the badge span
-                    const statusCell = $(dataTable.cell(dataIndex, 4).node());
-                    const statusText = statusCell.find('span').text().trim();
-
-                    return statusText === selectedStatus;
-                });
+                
+                // Clear any existing custom filter
+                $.fn.dataTable.ext.search.pop();
+                
+                if (selectedStatus !== 'all') {
+                    // Custom filtering function
+                    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                        // Get the actual DOM element for the status cell
+                        const statusCell = $(dataTable.cell(dataIndex, 4).node());
+                        
+                        // Find the status text which is in the first span element within the badge
+                        const statusText = statusCell.find('.status-badge > span:first').text().trim();
+                        
+                        return statusText === selectedStatus;
+                    });
+                }
 
                 // Redraw the table
                 dataTable.draw();
-
-                // Clear the custom filter
-                $.fn.dataTable.ext.search.pop();
             });
 
             // Initially trigger the filter if a value is selected
@@ -297,37 +317,37 @@
 
         // Print report directly
         function printReportDirectly(id) {
-    var loadingDiv = document.createElement('div');
-    loadingDiv.id = 'printLoadingIndicator';
-    loadingDiv.innerHTML = '<div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; display: flex; justify-content: center; align-items: center;"><span style="font-size: 18px;"><i class="fas fa-spinner fa-spin"></i> Preparing print...</span></div>';
-    document.body.appendChild(loadingDiv);
-    
-    var iframe = document.getElementById('printFrame');
-    
-    $.ajax({
-        url: "{{ route('admin.reports.get-print-content') }}",
-        type: "POST",
-        data: {
-            id: id,
-            _token: "{{ csrf_token() }}"
-        },
-        success: function(response) {
-            iframe.srcdoc = response;
-
-            iframe.onload = function() {
-                iframe.contentWindow.print();
-                
-                setTimeout(function() {
-                    document.body.removeChild(loadingDiv);
-                }, 1000); // Remove the loading indicator after 1 second
-            };
-        },
-        error: function(xhr) {
-            console.error("Error loading print content:", xhr.responseText);
-            document.body.removeChild(loadingDiv);
+            var loadingDiv = document.createElement('div');
+            loadingDiv.id = 'printLoadingIndicator';
+            loadingDiv.innerHTML = '<div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; display: flex; justify-content: center; align-items: center;"><span style="font-size: 18px;"><i class="fas fa-spinner fa-spin"></i> Preparing print...</span></div>';
+            document.body.appendChild(loadingDiv);
             
-            alert("There was an error preparing the print. Please try again.");
+            var iframe = document.getElementById('printFrame');
+            
+            $.ajax({
+                url: "{{ route('admin.reports.get-print-content') }}",
+                type: "POST",
+                data: {
+                    id: id,
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    iframe.srcdoc = response;
+
+                    iframe.onload = function() {
+                        iframe.contentWindow.print();
+                        
+                        setTimeout(function() {
+                            document.body.removeChild(loadingDiv);
+                        }, 1000); // Remove the loading indicator after 1 second
+                    };
+                },
+                error: function(xhr) {
+                    console.error("Error loading print content:", xhr.responseText);
+                    document.body.removeChild(loadingDiv);
+                    
+                    alert("There was an error preparing the print. Please try again.");
+                }
+            });
         }
-    });
-}
     </script>
