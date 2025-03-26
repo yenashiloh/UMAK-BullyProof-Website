@@ -68,7 +68,7 @@
 
             
             <div class="row">
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-3">
                     <div class="card card-stats card-round">
                         <div class="card-body">
                             <div class="row align-items-center">
@@ -79,7 +79,7 @@
                                 </div>
                                 <div class="col col-stats ms-3 ms-sm-0">
                                     <div class="numbers">
-                                        <p class="card-category">Total Users</p>
+                                        <p class="card-category">Users</p>
                                         <h4 class="card-title">{{ $totalUsers }}</h4>
                                     </div>
                                 </div>
@@ -88,19 +88,19 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-3">
                     <div class="card card-stats card-round">
                         <div class="card-body">
                             <div class="row align-items-center">
                                 <div class="col-icon">
-                                    <div class="icon-big text-center icon-info bubble-shadow-small">
+                                    <div class="icon-big text-center  icon-primary bubble-shadow-small">
                                         <i class="fas fa-clipboard-list"></i>
                                     </div>
                                 </div>
                                 <div class="col col-stats ms-3 ms-sm-0">
                                     <div class="numbers d-flex align-items-center">
                                         <div>
-                                            <p class="card-category">Total Incidents Reported</p>
+                                            <p class="card-category">Incidents Reported</p>
                                             <h4 class="card-title">{{ $totalReports }}</h4>
                                         </div>
                                     </div>
@@ -111,18 +111,18 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-3">
                     <div class="card card-stats card-round">
                         <div class="card-body">
                             <div class="row align-items-center">
                                 <div class="col-icon">
-                                    <div class="icon-big text-center icon-warning bubble-shadow-small">
+                                    <div class="icon-big text-center  icon-primary bubble-shadow-small">
                                         <i class="fas fa-file-alt"></i>
                                     </div>
                                 </div>
                                 <div class="col col-stats ms-3 ms-sm-0">
                                     <div class="numbers">
-                                        <p class="card-category">Total Review Report</p>
+                                        <p class="card-category">For Review</p>
                                         <h4 class="card-title">{{ $toReviewCount }}</h4>
                                     </div>
                                 </div>
@@ -131,18 +131,18 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-3">
                     <div class="card card-stats card-round">
                         <div class="card-body">
                             <div class="row align-items-center">
                                 <div class="col-icon">
-                                    <div class="icon-big text-center icon-secondary bubble-shadow-small">
+                                    <div class="icon-big text-center  icon-primary bubble-shadow-small">
                                         <i class="fas fa fa-search"></i>
                                     </div>
                                 </div>
                                 <div class="col col-stats ms-3 ms-sm-0">
                                     <div class="numbers">
-                                        <p class="card-category">Total Under Investigation</p>
+                                        <p class="card-category">Under Investigation</p>
                                         <h4 class="card-title">{{ $underInvestigationCount }}</h4>
                                     </div>
                                 </div>
@@ -151,29 +151,108 @@
                     </div>
                 </div>
 
-                
-
-                {{-- <div class="col-12 col-md-4">
+                <div class="col-12 col-md-3">
                 <div class="card card-stats card-round">
                   <div class="card-body">
                     <div class="row align-items-center">
                       <div class="col-icon">
-                        <div class="icon-big text-center icon-danger bubble-shadow-small">
+                        <div class="icon-big text-center  icon-primary bubble-shadow-small">
                           <i class="fas fa-exclamation-circle"></i>
                         </div>
                       </div>
                       <div class="col col-stats ms-3 ms-sm-0">
                         <div class="numbers">
-                          <p class="card-category">Total Unresolved Incidents</p>
-                          <h4 class="card-title"></h4>
+                          <p class="card-category">Awaiting Response</p>
+                          <h4 class="card-title">{{ $awaitingResponseCount }}</h4>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div> --}}
+              </div>
 
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-3">
+                    <div class="card card-stats card-round">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-icon">
+                                    <div class="icon-big text-center  icon-primary bubble-shadow-small">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                </div>
+                                <div class="col col-stats ms-3 ms-sm-0">
+                                    <div class="numbers">
+                                        <p class="card-category">Resolved</p>
+                                        <h4 class="card-title">{{ $resolvedCount }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-3">
+                    <div class="card card-stats card-round">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-icon">
+                                    <div class="icon-big text-center icon-primary bubble-shadow-small">
+                                        <i class="fas fa-handshake"></i>
+                                    </div>
+                                </div>
+                                <div class="col col-stats ms-3 ms-sm-0">
+                                    <div class="numbers">
+                                        <p class="card-category">Under Mediation</p>
+                                        <h4 class="card-title">{{ $underMediationCount }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-12 col-md-3">
+                    <div class="card card-stats card-round">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-icon">
+                                    <div class="icon-big text-center icon-primary bubble-shadow-small">
+                                        <i class="fas fa-folder-open"></i>
+                                    </div>
+                                </div>
+                                <div class="col col-stats ms-3 ms-sm-0">
+                                    <div class="numbers">
+                                        <p class="card-category">Reopened</p>
+                                        <h4 class="card-title">{{ $reopenedCount }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-3">
+                    <div class="card card-stats card-round">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-icon">
+                                    <div class="icon-big text-center icon-danger bubble-shadow-small">
+                                        <i class="fas fa-ban"></i>
+                                    </div>
+                                </div>
+                                <div class="col col-stats ms-3 ms-sm-0">
+                                    <div class="numbers">
+                                        <p class="card-category">Dismissed</p>
+                                        <h4 class="card-title">{{ $dismissedCount }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                {{-- <div class="col-12 col-md-3">
                     <div class="card card-stats card-round">
                         <div class="card-body">
                             <div class="row align-items-center">
@@ -184,8 +263,28 @@
                                 </div>
                                 <div class="col col-stats ms-3 ms-sm-0">
                                     <div class="numbers">
-                                        <p class="card-category">Total Resolved Incidents</p>
-                                        <h4 class="card-title">{{ $resolvedCount }}</h4>
+                                        <p class="card-category">Awaiting Response</p>
+                                        <h4 class="card-title">{{ $awaitingResponseCount }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> --}}
+
+                <div class="col-12 col-md-3">
+                    <div class="card card-stats card-round">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-icon">
+                                    <div class="icon-big text-center icon-danger bubble-shadow-small">
+                                        <i class="fas fa-times-circle"></i>
+                                    </div>
+                                </div>
+                                <div class="col col-stats ms-3 ms-sm-0">
+                                    <div class="numbers">
+                                        <p class="card-category">Withdrawn</p>
+                                        <h4 class="card-title">{{ $withdrawnCount }}</h4>
                                     </div>
                                 </div>
                             </div>
@@ -193,7 +292,8 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-md-4">
+
+                {{-- <div class="col-12 col-md-3">
                     <div class="card card-stats card-round">
                         <div class="card-body">
                             <div class="row align-items-center">
@@ -206,20 +306,21 @@
                                 </div>
                                 <div class="col col-stats ms-3 ms-sm-0">
                                     <div class="numbers">
-                                        <p class="card-category">Waiting for Confirmation</p>
+                                        <p class="card-category">Waiting Confirmation</p>
                                         <h4 class="card-title">{{ $waitingForConfirmationCount }}</h4>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
 
             <input type="hidden" id="reportMonths" value="{{ json_encode($reportMonthData) }}">
             <input type="hidden" id="reportCounts" value="{{ json_encode(array_values($reportCounts)) }}">
             <input type="hidden" id="platformLabels" value="{{ json_encode($platformLabels) }}">
             <input type="hidden" id="platformData" value="{{ json_encode($platformData) }}">
+            <input type="hidden" id="cyberbullyingData" value="{{ json_encode($cyberbullyingTypesData) }}">
 
             <div class="col-md-12">
                 <div class="card">
@@ -229,6 +330,19 @@
                     <div class="card-body">
                         <div class="chart-container">
                             <canvas id="lineChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Types of Cyberbullying</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="height: 400px;">
+                            <canvas id="cyberbullyingPieChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -252,7 +366,9 @@
     <!-- End Custom template -->
     </div>
     @include('partials.admin-footer')
+    
     <script src="../../../../assets/js/dashboard.js"></script>
+    
 </body>
 
 </html>

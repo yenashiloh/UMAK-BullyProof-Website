@@ -176,7 +176,8 @@ class ReportsController extends Controller
             'fullname' => $reporter->fullname ?? '',
             'idnumber' => $reporter->idnumber ?? '',
             'type' => $reporter->type ?? '',
-            'position' => $reporter->position ?? ''
+            'position' => $reporter->position ?? '',
+            
         ];
 
         // Support types
@@ -204,8 +205,6 @@ class ReportsController extends Controller
             'describeActions' => $report->describeActions ?? 'N/A',
 
             'incidentEvidence' => $report->incidentEvidence,
-
-
 
             'analysisResult' => $analysisResult['analysisResult'],
             'analysisProbability' => $analysisResult['analysisProbability'],
@@ -247,6 +246,8 @@ class ReportsController extends Controller
         if (!empty($report->perpetratorName)) {
             $perpetratorName = trim(strtoupper($report->perpetratorName));
             $studentsCollection = $client->bullyproof->students;
+            
+            // Remove the status filter to get all students
             $allStudents = $studentsCollection->find()->toArray();
             
             foreach ($allStudents as $student) {
@@ -266,6 +267,8 @@ class ReportsController extends Controller
                     
                     if (empty($perpFirstNames) || $this->hasAnyNamePartMatch($perpFirstNames, $studentName)) {
                         $perpetratorSchoolId = $student->schoolId;
+                        // You can add a way to capture the status here if needed
+                        $perpetratorStatus = $student->status ?? 'No Status';
                         break;
                     }
                 }
@@ -278,6 +281,8 @@ class ReportsController extends Controller
                     
                     if (count($commonWords) >= 2) {
                         $perpetratorSchoolId = $student->schoolId;
+                        // You can add a way to capture the status here if needed
+                        $perpetratorStatus = $student->status ?? 'No Status';
                         break;
                     }
                 }
@@ -285,6 +290,7 @@ class ReportsController extends Controller
         }
         
         $reportData['perpetratorSchoolId'] = $perpetratorSchoolId;
+        $reportData['perpetratorStatus'] = $perpetratorStatus ?? 'No Status';
 
         return view('admin.reports.view', compact(
             'firstName',
@@ -309,24 +315,18 @@ class ReportsController extends Controller
     public function updateReport(Request $request)
     {
         $validated = $request->validate([
-            'id_number' => 'required|string',
             'remarks' => 'nullable|string',
             'report_id' => 'required|string',
         ]);
     
         try {
             $reportId = $request->input('report_id');
-            $idNumber = $request->input('id_number');
             $remarks = $request->input('remarks', ''); 
     
             $client = new Client(env('MONGODB_URI'));
             $reportCollection = $client->bullyproof->reports;
     
-            $updateData = ['idNumber' => $idNumber];
-    
-            if (!empty($remarks)) {
-                $updateData['remarks'] = $remarks;
-            }
+            $updateData = ['remarks' => $remarks];
     
             $updateResult = $reportCollection->updateOne(
                 ['_id' => new \MongoDB\BSON\ObjectId($reportId)],
@@ -334,12 +334,24 @@ class ReportsController extends Controller
             );
     
             if ($updateResult->getModifiedCount() > 0) {
-                return response()->json(['message' => 'Saved Successfully!', 'status' => 'success'], 200);
+                return response()->json([
+                    'success' => true, 
+                    'message' => 'Remarks saved successfully!',
+                    'status' => 'success'
+                ], 200);
             } else {
-                return response()->json(['message' => 'No changes were made to the ID Number or remarks.', 'status' => 'error'], 400);
+                return response()->json([
+                    'success' => false, 
+                    'message' => 'No changes were made.',
+                    'status' => 'error'
+                ], 400);
             }
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to save ID Number and remarks: ' . $e->getMessage(), 'status' => 'error'], 500);
+            return response()->json([
+                'success' => false, 
+                'message' => 'Failed to save remarks: ' . $e->getMessage(),
+                'status' => 'error'
+            ], 500);
         }
     }
     
@@ -535,7 +547,6 @@ class ReportsController extends Controller
             'reportDate' => $report->reportDate->toDateTime()->format('Y-m-d H:i:s'),
             'victimRelationship' => $displayedVictimRelationship,
             'idNumber' => $report->idNumber ?? '',  
-            'remarks' => $report->remarks ?? '',  
             'reporterFullName' => $reporter->fullname,
             'reporterEmail' => $reporter->email,
             'hasReportedBefore' => $report->hasReportedBefore ?? 'N/A',
@@ -558,6 +569,7 @@ class ReportsController extends Controller
             'departmentCollege' => $report->departmentCollege,
             'witnessChoice' => $report->witnessChoice,
             'contactChoice' => $report->contactChoice,
+            'remarks' => property_exists($report, 'remarks') ? $report->remarks : ''
         ];
 
         if (!empty($reportData['otherPlatformUsed'])) {

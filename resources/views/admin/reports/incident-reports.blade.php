@@ -184,9 +184,6 @@
                                                         @endif
                                                     </div>
                                                 </td>
-                                                
-                                                
-
                                                 <td>
                                                     <div class="form-button-action d-flex gap-2">
                                                         <a href="{{ route('admin.reports.view', ['id' => $report['_id']]) }}"

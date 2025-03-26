@@ -140,7 +140,7 @@
                                             </div>
                                            
                                             <div class="col-md-6 mb-2">
-                                                <label class="mb-2 mt-2"><strong>ID Number:</strong></label>
+                                                <label class="mb-2 mt-2"><strong>Student Number:</strong></label>
                                                 <input type="text" class="form-control"
                                                     value="{{ $reporterData['idnumber'] }}" disabled>
                                             </div>
@@ -178,6 +178,11 @@
                                             <label class="mb-2 mt-2"><strong>ID Number:</strong></label>
                                             <input type="text" class="form-control"
                                                 value="{{ ucfirst($reportData['perpetratorSchoolId']) }}" disabled>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <label class="mb-2 mt-2"><strong>Status:</strong></label>
+                                            <input type="text" class="form-control"
+                                                value="{{ ucfirst($reportData['perpetratorStatus']) }}" disabled>
                                         </div>
                                         <div class="col-md-6 mb-2">
                                             <label class="mb-2 mt-2"><strong>Role at the University:</strong></label>
@@ -521,7 +526,36 @@
                                         </div>
                                     </div>
                                     @endif
-                                </div>
+
+                                    <form id="remarksForm" method="POST" action="{{ route('admin.updateReport') }}">
+                                        @csrf
+                                        <input type="hidden" name="report_id" value="{{ $reportData['_id'] }}">
+                                    
+                                        <div class="row">
+                                            <div class="col-md-12 form-group">
+                                                <label for="remarks" class="form-label">Remarks <span class="text-danger">*</span></label>
+                                                <textarea 
+                                                    class="form-control" 
+                                                    id="remarks" 
+                                                    name="remarks" 
+                                                    rows="5" 
+                                                    {{ $reportData['remarks'] ? 'disabled' : '' }}
+                                                    @if(!$reportData['remarks']) placeholder="Enter remarks" @endif
+                                                >{{ trim($reportData['remarks'] ?? '') }}</textarea>
+                                            </div>
+                                            
+                                            <div class="col-md-12 text-start mt-2">
+                                                <button 
+                                                    type="submit" 
+                                                    class="btn btn-secondary" 
+                                                    id="submitBtn" 
+                                                    {{ $reportData['remarks'] ? 'disabled' : '' }}
+                                                >
+                                                    Submit
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -539,121 +573,64 @@
     <script src="../../../../assets/js/report.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script>
-        // Function to show custom toast notifications
-        function showToast(message, type) {
-            const toastElement = document.createElement('div');
-            toastElement.classList.add('toast', 'align-items-center', 'text-white', 'bg-' + type, 'border-0');
-            toastElement.setAttribute('role', 'alert');
-            toastElement.setAttribute('aria-live', 'assertive');
-            toastElement.setAttribute('aria-atomic', 'true');
+      document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("remarksForm").addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent normal form submission
 
-            toastElement.innerHTML = `
+            let form = this;
+            let formData = new FormData(form);
+            let submitBtn = document.getElementById("submitBtn");
+
+            // Disable button to prevent multiple submissions
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Submitting...";
+
+            fetch(form.action, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value,
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Submit";
+
+                if (data.status === "success") { //  Ensure this matches the backend response
+                    showToast("success", data.message);
+                    form.querySelector("#remarks").setAttribute("disabled", "true");
+                    submitBtn.setAttribute("disabled", "true");
+                } else {
+                    showToast("danger", data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Submit";
+                showToast("danger", "Something went wrong!");
+            });
+        });
+
+        function showToast(type, message) {
+            const toast = document.createElement("div");
+            toast.className = `toast align-items-center text-white bg-${type} border-0 position-fixed bottom-0 end-0 m-3`;
+            toast.innerHTML = `
                 <div class="d-flex">
-                    <div class="toast-body">
-                        ${message}
-                    </div>
+                    <div class="toast-body">${message}</div>
                     <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
             `;
 
-            const toastContainer = document.getElementById('toastContainer');
-            toastContainer.appendChild(toastElement);
+            document.body.appendChild(toast);
+            let bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
 
-            const toast = new bootstrap.Toast(toastElement);
-            toast.show();
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
         }
+    });
 
-        $(document).ready(function() {
-            $('#updateReportForm').on('submit', function(e) {
-                e.preventDefault(); // Prevent default form submission
-
-                // Change the button text to "Saving..." and disable it
-                $('#saveButton').text('Saving...').prop('disabled', true);
-
-                // Send form data via AJAX
-                $.ajax({
-                    url: $(this).attr('action'),
-                    method: 'POST',
-                    data: $(this).serialize(),
-                    success: function(response) {
-                        // Show toast with the response message and type
-                        showToast(response.message, response.status);
-
-                        // Reset the button text to "Save"
-                        $('#saveButton').text('Save').prop('disabled', false);
-                    },
-                    error: function(xhr) {
-                        // Show toast with the error message
-                        var errorMessage = xhr.responseJSON.message ||
-                            'An error occurred while saving the report.';
-                        showToast(errorMessage, 'error');
-
-                        // Reset the button text to "Save"
-                        $('#saveButton').text('Save').prop('disabled', false);
-                    }
-                });
-            });
-        });
-
-        $(document).ready(function() {
-            const inputField = $('#id_number');
-            const suggestionsContainer = $('#idNumberSuggestions');
-
-            inputField.on('input', function() {
-                const searchTerm = $(this).val();
-
-                if (searchTerm.length >= 3) { // Trigger after 3 characters
-                    $.ajax({
-                        url: '{{ route('search.idNumber') }}',
-                        method: 'GET',
-                        data: {
-                            term: searchTerm
-                        },
-                        success: function(data) {
-                            // Remove duplicates using Set
-                            const uniqueData = [...new Set(data)];
-
-                            // Clear and reposition suggestions
-                            suggestionsContainer.empty().hide();
-
-                            if (uniqueData.length > 0) {
-                                // Match width of input field
-                                suggestionsContainer.css({
-                                    width: inputField.outerWidth() + 'px',
-                                    top: inputField.outerHeight() + 'px',
-                                    left: inputField.position().left + 'px',
-                                    position: 'absolute'
-                                });
-
-                                // Append suggestions
-                                uniqueData.forEach(function(idNumber) {
-                                    suggestionsContainer.append(`
-                                    <a href="#" class="list-group-item list-group-item-action">${idNumber}</a>
-                                `);
-                                });
-
-                                // Show the dropdown
-                                suggestionsContainer.show();
-
-                                // Add click event to suggestions
-                                suggestionsContainer.find('a').on('click', function(e) {
-                                    e.preventDefault();
-                                    inputField.val($(this).text());
-                                    suggestionsContainer.empty().hide();
-                                });
-                            }
-                        }
-                    });
-                } else {
-                    suggestionsContainer.empty().hide();
-                }
-            });
-
-            // Hide suggestions if the user clicks outside the input or suggestions
-            $(document).on('click', function(e) {
-                if (!$(e.target).closest('#id_number, #idNumberSuggestions').length) {
-                    suggestionsContainer.empty().hide();
-                }
-            });
-        });
     </script>

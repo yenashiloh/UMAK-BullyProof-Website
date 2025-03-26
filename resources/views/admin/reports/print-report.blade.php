@@ -239,6 +239,13 @@
         @endphp
     </div>
 
+    @if(isset($reportData['remarks']) && !empty($reportData['remarks']))
+        <div class="form-field">
+            <span class="field-label">Remarks: </span>
+            <span class="field-value">{{ $reportData['remarks'] }}</span>
+        </div>
+    @endif
+
     <br>
     <div class="section-title">Actions & Support Details</div>
     

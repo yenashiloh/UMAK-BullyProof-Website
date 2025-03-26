@@ -248,19 +248,19 @@ $(document).ready(function() {
     
         const respondentEmail = document.getElementById('respondentEmail');
         if (!validateEmail(respondentEmail.value)) {
-            showError(respondentEmail, 'Please enter a valid email address');
+            showError(respondentEmail, 'Please enter a valid UMAK email address (must end with @umak.edu.ph)');
             isValid = false;
         }
     
         const complaineeDepartmentEmail = document.getElementById('complaineeDepartmentEmail');
         if (!validateEmail(complaineeDepartmentEmail.value)) {
-            showError(complaineeDepartmentEmail, 'Please enter a valid email address');
+            showError(complaineeDepartmentEmail, 'Please enter a valid UMAK email address (must end with @umak.edu.ph');
             isValid = false;
         }
 
         const complainantDepartmentEmail = document.getElementById('complainantDepartmentEmail');
         if (!validateEmail(complainantDepartmentEmail.value)) {
-            showError(complainantDepartmentEmail, 'Please enter a valid email address');
+            showError(complainantDepartmentEmail, 'Please enter a valid UMAK email address (must end with @umak.edu.ph');
             isValid = false;
         }
 
@@ -272,7 +272,7 @@ $(document).ready(function() {
     
         const complainantEmail = document.getElementById('complainantEmail');
         if (!validateEmail(complainantEmail.value)) {
-            showError(complainantEmail, 'Please enter a valid email address');
+            showError(complainantEmail, 'Please enter a valid UMAK email address (must end with @umak.edu.ph');
             isValid = false;
         }
     
@@ -292,8 +292,17 @@ $(document).ready(function() {
     }
     
     function validateEmail(email) {
-        const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        return re.test(String(email).toLowerCase());
+        // First, check if it's a valid email format
+        const generalEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        
+        // Then, specifically check for @umak.edu.ph
+        const umakEmailRegex = /^[a-zA-Z0-9._%+-]+@umak\.edu\.ph$/;
+        
+        // Convert to string, trim, and lowercase for consistent checking
+        const trimmedEmail = String(email).trim().toLowerCase();
+        
+        // Return true only if both conditions are met
+        return generalEmailRegex.test(trimmedEmail) && umakEmailRegex.test(trimmedEmail);
     }
     
     function showError(input, message) {

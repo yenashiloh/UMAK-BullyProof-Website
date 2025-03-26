@@ -13767,3 +13767,367 @@ ML prediction: label=0, probability=0.22630958205706536
 Detection reasons: ML model only
 Final result: No Cyberbullying Detected, probability: 0
 Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
