@@ -80,54 +80,6 @@ class ReportsController extends Controller
         ));
     }
     
-    //show reports in guidance side
-    public function showReportsGuidance()
-    {
-        $client = new Client(env('MONGODB_URI'));
-        $userCollection = $client->bullyproof->users;
-        $adminCollection = $client->bullyproof->admins;
-        $reportCollection = $client->bullyproof->reports;
-    
-        $adminId = session('admin_id');
-        $admin = $adminCollection->findOne(['_id' => new \MongoDB\BSON\ObjectId($adminId)]);
-        $firstName = $admin->first_name ?? '';
-        $lastName = $admin->last_name ?? '';
-        $email = $admin->email ?? '';
-    
-        $reports = $reportCollection->aggregate([
-            [
-                '$lookup' => [
-                    'from' => 'users',
-                    'localField' => 'reportedBy',
-                    'foreignField' => '_id',
-                    'as' => 'reporter'
-                ]
-            ],
-            [
-                '$unwind' => '$reporter'
-            ],
-            [
-                '$project' => [
-                    'reportDate' => 1,
-                    'victimName' => 1,
-                    'gradeYearLevel' => 1,
-                    'reporterFullName' => '$reporter.fullname',
-                    'reporterEmail' => '$reporter.email'
-                ]
-            ],
-            [
-                '$sort' => ['reportDate' => -1]
-            ]
-        ])->toArray();
-    
-        return view('guidance.reports.incident-reports', compact(
-            'firstName', 
-            'lastName', 
-            'email',
-            'reports'
-        )); 
-    }
-
     //view report incident
     public function viewReportDiscipline($id) 
     {
@@ -373,60 +325,6 @@ class ReportsController extends Controller
         }
 
         return response()->json($idNumbers);
-    }
-
-    //view report for guidance
-    public function viewReportGuidance($id)
-    {
-        $client = new Client(env('MONGODB_URI'));
-        $reportCollection = $client->bullyproof->reports;
-        $userCollection = $client->bullyproof->users;
-        $adminCollection = $client->bullyproof->admins;
-
-        $adminId = session('admin_id');
-        $report = $reportCollection->findOne(['_id' => new \MongoDB\BSON\ObjectId($id)]);
-        $admin = $adminCollection->findOne(['_id' => new \MongoDB\BSON\ObjectId($adminId)]);
-        $firstName = $admin->first_name ?? '';
-        $lastName = $admin->last_name ?? '';
-        $email = $admin->email ?? '';
-
-    
-        $reporter = $userCollection->findOne(['_id' => $report->reportedBy]);
-
-        $reportData = [
-            'reportDate' => $report->reportDate->toDateTime()->format('Y-m-d H:i:s'),
-            'victimRelationship' => $report->victimRelationship,
-            'otherVictimRelationship' => $otherVictimRelationship, 
-            'victimName' => $report->victimName,
-            'victimType' => $report->victimType, 
-            'gradeYearLevel' => $report->gradeYearLevel,
-            'reporterFullName' => $reporter->fullname,
-            'reporterEmail' => $reporter->email,
-            'hasReportedBefore' => $report->hasReportedBefore ?? 'N/A', 
-            'departmentCollege' => $report->departmentCollege, 
-            'reportedTo' => $report->reportedTo ?? 'N/A', 
-            'platformUsed' => $report->platformUsed instanceof \MongoDB\Model\BSONArray ? $report->platformUsed->getArrayCopy() : [],
-            'otherPlatformUsed' => $report->otherPlatformUsed, 
-            'hasWitness' => $hasWitness, 
-            'witnessInfo' => $witnessInfo, 
-            'incidentDetails' => $report->incidentDetails ?? 'N/A',
-            'perpetratorName' => $report->perpetratorName,
-            'perpetratorRole' => $report->perpetratorRole,
-            'perpetratorGradeYearLevel' => $report->perpetratorGradeYearLevel,
-            'supportTypes' => $supportTypes,
-            'otherSupportTypes' => $otherSupportTypes, 
-            'actionsTaken' => $report->actionsTaken ?? 'N/A',
-            'describeActions' => $report->describeActions ?? 'N/A',
-            'incidentEvidence' => $report->incidentEvidence instanceof \MongoDB\Model\BSONArray ? $report->incidentEvidence->getArrayCopy() : [],
-
-
-        ];
- 
-        return view('guidance.reports.view', compact(
-            'firstName', 
-            'lastName', 
-            'email',
-            'reportData'));
     }
 
     //change status

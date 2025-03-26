@@ -104,27 +104,6 @@ class UserController extends Controller
             'users')); 
     }
 
-    public function showCounselling()
-    {
-        $client = new Client(env('MONGODB_URI'));
-        $userCollection = $client->bullyproof->users;
-        $adminCollection = $client->bullyproof->admins;
-
-        $adminId = session('admin_id');
-        $admin = $adminCollection->findOne(['_id' => new \MongoDB\BSON\ObjectId($adminId)]);
-
-        $firstName = $admin->first_name ?? '';
-        $lastName = $admin->last_name ?? '';
-        $email = $admin->email ?? '';
-
-        $users = $userCollection->find()->toArray();
-        return view ('guidance.counselling.counselling', compact(
-            'firstName', 
-            'lastName', 
-            'email',
-            'users')); 
-    }
-
     //change status of user disabled acc and active acc
     public function changeStatus($id, Request $request)
     {
