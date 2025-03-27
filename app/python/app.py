@@ -16,8 +16,8 @@ from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 import nltk
 
-nltk.download('wordnet')
-nltk.download('stopwords')
+nltk.download('wordnet', quiet=True)
+nltk.download('stopwords', quiet=True)
 
 # Logging setup
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -38,6 +38,15 @@ THREAT_PATTERNS = [
     r"\bmagpakamatay ka na\b", r"\bwala kang kwenta\b", r"\bhindi ka mahalaga\b"
 ]
 
+# List of common positive phrases that should NOT be flagged as bullying
+POSITIVE_PHRASES = [
+    "ang cute mo", "you're beautiful", "you're nice", "you're amazing",
+    "you're kind", "you're smart", "you're wonderful", "ang bait mo",
+    "you're the best", "you're awesome", "you're a good person", "ganda",
+    "bait", "maganda", "friendly", "kamukha", "ligtas", "gwapo",
+    "pogi"
+]
+
 lemmatizer = WordNetLemmatizer()
 stop_words = set(stopwords.words('english'))
 
@@ -47,6 +56,12 @@ def preprocess_text(text):
 
     text = text.encode('utf-8', errors='replace').decode('utf-8')
     text = text.lower()
+
+    # 🚨 Check if the text contains any positive phrases
+    if any(phrase in text for phrase in POSITIVE_PHRASES):
+        log_debug(f"Positive phrase detected and bypassed: {text}")
+        return "NON_BULLYING"
+
     text = re.sub(r'https?://\S+|www\.\S+', '', text)  # Remove links
     text = re.sub(r'[^\w\s]', ' ', text)  # Remove special characters
     text = ' '.join(lemmatizer.lemmatize(word) for word in text.split() if word not in stop_words)  # Lemmatization
@@ -108,6 +123,12 @@ class CyberbullyingDetector:
                 "error": None,
                 "result": "Cyberbullying Detected",
                 "probability": 100  # Force 100% certainty
+            }
+        elif processed_text == "NON_BULLYING":
+            return {
+                "error": None,
+                "result": "No Cyberbullying Detected",
+                "probability": 100  # Force 0% certainty
             }
 
         prediction = self.pipeline.predict([processed_text])[0]
