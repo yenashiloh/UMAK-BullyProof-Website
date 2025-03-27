@@ -14173,3 +14173,189 @@ ML prediction: label=0, probability=0.40096293831776547
 Detection reasons: ML model only
 Final result: No Cyberbullying Detected, probability: 0
 Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: GLOBE VoWiFi
+GLOBE
+Eull Name
+Please fill the details and create account
+Register As
+.ll ll
+Student
+Create Account
+We've sent a verification link to your email
+address. Please verify your email to complete
+the registration process.
+Verify Your Email
+Password Requirements:
+! One number
+At least 8 characters
+One uppercase letter
+One lowercase letter
+65) 4:50
+Continue to Login
+One special character (!@#$&*~)
+Input text for detection: GLOBE VoWiFi
+GLOBE
+Eull Name
+Please fill the details and create account
+Register As
+.ll ll
+Student
+Create Account
+We've sent a verification link to your email
+address. Please verify your email to complete
+the registration process.
+Verify Your Email
+Password Requirements:
+! One number
+At least 8 characters
+One uppercase letter
+One lowercase letter
+65) 4:50
+Continue to Login
+One special character (!@#$&*~)
+Original text: GLOBE VoWiFi
+GLOBE
+Eull Name
+Please fill the details and create account
+Register As
+.ll ll
+Student
+Create Account
+We've sent a verification link to your email
+address. Please verify your email to complete
+the registration process.
+Verify Your Email
+Password Requirements:
+! One number
+At least 8 characters
+One uppercase letter
+One lowercase letter
+65) 4:50
+Continue to Login
+One special character (!@#$&*~)
+After basic cleaning: globe vowifi
+globe
+eull name
+please fill the details and create account
+register as
+ ll ll
+student
+create account
+we ve sent a verification link to your email
+address  please verify your email to complete
+the registration process 
+verify your email
+password requirements 
+  one number
+at least 8 characters
+one uppercase letter
+one lowercase letter
+65  4 50
+continue to login
+one special character          
+After preprocessing: globe vowifi globe eull detail create account register ll ll student create account ve sent verification link email address verify email complete registration process verify email password requirement number 8 character uppercase letter lowercase letter 65 4 50 continue login special character
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.26094685443453797
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Bullshit ka
+Input text for detection: Bullshit ka
+Original text: Bullshit ka
+After basic cleaning: bullshit ka
+After preprocessing: bullshit
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.40096293831776547
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+
+
+--- New Detection Run ---
+
+
+--- New Detection Run ---
+Model trained and saved.
+Model loaded successfully.
+Preprocessed text: bullshit ka
+Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 65.17}
+
+
+--- New Detection Run ---
+
+
+--- New Detection Run ---
+
+
+--- New Detection Run ---
+Model trained and saved.
+Model loaded successfully.
+Preprocessed text: globe vowifi globe eull name please fill the details and create account register as ll ll student create account we ve sent a verification link to your email address please verify your email to complete the registration process verify your email password requirements one number at least 8 characters one uppercase letter one lowercase letter 65 4 50 continue to login one special character
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 97.3}
+
+
+--- New Detection Run ---
+Model trained and saved.
+Model loaded successfully.
+Preprocessed text: bullshit ka
+Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 65.17}
+
+
+--- New Detection Run ---
+Model trained and saved.
+Model loaded successfully.
+Preprocessed text: globe vowifi globe eull name please fill the details and create account register as ll ll student create account we ve sent a verification link to your email address please verify your email to complete the registration process verify your email password requirements one number at least 8 characters one uppercase letter one lowercase letter 65 4 50 continue to login one special character
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 97.3}
+
+
+--- New Detection Run ---
+Model trained and saved.
+Model loaded successfully.
+Preprocessed text: bullshit ka
+Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 65.17}
+
+
+--- New Detection Run ---
+Model trained and saved.
+Model loaded successfully.
+Preprocessed text: bullshit ka
+Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 65.17}
+
+
+--- New Detection Run ---
+Model trained and saved.
+Model loaded successfully.
+Preprocessed text: ang baho mo naman
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 81.56}
+
+
+--- New Detection Run ---
+Model trained and saved.
+Model loaded successfully.
+Preprocessed text: animnal ka
+Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 50.76}
+
+
+--- New Detection Run ---
+Model trained and saved.
+Model loaded successfully.
+Preprocessed text: bullshit ka
+Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 65.17}
+
+
+--- New Detection Run ---
+Model trained and saved.
+Model loaded successfully.
+Preprocessed text: globe vowifi globe eull name please fill the details and create account register as ll ll student create account we ve sent a verification link to your email address please verify your email to complete the registration process verify your email password requirements one number at least 8 characters one uppercase letter one lowercase letter 65 4 50 continue to login one special character
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 97.3}
