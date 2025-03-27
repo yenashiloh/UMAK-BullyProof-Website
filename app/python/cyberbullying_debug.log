@@ -14359,3 +14359,86 @@ Model trained and saved.
 Model loaded successfully.
 Preprocessed text: globe vowifi globe eull name please fill the details and create account register as ll ll student create account we ve sent a verification link to your email address please verify your email to complete the registration process verify your email password requirements one number at least 8 characters one uppercase letter one lowercase letter 65 4 50 continue to login one special character
 Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 97.3}
+
+
+--- New Detection Run ---
+Model trained and saved.
+Model loaded successfully.
+Preprocessed text: i will kill you
+Threat detected: i will kill you → kill you
+Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 100}
+
+
+--- New Detection Run ---
+Model trained and saved.
+Model loaded successfully.
+Preprocessed text: mamatay ka nang hayup ka
+Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 55.33}
+
+
+--- New Detection Run ---
+Model trained and saved.
+Model loaded successfully.
+Preprocessed text: mamatay ka na
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 55.69}
+
+
+--- New Detection Run ---
+Model trained and saved.
+Model loaded successfully.
+Preprocessed text: mamatay ka na
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 55.69}
+
+
+--- New Detection Run ---
+Model trained and saved.
+Model loaded successfully.
+Preprocessed text: buti pa mamatay ka na
+Threat detected: buti pa mamatay ka na → buti pa mamatay ka na
+Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 100}
+
+
+--- New Detection Run ---
+
+
+--- New Detection Run ---
+Model trained with hyperparameter tuning and saved.
+Model loaded successfully.
+Preprocessed text: buti pa mamatay ka na
+Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 62.85}
+
+
+--- New Detection Run ---
+Model trained with hyperparameter tuning and saved.
+Model loaded successfully.
+Preprocessed text: mamatay ka na
+Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 66.82}
+
+
+--- New Detection Run ---
+Model trained with hyperparameter tuning and saved.
+Model loaded successfully.
+Preprocessed text: papatayin kita
+Threat detected: papatayin kita → ['\\bpapatayin kita\\b']
+Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 100}
+
+
+--- New Detection Run ---
+Model trained with hyperparameter tuning and saved.
+Model loaded successfully.
+Preprocessed text: papatayin kita
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 29.63}
+
+
+--- New Detection Run ---
+Model trained with hyperparameter tuning and saved.
+Model loaded successfully.
+Preprocessed text: sana di ka na nabuhay pa
+Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 54.8}
+
+
+--- New Detection Run ---
+Model trained with hyperparameter tuning and saved.
+Model loaded successfully.
+Preprocessed text: bullshit ka
+Final result: {"error": null, "result": "Cyberbullying Detected", "probability": 65.61}

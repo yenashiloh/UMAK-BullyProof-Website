@@ -7,10 +7,17 @@ import numpy as np
 import joblib
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+from sklearn.linear_model import SGDClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
+from sklearn.utils.class_weight import compute_class_weight
+from sklearn.model_selection import GridSearchCV
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords
+import nltk
+
+nltk.download('wordnet')
+nltk.download('stopwords')
 
 # Logging setup
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -22,23 +29,40 @@ def log_debug(message):
 
 log_debug("\n\n--- New Detection Run ---")
 
-# Text Preprocessing
+# 🚨 Enhanced Threat Word List (Regex-based for flexibility)
+THREAT_PATTERNS = [
+    r"\bkill you\b", r"\bmurder you\b", r"\bshoot you\b", r"\bstab you\b",
+    r"\bi will kill\b", r"\byou should die\b", r"\bhang yourself\b",
+    r"\bno one loves you\b", r"\bjump off a bridge\b", r"\bnobody will miss you\b",
+    r"\bpapatayin kita\b", r"\bbabarilin kita\b", r"\bsasaksakin kita\b",
+    r"\bmagpakamatay ka na\b", r"\bwala kang kwenta\b", r"\bhindi ka mahalaga\b"
+]
+
+lemmatizer = WordNetLemmatizer()
+stop_words = set(stopwords.words('english'))
+
 def preprocess_text(text):
     if not isinstance(text, str):
         return ""
 
     text = text.encode('utf-8', errors='replace').decode('utf-8')
     text = text.lower()
-    text = re.sub(r'https?://\S+|www\.\S+', '', text)
-    text = re.sub(r'[^\w\s]', ' ', text)
-    text = ' '.join(text.split())
+    text = re.sub(r'https?://\S+|www\.\S+', '', text)  # Remove links
+    text = re.sub(r'[^\w\s]', ' ', text)  # Remove special characters
+    text = ' '.join(lemmatizer.lemmatize(word) for word in text.split() if word not in stop_words)  # Lemmatization
 
     log_debug(f"Preprocessed text: {text}")
+
+    # 🚨 Check for threats with regex matching
+    detected_threats = [pattern for pattern in THREAT_PATTERNS if re.search(pattern, text)]
+    if detected_threats:
+        log_debug(f"Threat detected: {text} → {detected_threats}")
+        return "THREAT_DETECTED"
+
     return text
 
 class CyberbullyingDetector:
     def __init__(self, dataset_path):
-        # Load dataset
         self.df = pd.read_csv(dataset_path)
         self.df.dropna(subset=['text', 'label'], inplace=True)
         self.df['text'] = self.df['text'].astype(str)
@@ -50,19 +74,23 @@ class CyberbullyingDetector:
             self.X, self.y, test_size=0.2, random_state=42
         )
 
-        # Machine Learning Pipeline
         self.pipeline = Pipeline([
-            ('tfidf', TfidfVectorizer(max_features=5000, stop_words='english')),
-            ('scaler', StandardScaler(with_mean=False)),
-            ('classifier', LogisticRegression(max_iter=1000, class_weight='balanced'))
+            ('tfidf', TfidfVectorizer(max_features=10000, stop_words='english')),
+            ('classifier', SGDClassifier(loss='hinge', max_iter=1000, class_weight='balanced'))
         ])
 
         self.train_model()
 
     def train_model(self):
-        self.pipeline.fit(self.X_train, self.y_train)
+        param_grid = {
+            'classifier__alpha': [1e-4, 1e-3, 1e-2],
+            'classifier__penalty': ['l2', 'l1']
+        }
+        grid_search = GridSearchCV(self.pipeline, param_grid, cv=3, scoring='accuracy')
+        grid_search.fit(self.X_train, self.y_train)
+        self.pipeline = grid_search.best_estimator_
         joblib.dump(self.pipeline, os.path.join(script_dir, 'cyberbullying_model.pkl'))
-        log_debug("Model trained and saved.")
+        log_debug("Model trained with hyperparameter tuning and saved.")
 
     def load_model(self):
         try:
@@ -74,18 +102,25 @@ class CyberbullyingDetector:
 
     def predict(self, text):
         processed_text = preprocess_text(text)
+
+        if processed_text == "THREAT_DETECTED":
+            return {
+                "error": None,
+                "result": "Cyberbullying Detected",
+                "probability": 100  # Force 100% certainty
+            }
+
         prediction = self.pipeline.predict([processed_text])[0]
-        probability = self.pipeline.predict_proba([processed_text])[0]
+        probability = self.pipeline.decision_function([processed_text])[0]
 
         return {
             "error": None,
             "result": "Cyberbullying Detected" if prediction == 1 else "No Cyberbullying Detected",
-            "probability": round(max(probability) * 100, 2)
+            "probability": round(1 / (1 + np.exp(-probability)) * 100, 2)  # Convert to probability
         }
 
 if __name__ == "__main__":
     text = ""
-
     if len(sys.argv) > 1:
         text = sys.argv[1]
     else:
