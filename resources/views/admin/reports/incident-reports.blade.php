@@ -129,25 +129,30 @@
                                                 <td>{{ ucwords(strtolower($report['perpetratorName'])) }}</td>                                                
                                                 <td>
                                                     <div class="dropdown">
-                                                        <span class="badge status-badge bg-{{ 
-                                                            $report['status'] == 'For Review' ? 'primary' : 
-                                                            ($report['status'] == 'Under Investigation' ? 'warning text-white' : 
-                                                            ($report['status'] == 'Resolved' ? 'success' : 
-                                                            ($report['status'] == 'Dismissed' ? 'danger' :
-                                                            ($report['status'] == 'Under Mediation' ? 'info' :
-                                                            ($report['status'] == 'Reopened' ? 'dark' :
-                                                            ($report['status'] == 'Awaiting Response' ? 'secondary' :
-                                                            ($report['status'] == 'Withdrawn' ? 'muted' : 'secondary'))))))) 
-                                                        }} d-flex justify-content-between align-items-center w-100" 
-                                                        style="min-width: 180px; cursor: {{ in_array($report['status'], ['Resolved', 'Withdrawn', 'Dismissed']) ? 'default' : 'pointer' }};"
-                                                        @if (!in_array($report['status'], ['Resolved', 'Withdrawn', 'Dismissed'])) data-bs-toggle="dropdown" aria-expanded="false" @endif>
+                                                        @php
+                                                            $statusClass = match ($report['status']) {
+                                                                'For Review' => 'primary',
+                                                                'Under Investigation' => 'warning text-white',
+                                                                'Resolved' => 'success',
+                                                                'Dismissed' => 'danger',
+                                                                'Under Mediation' => 'info',
+                                                                'Reopened' => 'dark',
+                                                                'Awaiting Response' => 'secondary',
+                                                                'Withdrawn' => 'danger',
+                                                                default => 'secondary',
+                                                            };
+                                                        @endphp
+                                                
+                                                        <span class="badge status-badge bg-{{ $statusClass }} d-flex justify-content-between align-items-center w-100"
+                                                              style="min-width: 180px; cursor: {{ in_array($report['status'], ['Resolved']) ? 'default' : 'pointer' }};"
+                                                              @if (!in_array($report['status'], ['Resolved'])) data-bs-toggle="dropdown" aria-expanded="false" @endif>
                                                             <span>{{ $report['status'] }}</span>
-                                                            @if (!in_array($report['status'], ['Resolved', 'Withdrawn', 'Dismissed']))
+                                                            @if (!in_array($report['status'], ['Resolved']))
                                                                 <i class="fas fa-chevron-down ms-auto"></i>
                                                             @endif
                                                         </span>
                                                 
-                                                        @if (!in_array($report['status'], ['Resolved', 'Withdrawn', 'Dismissed']))
+                                                        @if (!in_array($report['status'], ['Resolved']))
                                                             <ul class="dropdown-menu w-100">
                                                                 <form action="{{ route('admin.reports.changeStatus', ['id' => $report['_id']]) }}" method="POST">
                                                                     @csrf
@@ -159,31 +164,28 @@
                                                                         <li><button class="dropdown-item" type="submit" name="status" value="Dismissed">Dismiss Report</button></li>
                                                 
                                                                     @elseif ($report['status'] == 'Under Investigation')
-                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Resolved">Resolved</button></li>
-                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Under Mediation">Mediation</button></li>
                                                                         <li><button class="dropdown-item" type="submit" name="status" value="Awaiting Response">Awaiting Response</button></li>
+                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Resolved">Resolved</button></li>
                                                                         <li><button class="dropdown-item" type="submit" name="status" value="Dismissed">Dismiss Report</button></li>
-                                                
-                                                                    @elseif ($report['status'] == 'Under Mediation')
-                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Awaiting Response">Awaiting Response</button></li>
-                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Reopened">Reopen Report</button></li>
-                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Resolved">Resolved</button></li>
                                                 
                                                                     @elseif ($report['status'] == 'Awaiting Response')
                                                                         <li><button class="dropdown-item" type="submit" name="status" value="Resolved">Resolved</button></li>
+                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Dismissed">Dismiss Report</button></li>
                                                                         <li><button class="dropdown-item" type="submit" name="status" value="Withdrawn">Withdraw Report</button></li>
-                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Reopened">Reopen Report</button></li>
                                                 
                                                                     @elseif ($report['status'] == 'Reopened')
-                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Under Investigation">Investigation</button></li>
+                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Under Investigation">Under Investigation</button></li>
                                                                         <li><button class="dropdown-item" type="submit" name="status" value="Under Mediation">Mediation</button></li>
-                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Awaiting Response">Awaiting Response</button></li>
+                                                
+                                                                    @elseif (in_array($report['status'], ['Dismissed', 'Withdrawn']))
+                                                                        <li><button class="dropdown-item" type="submit" name="status" value="Reopened">Reopen Report</button></li>
                                                                     @endif
                                                                 </form>
                                                             </ul>
                                                         @endif
                                                     </div>
                                                 </td>
+                                                
                                                 <td>
                                                     <div class="form-button-action d-flex gap-2">
                                                         <a href="{{ route('admin.reports.view', ['id' => $report['_id']]) }}"

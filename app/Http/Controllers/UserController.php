@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Services\CyberbullyingDetectionService;
 use Illuminate\Support\Facades\Hash;
 use MongoDB\BSON\UTCDateTime;
+use Illuminate\Support\Facades\Mail;
 use DateTime;
 use DateTimeZone;
 
@@ -109,33 +110,72 @@ class UserController extends Controller
     {
         try {
             $client = new Client(env('MONGODB_URI'));
-    
             $userCollection = $client->bullyproof->users;
-    
+            
             $status = $request->status;
-    
+            $reason = $request->reason ?? null;
+            $sendEmail = $request->sendEmail ?? false;
+            
             $user = $userCollection->findOne(['_id' => new \MongoDB\BSON\ObjectId($id)]);
-    
-            if ($user) {
-                $updateResult = $userCollection->updateOne(
-                    ['_id' => new \MongoDB\BSON\ObjectId($id)],
-                    ['$set' => ['status' => $status]]
-                );
-    
-                if ($updateResult->getModifiedCount() > 0) {
-                    return response()->json(['success' => true, 'status' => $status]);
-                } else {
-                    return response()->json(['success' => false, 'message' => 'No changes made to the user status.']);
-                }
-            } else {
+            
+            if (!$user) {
                 return response()->json(['success' => false, 'message' => 'User not found.']);
             }
-    
+            
+            $updateData = ['status' => $status];
+            
+            // If disabling account with reason, store the reason
+            if ($status === 'Disabled Account' && $reason) {
+                $updateData['disable_reason'] = $reason;
+                $updateData['disabled_at'] = new \MongoDB\BSON\UTCDateTime();
+            }
+            
+            $updateResult = $userCollection->updateOne(
+                ['_id' => new \MongoDB\BSON\ObjectId($id)],
+                ['$set' => $updateData]
+            );
+            
+            // Send email notification if requested
+            if ($sendEmail && isset($user->email)) {
+                $this->sendStatusChangeEmail($user, $status, $reason);
+            }
+            
+            if ($updateResult->getModifiedCount() > 0) {
+                return response()->json(['success' => true, 'status' => $status]);
+            } else {
+                return response()->json(['success' => false, 'message' => 'No changes made to the user status.']);
+            }
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Error updating status: ' . $e->getMessage()]);
         }
     }
     
+    //Send email notification to user when account is disabled or activated
+    private function sendStatusChangeEmail($user, $status, $reason = null)
+    {
+        $userName = $user->fullname ?? ($user->first_name ?? 'User');
+        $userEmail = $user->email;
+        
+        $subject = $status === 'Disabled Account' 
+            ? 'Your Account Has Been Disabled'
+            : 'Your Account Has Been Activated';
+        
+        $viewData = [
+            'userName' => $userName,
+            'status' => $status,
+            'reason' => $reason,
+        ];
+        
+        $view = $status === 'Disabled Account' 
+            ? 'emails.account_disabled'
+            : 'emails.account_activated';
+        
+        Mail::send($view, $viewData, function($message) use ($userEmail, $userName, $subject) {
+            $message->to($userEmail, $userName)
+                    ->subject($subject);
+        });
+    }
+
     //show create account
     public function showCreateAccountPage()
     {

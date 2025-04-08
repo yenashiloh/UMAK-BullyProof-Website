@@ -48,7 +48,7 @@
                         <i class="icon-arrow-right"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="{{route ('admin.list.list-perpetrators')}}">Complainees</a>
+                        <a href="{{ route('admin.list.list-perpetrators') }}">Complainees</a>
                     </li>
                     <li class="separator">
                         <i class="icon-arrow-right"></i>
@@ -59,7 +59,7 @@
                     <li class="separator">
                         <i class="icon-arrow-right"></i>
                     </li>
-                 
+
                 </ul>
             </div>
 
@@ -67,7 +67,7 @@
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <h4 class="card-title">List of Complainant Report</h4>
+                            <h4 class="card-title"> {{ $perpetratorDetails['name'] }}</h4>
                         </div>
 
                         <div class="card-body">
@@ -87,48 +87,51 @@
                                         </thead>
                                         <tbody>
                                             @forelse($formattedReports as $index => $report)
-                                            <tr>
-                                                <td>{{ $index + 1 }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($report['reportDate'])->setTimezone('Asia/Manila')->format('F d, Y g:i A') }}</td>
+                                                <tr>
+                                                    <td>{{ $index + 1 }}</td>
+                                                    <td>{{ \Carbon\Carbon::parse($report['reportDate'])->setTimezone('Asia/Manila')->format('F d, Y g:i A') }}
+                                                    </td>
 
-                                                <td>{{ $report['reporterFullName'] }}</td>
-                                                <td>
-                                                    @if($report['status'] == 'For Review')
-                                                        <span class="badge badge-warning">For Review</span>
-                                                    @elseif($report['status'] == 'In Progress')
-                                                        <span class="badge badge-info">In Progress</span>
-                                                    @elseif($report['status'] == 'Resolved')
-                                                        <span class="badge badge-success">Resolved</span>
-                                                    @else
-                                                        <span class="badge badge-secondary">{{ $report['status'] }}</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    <div class="form-button-action">
-                                                        <a href="{{ route('admin.list.view-report', ['id' => $report['_id']]) }}" 
-                                                           class="btn btn-link btn-primary" data-bs-toggle="tooltip"
-                                                           title="View Report" data-original-title="View Report">
-                                                            <i class="fa fa-eye"></i>
+                                                    <td>{{ $report['reporterFullName'] }}</td>
+                                                    <td>
+                                                        @if ($report['status'] == 'For Review')
+                                                            <span class="badge badge-warning">For Review</span>
+                                                        @elseif($report['status'] == 'In Progress')
+                                                            <span class="badge badge-info">In Progress</span>
+                                                        @elseif($report['status'] == 'Resolved')
+                                                            <span class="badge badge-success">Resolved</span>
+                                                        @else
+                                                            <span
+                                                                class="badge badge-secondary">{{ $report['status'] }}</span>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        <div class="form-button-action">
+                                                            <a href="{{ route('admin.list.view-report', ['id' => $report['_id']]) }}"
+                                                                class="btn btn-link btn-primary"
+                                                                data-bs-toggle="tooltip" title="View Report"
+                                                                data-original-title="View Report">
+                                                                <i class="fa fa-eye"></i>
+                                                            </a>
+                                                        </div>
+                                                        <a href="javascript:void(0)" class="btn btn-link btn-secondary"
+                                                            data-bs-toggle="tooltip" title="Print Report"
+                                                            onclick="printReportDirectly('{{ $report['_id'] }}')">
+                                                            <i class="fas fa-print"></i>
                                                         </a>
-                                                    </div>
-                                                    <a href="javascript:void(0)"
-                                                    class="btn btn-link btn-secondary" data-bs-toggle="tooltip"
-                                                    title="Print Report" onclick="printReportDirectly('{{ $report['_id'] }}')">
-                                                    <i class="fas fa-print"></i>
-                                                </a>
-                                                </td>
-                                            </tr>
+                                                    </td>
+                                                </tr>
                                             @empty
-                                            <tr>
-                                                <td colspan="5" class="text-center">No reports found for this perpetrator</td>
-                                            </tr>
+                                                <tr>
+                                                    <td colspan="5" class="text-center">No reports found for this
+                                                        perpetrator</td>
+                                                </tr>
                                             @endforelse
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
                         </div>
-                        
                     </div>
                 </div>
             </div>
@@ -145,11 +148,12 @@
         function printReportDirectly(id) {
             var loadingDiv = document.createElement('div');
             loadingDiv.id = 'printLoadingIndicator';
-            loadingDiv.innerHTML = '<div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; display: flex; justify-content: center; align-items: center;"><span style="font-size: 18px;"><i class="fas fa-spinner fa-spin"></i> Preparing print...</span></div>';
+            loadingDiv.innerHTML =
+                '<div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; display: flex; justify-content: center; align-items: center;"><span style="font-size: 18px;"><i class="fas fa-spinner fa-spin"></i> Preparing print...</span></div>';
             document.body.appendChild(loadingDiv);
-            
+
             var iframe = document.getElementById('printFrame');
-            
+
             $.ajax({
                 url: "{{ route('admin.reports.get-print-content') }}",
                 type: "POST",
@@ -162,19 +166,18 @@
 
                     iframe.onload = function() {
                         iframe.contentWindow.print();
-                        
+
                         setTimeout(function() {
                             document.body.removeChild(loadingDiv);
-                        }, 1000); 
+                        }, 1000);
                     };
                 },
                 error: function(xhr) {
                     console.error("Error loading print content:", xhr.responseText);
                     document.body.removeChild(loadingDiv);
-                    
+
                     alert("There was an error preparing the print. Please try again.");
                 }
             });
         }
-
     </script>

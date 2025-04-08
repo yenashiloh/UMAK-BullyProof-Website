@@ -12,36 +12,124 @@ $(document).ready(function () {
 });
 
 function changeStatus(userId, newStatus) {
-    // SweetAlert confirmation dialog
-    Swal.fire({
-        title: 'Are you sure?',
-        text: `Do you want to change the status to ${newStatus}?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'Cancel',
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Immediately reload the page
-            sessionStorage.setItem('successMessage', "Status updated successfully!");
-            location.reload();
+    if (newStatus === 'Disabled Account') {
+        Swal.fire({
+            title: 'Disable Account',
+            html: `
+                <div class="form-group">
+                    <label for="disable-reason" class="form-label">Reason for disabling account:</label>
+                    <textarea id="disable-reason" class="form-control" rows="6" placeholder="Please provide a reason"></textarea>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Disable Account',
+            cancelButtonText: 'Cancel',
+            didOpen: () => {
+                const confirmBtn = Swal.getConfirmButton();
+                confirmBtn.innerHTML = `<span class="button-text">Disable Account</span>`;
+            },
+            preConfirm: () => {
+                const reason = document.getElementById('disable-reason').value.trim();
+                if (!reason) {
+                    Swal.showValidationMessage('Please provide a reason for disabling the account');
+                    return false;
+                }
 
-            // Send the POST request in the background (async)
-            fetch(`/admin/users/change-status/${userId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                },
-                body: JSON.stringify({
-                    status: newStatus,
-                }),
-            }).catch((error) => {
-                console.error('Error while updating status:', error);
-            });
-        }
-    });
+                const confirmBtn = Swal.getConfirmButton();
+                confirmBtn.disabled = true;
+                confirmBtn.innerHTML = `
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    <span class="button-text">Disabling...</span>
+                `;
+
+                return fetch(`/admin/users/change-status/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    },
+                    body: JSON.stringify({
+                        status: newStatus,
+                        reason: reason,
+                        sendEmail: true
+                    }),
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network error');
+                    return response.json();
+                })
+                .catch((error) => {
+                    Swal.showValidationMessage(`Request failed: ${error}`);
+                    confirmBtn.disabled = false;
+                    confirmBtn.innerHTML = `<span class="button-text">Disable Account</span>`;
+                });
+            }
+        }).then((result) => {
+            if (result.isConfirmed && result.value && result.value.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Account Disabled!',
+                    text: 'The account has been successfully disabled and an email has been sent.',
+                    timer: 2500,
+                    showConfirmButton: false
+                }).then(() => location.reload());
+            }
+        });
+
+    } else {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: `Do you want to change the status to ${newStatus}?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'Cancel',
+            didOpen: () => {
+                Swal.getConfirmButton().innerHTML = `<span class="button-text">Yes</span>`;
+            },
+            preConfirm: () => {
+                const confirmBtn = Swal.getConfirmButton();
+                confirmBtn.disabled = true;
+                confirmBtn.innerHTML = `
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    <span class="button-text">Processing...</span>
+                `;
+
+                return fetch(`/admin/users/change-status/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    },
+                    body: JSON.stringify({
+                        status: newStatus,
+                        sendEmail: newStatus === 'Active Account'
+                    }),
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network error');
+                    return response.json();
+                })
+                .catch((error) => {
+                    Swal.showValidationMessage(`Request failed: ${error}`);
+                    confirmBtn.disabled = false;
+                    confirmBtn.innerHTML = `<span class="button-text">Yes</span>`;
+                });
+            }
+        }).then((result) => {
+            if (result.isConfirmed && result.value && result.value.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Status Updated!',
+                    text: 'The user status has been updated successfully.',
+                    timer: 2500,
+                    showConfirmButton: false
+                }).then(() => location.reload());
+            }
+        });
+    }
 }
+
 
 // Custom toast notification function
 function createCustomToast(message, type = 'info') {
@@ -81,3 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.head.appendChild(metaTag);
     }
 });
+
+/**
+ * Reason for disabled accounts
+ */

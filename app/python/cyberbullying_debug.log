@@ -14173,3 +14173,261 @@ ML prediction: label=0, probability=0.40096293831776547
 Detection reasons: ML model only
 Final result: No Cyberbullying Detected, probability: 0
 Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: Life.Church
+Hello! We are so excited to
+get to know you more.
+Please message us with any
+questions that you have and
+remember, whoever finds
+God, finds life!
+Is there something we can
+pray for you about righ
+now?
+If you want us to stop
+messaging you, type
+'unsubscribe' at any time.
+We won't be offended!
+Powered bv ManvChat
+A9ype a message...
+X
+Input text for detection: Life.Church
+Hello! We are so excited to
+get to know you more.
+Please message us with any
+questions that you have and
+remember, whoever finds
+God, finds life!
+Is there something we can
+pray for you about righ
+now?
+If you want us to stop
+messaging you, type
+'unsubscribe' at any time.
+We won't be offended!
+Powered bv ManvChat
+A9ype a message...
+X
+Original text: Life.Church
+Hello! We are so excited to
+get to know you more.
+Please message us with any
+questions that you have and
+remember, whoever finds
+God, finds life!
+Is there something we can
+pray for you about righ
+now?
+If you want us to stop
+messaging you, type
+'unsubscribe' at any time.
+We won't be offended!
+Powered bv ManvChat
+A9ype a message...
+X
+After basic cleaning: life church
+hello  we are so excited to
+get to know you more 
+please message us with any
+questions that you have and
+remember  whoever finds
+god  finds life 
+is there something we can
+pray for you about righ
+now 
+if you want us to stop
+messaging you  type
+ unsubscribe  at any time 
+we won t be offended 
+powered bv manvchat
+a9ype a message   
+x
+After preprocessing: life church hello excited know message question remember find god find life pray righ want stop messaging type unsubscribe time won t offended powered bv manvchat a9ype message x
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.3413748426973306
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: GLOBE VoWiFi
+GLOBE
+Eull Name
+Please fill the details and create account
+Register As
+.ll ll
+Student
+Create Account
+We've sent a verification link to your email
+address. Please verify your email to complete
+the registration process.
+Verify Your Email
+Password Requirements:
+! One number
+At least 8 characters
+One uppercase letter
+One lowercase letter
+65) 4:50
+Continue to Login
+One special character (!@#$&*~)
+Input text for detection: GLOBE VoWiFi
+GLOBE
+Eull Name
+Please fill the details and create account
+Register As
+.ll ll
+Student
+Create Account
+We've sent a verification link to your email
+address. Please verify your email to complete
+the registration process.
+Verify Your Email
+Password Requirements:
+! One number
+At least 8 characters
+One uppercase letter
+One lowercase letter
+65) 4:50
+Continue to Login
+One special character (!@#$&*~)
+Original text: GLOBE VoWiFi
+GLOBE
+Eull Name
+Please fill the details and create account
+Register As
+.ll ll
+Student
+Create Account
+We've sent a verification link to your email
+address. Please verify your email to complete
+the registration process.
+Verify Your Email
+Password Requirements:
+! One number
+At least 8 characters
+One uppercase letter
+One lowercase letter
+65) 4:50
+Continue to Login
+One special character (!@#$&*~)
+After basic cleaning: globe vowifi
+globe
+eull name
+please fill the details and create account
+register as
+ ll ll
+student
+create account
+we ve sent a verification link to your email
+address  please verify your email to complete
+the registration process 
+verify your email
+password requirements 
+  one number
+at least 8 characters
+one uppercase letter
+one lowercase letter
+65  4 50
+continue to login
+one special character          
+After preprocessing: globe vowifi globe eull detail create account register ll ll student create account ve sent verification link email address verify email complete registration process verify email password requirement number 8 character uppercase letter lowercase letter 65 4 50 continue login special character
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.26094685443453797
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}
+
+
+--- New Detection Run ---
+Received text from stdin: GLOBE VoWiFi
+GLOBE
+Eull Name
+Please fill the details and create account
+Register As
+.ll ll
+Student
+Create Account
+We've sent a verification link to your email
+address. Please verify your email to complete
+the registration process.
+Verify Your Email
+Password Requirements:
+! One number
+At least 8 characters
+One uppercase letter
+One lowercase letter
+65) 4:50
+Continue to Login
+One special character (!@#$&*~)
+Input text for detection: GLOBE VoWiFi
+GLOBE
+Eull Name
+Please fill the details and create account
+Register As
+.ll ll
+Student
+Create Account
+We've sent a verification link to your email
+address. Please verify your email to complete
+the registration process.
+Verify Your Email
+Password Requirements:
+! One number
+At least 8 characters
+One uppercase letter
+One lowercase letter
+65) 4:50
+Continue to Login
+One special character (!@#$&*~)
+Original text: GLOBE VoWiFi
+GLOBE
+Eull Name
+Please fill the details and create account
+Register As
+.ll ll
+Student
+Create Account
+We've sent a verification link to your email
+address. Please verify your email to complete
+the registration process.
+Verify Your Email
+Password Requirements:
+! One number
+At least 8 characters
+One uppercase letter
+One lowercase letter
+65) 4:50
+Continue to Login
+One special character (!@#$&*~)
+After basic cleaning: globe vowifi
+globe
+eull name
+please fill the details and create account
+register as
+ ll ll
+student
+create account
+we ve sent a verification link to your email
+address  please verify your email to complete
+the registration process 
+verify your email
+password requirements 
+  one number
+at least 8 characters
+one uppercase letter
+one lowercase letter
+65  4 50
+continue to login
+one special character          
+After preprocessing: globe vowifi globe eull detail create account register ll ll student create account ve sent verification link email address verify email complete registration process verify email password requirement number 8 character uppercase letter lowercase letter 65 4 50 continue login special character
+Non-cyberbullying matches: set()
+Cyberbullying matches: set()
+ML prediction: label=0, probability=0.26094685443453797
+Detection reasons: ML model only
+Final result: No Cyberbullying Detected, probability: 0
+Final result: {"error": null, "result": "No Cyberbullying Detected", "probability": 0, "reasons": []}

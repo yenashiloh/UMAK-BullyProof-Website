@@ -176,7 +176,7 @@ class ListController extends Controller
         return view('admin.list.view-perpertrators', compact('reports', 'idNumber', 'firstName', 'lastName', 'email'));
     }
 
-
+    //View Complainees
     public function viewPerpetratorDiscipline($identifier)
     {
         $client = new Client(env('MONGODB_URI'));
@@ -204,9 +204,6 @@ class ListController extends Controller
         
         // Special handling for "Not identified" cases
         if ($identifier === 'Not identified') {
-            // This is a special case where we only have a name, no ID
-            // We'll need to use additional information to identify the perpetrator
-            // This will be handled in subsequent queries
             $perpetratorIdNumber = 'Not identified';
         }
         // Check if identifier is a URL-encoded name (decode it)
