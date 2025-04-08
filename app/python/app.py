@@ -1,295 +1,163 @@
 import sys
-import joblib
-import re
-import nltk
 import os
-from nltk.stem import WordNetLemmatizer
-from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 import json
+import re
+import pandas as pd
+import numpy as np
+import joblib
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import SGDClassifier
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.utils.class_weight import compute_class_weight
+from sklearn.model_selection import GridSearchCV
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords
+import nltk
 
-# get the directory containing the script
+nltk.download('wordnet', quiet=True)
+nltk.download('stopwords', quiet=True)
+
+# Logging setup
 script_dir = os.path.dirname(os.path.abspath(__file__))
-
-# Set up logging to a file
 log_file = os.path.join(script_dir, 'cyberbullying_debug.log')
 
-
 def log_debug(message):
-    try:
-        with open(log_file, 'a', encoding='utf-8', errors='replace') as f:
-            f.write(f"{message}\n")
-    except Exception as e:
-        # Fall back to a simpler logging approach if the above fails
-        with open(log_file, 'a', encoding='utf-8', errors='replace') as f:
-            f.write(f"Error logging message: {str(e)}\n")
-
+    with open(log_file, 'a', encoding='utf-8', errors='replace') as f:
+        f.write(f"{message}\n")
 
 log_debug("\n\n--- New Detection Run ---")
 
-# download required NLTK data
-try:
-    nltk.download('wordnet', quiet=True)
-    nltk.download('stopwords', quiet=True)
-except Exception as e:
-    error_msg = f"Failed to download NLTK data: {str(e)}"
-    log_debug(error_msg)
-    print(json.dumps({
-        "error": error_msg,
-        "result": None,
-        "probability": None
-    }))
-    sys.exit(1)
+# 🚨 Enhanced Threat Word List (Regex-based for flexibility)
+THREAT_PATTERNS = [
+    r"\bkill you\b", r"\bmurder you\b", r"\bshoot you\b", r"\bstab you\b",
+    r"\bi will kill\b", r"\byou should die\b", r"\bhang yourself\b",
+    r"\bno one loves you\b", r"\bjump off a bridge\b", r"\bnobody will miss you\b",
+    r"\bpapatayin kita\b", r"\bbabarilin kita\b", r"\bsasaksakin kita\b",
+    r"\bmagpakamatay ka na\b", r"\bwala kang kwenta\b", r"\bhindi ka mahalaga\b"
+]
 
-# load model and vectorizer
-try:
-    model_path = os.path.join(script_dir, 'models',
-                              'logistic_regression_model.pkl')
-    vectorizer_path = os.path.join(
-        script_dir, 'models', 'tfidf_vectorizer.pkl')
-
-    model = joblib.load(model_path)
-    vectorizer = joblib.load(vectorizer_path)
-except FileNotFoundError as e:
-    error_msg = f"Model files not found. Path: {model_path}"
-    log_debug(error_msg)
-    print(json.dumps({
-        "error": error_msg,
-        "result": None,
-        "probability": None
-    }))
-    sys.exit(1)
-except Exception as e:
-    error_msg = f"Error loading models: {str(e)}"
-    log_debug(error_msg)
-    print(json.dumps({
-        "error": error_msg,
-        "result": None,
-        "probability": None
-    }))
-    sys.exit(1)
-
-# stopwords and keywords
-stopwords = set(ENGLISH_STOP_WORDS).union({
-    "ang", "sa", "ng", "para", "at", "ito", "ay", "na", "ako", "ni",
-    "is", "kung", "hindi", "mga", "may", "ko", "kami", "kayo", "nila",
-    "naman", "pa", "si", "ngayon", "dahil", "wala", "doon", "dito",
-    "isang", "o", "lahat", "tungkol", "pero", "alam", "huwag", "tama",
-    "baka", "pag", "ganun", "sana", "iyan", "iyong", "nito", "akin",
-    "kanila", "sila", "amin", "atin", "ikaw", "tao", "bakit", "ano",
-    "paano", "ganoon", "ganito", "noon", "ngayong", "iyo", "nga",
-    "nang", "muli", "kasama", "bago", "pagkatapos", "habang", "sapagkat",
-    "kaya", "upang", "mula", "hanggang", "din", "rin", "man", "talaga",
-    "walang", "sino", "alin", "kanino", "bawat", "maging", "subalit",
-    "bagamat", "dati", "lagi", "pala", "muna", "halos", "lamang",
-    "siyang", "niya", "kahit", "daw", "raw", "pati", "iyon", "diyan",
-    "kay", "kaniya", "tulad", "niyo", "kailan", "magkaroon", "gawa",
-    "tayo", "siya", "iba", "ibang", "kahiyan", "kailanman", "karamihan",
-    "katulad", "kaysa", "kayat", "lalo", "lalo na", "lalung",
-    "magkagayunman", "magkagayun", "marahil", "masyado", "matapos",
-    "naging", "napaka", "narito", "nasaan", "ngunit", "pareho", "pwede",
-    "pwedeng", "saan", "saanman", "sanhi", "tila", "tuloy", "tuloy-tuloy",
-    "yata", "yun", "yung", "makipag", "maibsan", "maitala", "makita",
-    "malaki", "maliit", "mamaya", "mas", "mayron", "mayroon", "mula sa",
-    "nasa", "nitong", "noon", "palagay", "patungkol", "puwede",
-    "samantalang", "tapos", "yari", "kahit na", "mo", "ka"
-})
+# List of common positive phrases that should NOT be flagged as bullying
+POSITIVE_PHRASES = [
+    "ang cute mo", "you're beautiful", "you're nice", "you're amazing",
+    "you're kind", "you're smart", "you're wonderful", "ang bait mo",
+    "you're the best", "you're awesome", "you're a good person", "ganda",
+    "bait", "maganda", "friendly", "kamukha", "ligtas", "gwapo",
+    "pogi"
+]
 
 lemmatizer = WordNetLemmatizer()
-
-non_cyberbullying_keywords = {
-    "ganda", "bait", "maganda", "friendly", "kamukha", "ligtas", "cute", "gwapo", "pogi"
-}
-
-# Expanded cyberbullying keywords list
-cyberbullying_keywords = {
-    "bobo", "pangit", "hate", "bully", "stupid", "kill", "yourself", "worthless",
-    "loser", "shit", "fucking", "fuck", "die", "ugly", "idiot", "dumb", "bitch",
-    "whore", "slut", "retard", "retarded", "moron", "pathetic", "useless", "attack",
-    "harass", "harassed", "offensive", "degrad", "harm", "profanity", "insult",
-    "tanga", "gago", "inutil", "pakyu", "puta", "bulok", "ulol", "tarantado",
-    "engot", "boba", "abnormal", "putangina", "hayop", "walang kwenta", "timang",
-    "tarantado", "hinayupak"
-}
-
+stop_words = set(stopwords.words('english'))
 
 def preprocess_text(text):
     if not isinstance(text, str):
         return ""
 
-    # Sanitize input by replacing invalid unicode
     text = text.encode('utf-8', errors='replace').decode('utf-8')
-
-    log_debug(f"Original text: {text}")
-
-    # Less aggressive preprocessing to preserve offensive words
     text = text.lower()
 
-    # Remove URLs
-    text = re.sub(r'https?://\S+|www\.\S+', '', text)
+    # 🚨 Check if the text contains any positive phrases
+    if any(phrase in text for phrase in POSITIVE_PHRASES):
+        log_debug(f"Positive phrase detected and bypassed: {text}")
+        return "NON_BULLYING"
 
-    # Keep alphanumeric characters and spaces
-    text = re.sub(r'[^\w\s]', ' ', text)
+    text = re.sub(r'https?://\S+|www\.\S+', '', text)  # Remove links
+    text = re.sub(r'[^\w\s]', ' ', text)  # Remove special characters
+    text = ' '.join(lemmatizer.lemmatize(word) for word in text.split() if word not in stop_words)  # Lemmatization
 
-    log_debug(f"After basic cleaning: {text}")
+    log_debug(f"Preprocessed text: {text}")
 
-    tokens = text.split()
+    # 🚨 Check for threats with regex matching
+    detected_threats = [pattern for pattern in THREAT_PATTERNS if re.search(pattern, text)]
+    if detected_threats:
+        log_debug(f"Threat detected: {text} → {detected_threats}")
+        return "THREAT_DETECTED"
 
-    # Filter stopwords but keep offensive words even if they're in stopwords
-    filtered_tokens = []
-    for word in tokens:
-        if word in cyberbullying_keywords or word not in stopwords:
-            filtered_tokens.append(lemmatizer.lemmatize(word))
+    return text
 
-    processed_text = ' '.join(filtered_tokens)
-    log_debug(f"After preprocessing: {processed_text}")
+class CyberbullyingDetector:
+    def __init__(self, dataset_path):
+        self.df = pd.read_csv(dataset_path)
+        self.df.dropna(subset=['text', 'label'], inplace=True)
+        self.df['text'] = self.df['text'].astype(str)
+        self.df.drop_duplicates(subset=['text'], inplace=True)
 
-    return processed_text
+        self.X = self.df['text']
+        self.y = self.df['label']
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
+            self.X, self.y, test_size=0.2, random_state=42
+        )
 
+        self.pipeline = Pipeline([
+            ('tfidf', TfidfVectorizer(max_features=10000, stop_words='english')),
+            ('classifier', SGDClassifier(loss='hinge', max_iter=1000, class_weight='balanced'))
+        ])
 
-def detect_cyberbullying(text):
-    try:
-        # Sanitize input
-        text = text.encode('utf-8', errors='replace').decode('utf-8')
-        
-        log_debug(f"Input text for detection: {text}")
-        base_probability = 0
-        lower_text = text.lower()
-        detected_reasons = []
+        self.train_model()
 
-        # Check for extreme phrases - highest severity
-        extreme_phrases = ["kill yourself",
-                           "go kill yourself", "go die", "commit suicide"]
-        for phrase in extreme_phrases:
-            if phrase in lower_text:
-                log_debug(f"Extreme phrase detected: {phrase}")
-                detected_reasons.append(f"extreme phrase: '{phrase}'")
-                # 95% base probability
-                base_probability = max(base_probability, 0.95)
+    def train_model(self):
+        param_grid = {
+            'classifier__alpha': [1e-4, 1e-3, 1e-2],
+            'classifier__penalty': ['l2', 'l1']
+        }
+        grid_search = GridSearchCV(self.pipeline, param_grid, cv=3, scoring='accuracy')
+        grid_search.fit(self.X_train, self.y_train)
+        self.pipeline = grid_search.best_estimator_
+        joblib.dump(self.pipeline, os.path.join(script_dir, 'cyberbullying_model.pkl'))
+        log_debug("Model trained with hyperparameter tuning and saved.")
 
-        # Check for keywords directly in original text - high severity
-        for word in cyberbullying_keywords:
-            if re.search(r'\b' + word + r'\b', lower_text):
-                log_debug(f"Cyberbullying keyword found directly: {word}")
-                detected_reasons.append(f"keyword: '{word}'")
-                # 85% base probability if higher than current
-                base_probability = max(base_probability, 0.85)
+    def load_model(self):
+        try:
+            self.pipeline = joblib.load(os.path.join(script_dir, 'cyberbullying_model.pkl'))
+            log_debug("Model loaded successfully.")
+        except Exception as e:
+            log_debug(f"Error loading model: {str(e)}")
+            sys.exit(1)
 
-        # Continue with ML-based detection
+    def predict(self, text):
         processed_text = preprocess_text(text)
-        if not processed_text:
-            log_debug("Empty processed text")
+
+        if processed_text == "THREAT_DETECTED":
             return {
-                "error": "Empty or invalid input text after preprocessing",
-                "result": None,
-                "probability": None
+                "error": None,
+                "result": "Cyberbullying Detected",
+                "probability": 100  # Force 100% certainty
             }
-
-        input_tokens = set(processed_text.split())
-        matched_non_cyberbullying = input_tokens.intersection(
-            non_cyberbullying_keywords)
-        matched_cyberbullying = input_tokens.intersection(
-            cyberbullying_keywords)
-
-        log_debug(f"Non-cyberbullying matches: {matched_non_cyberbullying}")
-        log_debug(f"Cyberbullying matches: {matched_cyberbullying}")
-
-        # Add matched cyberbullying keywords to detection reasons
-        if matched_cyberbullying:
-            log_debug(
-                f"Cyberbullying detected by keywords: {matched_cyberbullying}")
-            detected_reasons.append(
-                f"keyword set: {', '.join(matched_cyberbullying)}")
-            # 80% base probability if higher than current
-            base_probability = max(base_probability, 0.80)
-
-        # Only consider non-cyberbullying keywords if no cyberbullying is detected
-        if matched_non_cyberbullying and not detected_reasons:
-            log_debug(
-                "Non-cyberbullying keywords found, no cyberbullying keywords")
+        elif processed_text == "NON_BULLYING":
             return {
                 "error": None,
                 "result": "No Cyberbullying Detected",
-                "probability": 0
+                "probability": 100  # Force 0% certainty
             }
 
-        # Always use ML model to refine or establish probability
-        input_vector = vectorizer.transform([processed_text])
-        ml_probability = model.predict_proba(input_vector)[0][1]
-        prediction_label = model.predict(input_vector)[0]
-
-        log_debug(
-            f"ML prediction: label={prediction_label}, probability={ml_probability}")
-
-        # If we already detected something with rules
-        if detected_reasons:
-            # Combine rule-based and ML probabilities (weighted average)
-            # You can adjust the weights to give more importance to rules or ML
-            final_probability = (0.7 * base_probability) + \
-                (0.3 * ml_probability)
-            result = "Cyberbullying Detected"
-        else:
-            # If no rule-based detection, rely on ML model
-            final_probability = ml_probability
-            result = "Cyberbullying Detected" if prediction_label == 1 else "No Cyberbullying Detected"
-
-        # Only return probability > 0 if cyberbullying is detected
-        probability = final_probability * 100 if result == "Cyberbullying Detected" else 0
-
-        log_debug(
-            f"Detection reasons: {', '.join(detected_reasons) if detected_reasons else 'ML model only'}")
-        log_debug(f"Final result: {result}, probability: {probability}")
+        prediction = self.pipeline.predict([processed_text])[0]
+        probability = self.pipeline.decision_function([processed_text])[0]
 
         return {
             "error": None,
-            "result": result,
-            "probability": round(probability, 2),
-            "reasons": detected_reasons if result == "Cyberbullying Detected" else []
+            "result": "Cyberbullying Detected" if prediction == 1 else "No Cyberbullying Detected",
+            "probability": round(1 / (1 + np.exp(-probability)) * 100, 2)  # Convert to probability
         }
-
-    except Exception as e:
-        error_msg = f"Detection error: {str(e)}"
-        log_debug(f"ERROR: {error_msg}")
-        return {
-            "error": error_msg,
-            "result": None,
-            "probability": None
-        }
-
 
 if __name__ == "__main__":
     text = ""
-
-    # Check if there are command line arguments
     if len(sys.argv) > 1:
         text = sys.argv[1]
-        log_debug(f"Received text from command line: {text}")
     else:
-        # Read from stdin with error handling
         try:
-            # Replace invalid Unicode characters during reading
-            text = sys.stdin.read().encode('utf-8', errors='replace').decode('utf-8').strip()
-            log_debug(f"Received text from stdin: {text}")
+            text = sys.stdin.read().strip()
         except Exception as e:
-            error_msg = f"Error reading input: {str(e)}"
-            log_debug(error_msg)
-            print(json.dumps({
-                "error": error_msg,
-                "result": None,
-                "probability": None
-            }))
+            print(json.dumps({"error": f"Error reading input: {str(e)}", "result": None, "probability": None}))
             sys.exit(1)
 
-    # If still empty, report an error
     if not text:
-        error_msg = "No input text provided"
-        log_debug(error_msg)
-        print(json.dumps({
-            "error": error_msg,
-            "result": None,
-            "probability": None
-        }))
+        print(json.dumps({"error": "No input text provided", "result": None, "probability": None}))
         sys.exit(1)
 
-    result = detect_cyberbullying(text)
+    dataset_path = os.path.join(script_dir, 'enhanced_cyberbullying_dataset.csv')
+    detector = CyberbullyingDetector(dataset_path)
+    detector.load_model()
+    result = detector.predict(text)
     log_debug(f"Final result: {json.dumps(result)}")
     print(json.dumps(result))

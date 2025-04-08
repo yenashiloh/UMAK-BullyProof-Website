@@ -353,7 +353,7 @@
                                         @if (isset($reportData['analysisResult']))
                                             <p class="mb-2">
                                                 <strong>Result:</strong> 
-                                                <span class="@if ($reportData['analysisProbability'] > 50) text-danger @else text-success @endif">
+                                                <span class="@if ($reportData['analysisResult'] === 'Cyberbullying Detected') text-danger @else text-success @endif">
                                                     {{ number_format($reportData['analysisProbability'], 2) }}% {{ $reportData['analysisResult'] }}
                                                 </span>
                                             </p>
