@@ -49,6 +49,7 @@
         position: relative;
         z-index: 1052;
     }
+    
 </style>
 
 <body>
@@ -115,14 +116,12 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="line-contact-tab" data-bs-toggle="pill" href="#line-contact"
-                                        role="tab" aria-controls="pills-contact" aria-selected="false">Incident
-                                        Report
+                                        role="tab" aria-controls="pills-contact" aria-selected="false">Incident Report
                                         Details</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="line-actions-tab" data-bs-toggle="pill" href="#line-actions"
-                                        role="tab" aria-controls="pills-actions" aria-selected="false">Actions &
-                                        Support Details</a>
+                                        role="tab" aria-controls="pills-actions" aria-selected="false">Actions & Support Details</a>
                                 </li>
                             </ul>
 
@@ -131,23 +130,23 @@
                                 <div class="tab-pane fade show active" id="line-home" role="tabpanel"
                                     aria-labelledby="line-home-tab">
                                     <div class="row">
-
-
+                                        
+    
                                         <div class="row">
                                             <div class="col-md-6 mb-2">
                                                 <label class="mb-2 mt-2"><strong>Full Name:</strong></label>
                                                 <input type="text" class="form-control"
                                                     value="{{ $reporterData['fullname'] }}" disabled>
                                             </div>
-
+                                           
                                             <div class="col-md-6 mb-2">
-                                                <label class="mb-2 mt-2"><strong>ID Number:</strong></label>
+                                                <label class="mb-2 mt-2"><strong>Student Number:</strong></label>
                                                 <input type="text" class="form-control"
                                                     value="{{ $reporterData['idnumber'] }}" disabled>
                                             </div>
-
+                                           
                                         </div>
-
+                                        
                                         <div class="row">
                                             <div class="col-md-6 mb-2">
                                                 <label class="mb-2 mt-2">
@@ -155,12 +154,10 @@
                                                         {{ $reporterData['type'] === 'Student' ? 'Grade/Year Level' : 'Position' }}
                                                     </strong>
                                                 </label>
-                                                <input type="text" class="form-control"
-                                                    value="{{ $reporterData['position'] }}" disabled>
+                                                <input type="text" class="form-control" value="{{ $reporterData['position'] }}" disabled>
                                             </div>
                                             <div class="col-md-6 mb-2">
-                                                <label class="mb-2 mt-2"><strong>Role at the
-                                                        University:</strong></label>
+                                                <label class="mb-2 mt-2"><strong>Role at the University:</strong></label>
                                                 <input type="text" class="form-control"
                                                     value="{{ $reporterData['type'] }}" disabled>
                                             </div>
@@ -183,6 +180,11 @@
                                                 value="{{ ucfirst($reportData['perpetratorSchoolId']) }}" disabled>
                                         </div>
                                         <div class="col-md-6 mb-2">
+                                            <label class="mb-2 mt-2"><strong>Status:</strong></label>
+                                            <input type="text" class="form-control"
+                                                value="{{ ucfirst($reportData['perpetratorStatus']) }}" disabled>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
                                             <label class="mb-2 mt-2"><strong>Role at the University:</strong></label>
                                             <input type="text" class="form-control"
                                                 value="{{ $reportData['perpetratorRole'] }}" disabled>
@@ -190,7 +192,7 @@
                                         <div class="col-md-6 mb-2">
                                             <label class="mb-2 mt-2">
                                                 <strong>
-                                                    @if ($reportData['perpetratorRole'] == 'Student')
+                                                    @if($reportData['perpetratorRole'] == 'Student')
                                                         Year Level:
                                                     @elseif($reportData['perpetratorRole'] == 'Employee')
                                                         Position:
@@ -203,19 +205,18 @@
                                                 value="{{ $reportData['perpetratorGradeYearLevel'] }}" disabled>
                                         </div>
                                         <div class="col-md-6 mb-2">
-                                            <label class="mb-2 mt-2"><strong>Report As the
-                                                    Complainant:</strong></label>
+                                            <label class="mb-2 mt-2"><strong>Report As the Complainant:</strong></label>
                                             <input type="text" class="form-control"
                                                 value="{{ $reportData['submitAs'] }}" disabled>
                                         </div>
-
-                                        @if ($reportData['submitAs'] == 'No, I am submitting as a witness, friend, or other third party.')
+                                        
+                                        @if($reportData['submitAs'] == "No, I am submitting as a witness, friend, or other third party.")
                                             <div class="col-md-6 mb-2">
                                                 <label class="mb-2 mt-2"><strong>Victim Relationship:</strong></label>
                                                 <input type="text" class="form-control"
                                                     value="{{ $reportData['victimRelationship'] }}" disabled>
                                             </div>
-                                        @endif
+                                        @endif                           
                                     </div>
                                 </div>
 
@@ -230,88 +231,64 @@
                                                 value="{{ \Carbon\Carbon::parse($reportData['reportDate'])->setTimezone('Asia/Manila')->format('F j, Y, g:i A') }}"
                                                 disabled>
                                         </div>
-
+                                    
                                         <!-- Platform where cyberbullying occurred -->
                                         <div class="col-md-6 mb-2">
-                                            <label class="mb-2 mt-2"><strong>Platform where cyberbullying
-                                                    occurred:</strong></label>
+                                            <label class="mb-2 mt-2"><strong>Platform where cyberbullying occurred:</strong></label>
                                             @php
-                                                $uniquePlatforms = [];
-
-                                                foreach ($reportData['platformUsed'] as $platform) {
-                                                    if ($platform == 'N/A') {
-                                                        continue;
-                                                    }
-
-                                                    if (
-                                                        is_array($platform) ||
-                                                        (is_string($platform) && strpos($platform, ',') !== false)
-                                                    ) {
-                                                        $platformItems = is_array($platform)
-                                                            ? $platform
-                                                            : explode(', ', $platform);
-
-                                                        foreach ($platformItems as $item) {
-                                                            $cleanedItem = trim($item);
-                                                            $cleanedItem = preg_replace(
-                                                                '/[\[\]\(\)]/',
-                                                                '',
-                                                                $cleanedItem,
-                                                            );
-
-                                                            if (
-                                                                !empty($cleanedItem) &&
-                                                                !in_array($cleanedItem, $uniquePlatforms)
-                                                            ) {
-                                                                $uniquePlatforms[] = $cleanedItem;
-                                                            }
-                                                        }
-                                                    } else {
-                                                        $cleanedPlatform = $platform;
-
-                                                        if (str_starts_with($platform, 'Others (Please Specify)')) {
-                                                            $cleanedPlatform = trim(
-                                                                str_replace('Others (Please Specify), ', '', $platform),
-                                                            );
-                                                        } elseif (str_starts_with($platform, 'Social Media')) {
-                                                            $cleanedPlatform = 'Social Media';
-                                                        }
-
-                                                        $cleanedPlatform = preg_replace(
-                                                            '/[\[\]\(\),]/',
-                                                            '',
-                                                            $cleanedPlatform,
-                                                        );
-                                                        $cleanedPlatform = trim($cleanedPlatform);
-
-                                                        if (
-                                                            !empty($cleanedPlatform) &&
-                                                            !in_array($cleanedPlatform, $uniquePlatforms)
-                                                        ) {
-                                                            $uniquePlatforms[] = $cleanedPlatform;
+                                            $uniquePlatforms = [];
+                                            
+                                            foreach ($reportData['platformUsed'] as $platform) {
+                                                if ($platform == 'N/A') {
+                                                    continue;
+                                                }
+                                                
+                                                if (is_array($platform) || (is_string($platform) && strpos($platform, ',') !== false)) {
+                                                    $platformItems = is_array($platform) ? $platform : explode(', ', $platform);
+                                                    
+                                                    foreach ($platformItems as $item) {
+                                                        $cleanedItem = trim($item);
+                                                        $cleanedItem = preg_replace('/[\[\]\(\)]/', '', $cleanedItem);
+                                                        
+                                                        if (!empty($cleanedItem) && !in_array($cleanedItem, $uniquePlatforms)) {
+                                                            $uniquePlatforms[] = $cleanedItem;
                                                         }
                                                     }
+                                                } else {
+                                                    $cleanedPlatform = $platform;
+                                                    
+                                                    if (str_starts_with($platform, 'Others (Please Specify)')) {
+                                                        $cleanedPlatform = trim(str_replace('Others (Please Specify), ', '', $platform));
+                                                    } 
+                                                    elseif (str_starts_with($platform, 'Social Media')) {
+                                                        $cleanedPlatform = 'Social Media';
+                                                    }
+                                                    
+                                                    $cleanedPlatform = preg_replace('/[\[\]\(\),]/', '', $cleanedPlatform);
+                                                    $cleanedPlatform = trim($cleanedPlatform);
+                                                    
+                                                    if (!empty($cleanedPlatform) && !in_array($cleanedPlatform, $uniquePlatforms)) {
+                                                        $uniquePlatforms[] = $cleanedPlatform;
+                                                    }
                                                 }
-
-                                                if (empty($uniquePlatforms)) {
-                                                    $uniquePlatforms[] = 'N/A';
-                                                }
-
-                                                $platformsString = implode(', ', $uniquePlatforms);
-                                            @endphp
-
-                                            <input type="text" class="form-control"
-                                                value="{{ $platformsString }}" disabled>
+                                            }
+                                            
+                                            if (empty($uniquePlatforms)) {
+                                                $uniquePlatforms[] = 'N/A';
+                                            }
+                                            
+                                            $platformsString = implode(', ', $uniquePlatforms);
+                                        @endphp
+                                    
+                                            <input type="text" class="form-control" value="{{ $platformsString }}" disabled>
                                         </div>
-                                    </div>
-
+                                    </div>     
+                                    
                                     <div class="row">
                                         <div class="col-md-12 mb-2">
-                                            <label class="mb-2 mt-2"><strong>Type of Cyberbullying was
-                                                    Involved:</strong></label>
+                                            <label class="mb-2 mt-2"><strong>Type of Cyberbullying was Involved:</strong></label>
                                             <input type="text" class="form-control"
-                                                value="{{ str_replace(['[', ']'], '', implode(', ', $reportData['cyberbullyingTypes'])) }}"
-                                                disabled>
+                                            value="{{ str_replace(['[', ']'], '', implode(', ', $reportData['cyberbullyingTypes'])) }}" disabled>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -343,7 +320,7 @@
                                             @endif
                                         </div>
                                     </div>
-
+  
                                     <!-- Full Screen Image Viewer -->
                                     <div id="galleryViewer"
                                         class="position-fixed top-0 start-0 w-100 h-100 bg-black d-none"
@@ -375,11 +352,9 @@
                                     <div class="result">
                                         @if (isset($reportData['analysisResult']))
                                             <p class="mb-2">
-                                                <strong>Result:</strong>
-                                                <span
-                                                    class="@if ($reportData['analysisProbability'] > 50) text-danger @else text-success @endif">
-                                                    {{ number_format($reportData['analysisProbability'], 2) }}%
-                                                    {{ $reportData['analysisResult'] }}
+                                                <strong>Result:</strong> 
+                                                <span class="@if ($reportData['analysisResult'] === 'Cyberbullying Detected') text-danger @else text-success @endif">
+                                                    {{ number_format($reportData['analysisProbability'], 2) }}% {{ $reportData['analysisResult'] }}
                                                 </span>
                                             </p>
                                         @else
@@ -387,7 +362,7 @@
                                                 <p class="text-yellow-700">Analysis result not available</p>
                                             </div>
                                         @endif
-
+                                    
                                         @if (isset($reportData['error']))
                                             <div class="bg-red-50 p-4 rounded-lg shadow">
                                                 <p class="text-red-700">Error: {{ $reportData['error'] }}</p>
@@ -395,212 +370,192 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="tab-pane fade" id="line-actions" role="tabpanel"
-                                    aria-labelledby="line-actions-tab">
+                                <div class="tab-pane fade" id="line-actions" role="tabpanel" aria-labelledby="line-actions-tab">
                                     <div class="row">
                                         @if (empty($reportData['describeActions']) && empty($reportData['reportedTo']))
                                             @if ($reportData['actionsTaken'] != 'N/A')
                                                 <div class="col-md-6 mb-2">
-                                                    <label class="mb-2 mt-2"><strong>Have actions been taken so
-                                                            far:</strong></label>
-                                                    <input type="text" class="form-control"
-                                                        value="{{ $reportData['actionsTaken'] }}" disabled>
+                                                    <label class="mb-2 mt-2"><strong>Have actions been taken so far:</strong></label>
+                                                    <input type="text" class="form-control" value="{{ $reportData['actionsTaken'] }}" disabled>
                                                 </div>
                                             @endif
-
+                                            
                                             <div class="col-md-6 mb-2">
-                                                <label class="mb-2 mt-2"><strong>Have Reported the Incident to Anyone
-                                                        Else:</strong></label>
-                                                <input type="text" class="form-control"
-                                                    value="{{ $reportData['hasReportedBefore'] !== 'N/A' ? $reportData['hasReportedBefore'] : '' }}"
-                                                    disabled>
+                                                <label class="mb-2 mt-2"><strong>Have Reported the Incident to Anyone Else:</strong></label>
+                                                <input type="text" class="form-control" value="{{ $reportData['hasReportedBefore'] !== 'N/A' ? $reportData['hasReportedBefore'] : '' }}" disabled>
                                             </div>
-
+                                            
                                             @if ($reportData['actionsTaken'] == 'N/A')
                                                 <div class="col-md-6 mb-2">
                                                     <label class="mb-2 mt-2"><strong>Support Types:</strong></label>
                                                     @php
                                                         $uniqueSupportTypes = [];
-
+                                                        
                                                         foreach ($reportData['supportTypes'] as $supportType) {
                                                             if ($supportType == 'N/A') {
                                                                 continue;
                                                             }
-
-                                                            $cleanedSupportType = preg_replace(
-                                                                '/[\[\]]/',
-                                                                '',
-                                                                $supportType,
-                                                            );
+                                                            
+                                                            $cleanedSupportType = preg_replace('/[\[\]]/', '', $supportType);
                                                             $cleanedSupportType = trim($cleanedSupportType);
-
-                                                            if (
-                                                                !empty($cleanedSupportType) &&
-                                                                !in_array($cleanedSupportType, $uniqueSupportTypes)
-                                                            ) {
+                                                            
+                                                            if (!empty($cleanedSupportType) && !in_array($cleanedSupportType, $uniqueSupportTypes)) {
                                                                 $uniqueSupportTypes[] = $cleanedSupportType;
                                                             }
                                                         }
                                                     @endphp
-
-                                                    @if (empty($uniqueSupportTypes))
-                                                        <input type="text" class="form-control" value="N/A"
-                                                            disabled>
+                                                    
+                                                    @if(empty($uniqueSupportTypes))
+                                                        <input type="text" class="form-control" value="N/A" disabled>
                                                     @else
-                                                        <input type="text" class="form-control"
-                                                            value="{{ implode(', ', $uniqueSupportTypes) }}" disabled>
+                                                        <input type="text" class="form-control" value="{{ implode(', ', $uniqueSupportTypes) }}" disabled>
                                                     @endif
                                                 </div>
                                             @endif
                                         @else
                                             @if ($reportData['actionsTaken'] != 'N/A')
                                                 <div class="col-md-6 mb-2">
-                                                    <label class="mb-2 mt-2"><strong>Have actions been taken so
-                                                            far:</strong></label>
-                                                    <input type="text" class="form-control"
-                                                        value="{{ $reportData['actionsTaken'] }}" disabled>
+                                                    <label class="mb-2 mt-2"><strong>Have actions been taken so far:</strong></label>
+                                                    <input type="text" class="form-control" value="{{ $reportData['actionsTaken'] }}" disabled>
                                                 </div>
                                             @endif
-
+                                            
                                             @if (!empty($reportData['describeActions']) && $reportData['describeActions'] != 'N/A')
-                                                <div
-                                                    class="col-md-{{ $reportData['actionsTaken'] != 'N/A' ? '6' : '12' }} mb-2">
+                                                <div class="col-md-{{ $reportData['actionsTaken'] != 'N/A' ? '6' : '12' }} mb-2">
                                                     <label class="mb-2 mt-2"><strong>Describe Actions:</strong></label>
-                                                    <input type="text" class="form-control"
-                                                        value="{{ $reportData['describeActions'] }}" disabled>
+                                                    <input type="text" class="form-control" value="{{ $reportData['describeActions'] }}" disabled>
                                                 </div>
                                             @endif
                                         @endif
                                     </div>
-
+                                    
                                     <div class="row">
                                         <div class="col-md-6 mb-2">
-                                            <label class="mb-2 mt-2"><strong>Have Reported the Incident to Anyone
-                                                    Else:</strong></label>
-                                            <input type="text" class="form-control"
-                                                value="{{ $reportData['hasReportedBefore'] !== 'N/A' ? $reportData['hasReportedBefore'] : '' }}"
-                                                disabled>
+                                            <label class="mb-2 mt-2"><strong>Have Reported the Incident to Anyone Else:</strong></label>
+                                            <input type="text" class="form-control" value="{{ $reportData['hasReportedBefore'] !== 'N/A' ? $reportData['hasReportedBefore'] : '' }}" disabled>
                                         </div>
-
+                                        
                                         @if ($reportData['departmentCollege'] != 'N/A')
                                             <div class="col-md-6 mb-2">
-                                                <label class="mb-2 mt-2"><strong>Department/College
-                                                        Reported:</strong></label>
-                                                <input type="text" class="form-control"
-                                                    value="{{ $reportData['departmentCollege'] }}" disabled>
+                                                <label class="mb-2 mt-2"><strong>Department/College Reported:</strong></label>
+                                                <input type="text" class="form-control" value="{{ $reportData['departmentCollege'] }}" disabled>
                                             </div>
                                         @elseif (!empty($reportData['reportedTo']) && $reportData['reportedTo'] != 'N/A')
                                             <div class="col-md-6 mb-2">
                                                 <label class="mb-2 mt-2"><strong>Reported to:</strong></label>
-                                                <input type="text" class="form-control"
-                                                    value="{{ $reportData['reportedTo'] }}" disabled>
+                                                <input type="text" class="form-control" value="{{ $reportData['reportedTo'] }}" disabled>
                                             </div>
                                         @else
                                             <div class="col-md-6 mb-2">
                                                 <label class="mb-2 mt-2"><strong>Support Types:</strong></label>
                                                 @php
                                                     $uniqueSupportTypes = [];
-
+                                                    
                                                     foreach ($reportData['supportTypes'] as $supportType) {
                                                         if ($supportType == 'N/A') {
                                                             continue;
                                                         }
-
-                                                        $cleanedSupportType = preg_replace(
-                                                            '/[\[\]]/',
-                                                            '',
-                                                            $supportType,
-                                                        );
+                                                        
+                                                        $cleanedSupportType = preg_replace('/[\[\]]/', '', $supportType);
                                                         $cleanedSupportType = trim($cleanedSupportType);
-
-                                                        if (
-                                                            !empty($cleanedSupportType) &&
-                                                            !in_array($cleanedSupportType, $uniqueSupportTypes)
-                                                        ) {
+                                                        
+                                                        if (!empty($cleanedSupportType) && !in_array($cleanedSupportType, $uniqueSupportTypes)) {
                                                             $uniqueSupportTypes[] = $cleanedSupportType;
                                                         }
                                                     }
                                                 @endphp
-
-                                                @if (empty($uniqueSupportTypes))
-                                                    <input type="text" class="form-control" value="N/A"
-                                                        disabled>
+                                                
+                                                @if(empty($uniqueSupportTypes))
+                                                    <input type="text" class="form-control" value="N/A" disabled>
                                                 @else
-                                                    <input type="text" class="form-control"
-                                                        value="{{ implode(', ', $uniqueSupportTypes) }}" disabled>
+                                                    <input type="text" class="form-control" value="{{ implode(', ', $uniqueSupportTypes) }}" disabled>
                                                 @endif
                                             </div>
                                         @endif
                                     </div>
-
+                                    
                                     @if (!empty($reportData['reportedTo']) && $reportData['reportedTo'] != 'N/A')
-                                        <div class="row">
-                                            <div class="col-md-6 mb-2">
-                                                <label class="mb-2 mt-2"><strong>Support Types:</strong></label>
-                                                @php
-                                                    $uniqueSupportTypes = [];
-
-                                                    foreach ($reportData['supportTypes'] as $supportType) {
-                                                        if ($supportType == 'N/A') {
-                                                            continue;
-                                                        }
-
-                                                        $cleanedSupportType = preg_replace(
-                                                            '/[\[\]]/',
-                                                            '',
-                                                            $supportType,
-                                                        );
-                                                        $cleanedSupportType = trim($cleanedSupportType);
-
-                                                        if (
-                                                            !empty($cleanedSupportType) &&
-                                                            !in_array($cleanedSupportType, $uniqueSupportTypes)
-                                                        ) {
-                                                            $uniqueSupportTypes[] = $cleanedSupportType;
-                                                        }
+                                    <div class="row">
+                                        <div class="col-md-6 mb-2">
+                                            <label class="mb-2 mt-2"><strong>Support Types:</strong></label>
+                                            @php
+                                                $uniqueSupportTypes = [];
+                                                
+                                                foreach ($reportData['supportTypes'] as $supportType) {
+                                                    if ($supportType == 'N/A') {
+                                                        continue;
                                                     }
-                                                @endphp
-
-                                                @if (empty($uniqueSupportTypes))
-                                                    <input type="text" class="form-control" value="N/A"
-                                                        disabled>
-                                                @else
-                                                    <input type="text" class="form-control"
-                                                        value="{{ implode(', ', $uniqueSupportTypes) }}" disabled>
-                                                @endif
-                                            </div>
-
-                                            @if ($reportData['submitAs'] == 'No, I am submitting as a witness, friend, or other third party.')
-                                                <div class="col-md-6 mb-2">
-                                                    <label class="mb-2 mt-2"><strong>Participate in an
-                                                            Investigation:</strong></label>
-                                                    <input type="text" class="form-control"
-                                                        value="{{ $reportData['witnessChoice'] }}" disabled>
-                                                </div>
+                                                    
+                                                    $cleanedSupportType = preg_replace('/[\[\]]/', '', $supportType);
+                                                    $cleanedSupportType = trim($cleanedSupportType);
+                                                    
+                                                    if (!empty($cleanedSupportType) && !in_array($cleanedSupportType, $uniqueSupportTypes)) {
+                                                        $uniqueSupportTypes[] = $cleanedSupportType;
+                                                    }
+                                                }
+                                            @endphp
+                                            
+                                            @if(empty($uniqueSupportTypes))
+                                                <input type="text" class="form-control" value="N/A" disabled>
+                                            @else
+                                                <input type="text" class="form-control" value="{{ implode(', ', $uniqueSupportTypes) }}" disabled>
                                             @endif
                                         </div>
+                                        
+                                        @if($reportData['submitAs'] == "No, I am submitting as a witness, friend, or other third party.")
+                                            <div class="col-md-6 mb-2">
+                                                <label class="mb-2 mt-2"><strong>Participate in an Investigation:</strong></label>
+                                                <input type="text" class="form-control" value="{{ $reportData['witnessChoice'] }}" disabled>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    @endif
+                                    
+                                    @if($reportData['submitAs'] == "No, I am submitting as a witness, friend, or other third party.")
+                                    <div class="row">
+                                        @if(!(!empty($reportData['reportedTo']) && $reportData['reportedTo'] != 'N/A'))
+                                            <div class="col-md-6 mb-2">
+                                                <label class="mb-2 mt-2"><strong>Willingness to Participate in Investigation:</strong></label>
+                                                <input type="text" class="form-control" value="{{ $reportData['witnessChoice'] }}" disabled>
+                                            </div>
+                                        @endif
+                                        
+                                        <div class="col-md-{{ (!empty($reportData['reportedTo']) && $reportData['reportedTo'] != 'N/A') ? '12' : '6' }} mb-2">
+                                            <label class="mb-2 mt-2"><strong>Contact if Investigation Starts:</strong></label>
+                                            <input type="text" class="form-control" value="{{ $reportData['contactChoice'] }}" disabled>
+                                        </div>
+                                    </div>
                                     @endif
 
-                                    @if ($reportData['submitAs'] == 'No, I am submitting as a witness, friend, or other third party.')
+                                    <form id="remarksForm" method="POST" action="{{ route('admin.updateReport') }}">
+                                        @csrf
+                                        <input type="hidden" name="report_id" value="{{ $reportData['_id'] }}">
+                                    
                                         <div class="row">
-                                            @if (!(!empty($reportData['reportedTo']) && $reportData['reportedTo'] != 'N/A'))
-                                                <div class="col-md-6 mb-2">
-                                                    <label class="mb-2 mt-2"><strong>Willingness to Participate in
-                                                            Investigation:</strong></label>
-                                                    <input type="text" class="form-control"
-                                                        value="{{ $reportData['witnessChoice'] }}" disabled>
-                                                </div>
-                                            @endif
-
-                                            <div
-                                                class="col-md-{{ !empty($reportData['reportedTo']) && $reportData['reportedTo'] != 'N/A' ? '12' : '6' }} mb-2">
-                                                <label class="mb-2 mt-2"><strong>Contact if Investigation
-                                                        Starts:</strong></label>
-                                                <input type="text" class="form-control"
-                                                    value="{{ $reportData['contactChoice'] }}" disabled>
+                                            <div class="col-md-12 form-group">
+                                                <label for="remarks" class="form-label">Remarks <span class="text-danger">*</span></label>
+                                                <textarea 
+                                                    class="form-control" 
+                                                    id="remarks" 
+                                                    name="remarks" 
+                                                    rows="5" 
+                                                    {{ $reportData['remarks'] ? 'disabled' : '' }}
+                                                    @if(!$reportData['remarks']) placeholder="Enter remarks" @endif
+                                                >{{ trim($reportData['remarks'] ?? '') }}</textarea>
+                                            </div>
+                                            
+                                            <div class="col-md-12 text-start mt-2">
+                                                <button 
+                                                    type="submit" 
+                                                    class="btn btn-secondary" 
+                                                    id="submitBtn" 
+                                                    {{ $reportData['remarks'] ? 'disabled' : '' }}
+                                                >
+                                                    Submit
+                                                </button>
                                             </div>
                                         </div>
-                                    @endif
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -608,7 +563,6 @@
                 </div>
             </div>
         </div>
-    </div>
     </div>
 
 
@@ -619,121 +573,64 @@
     <script src="../../../../assets/js/report.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script>
-        // Function to show custom toast notifications
-        function showToast(message, type) {
-            const toastElement = document.createElement('div');
-            toastElement.classList.add('toast', 'align-items-center', 'text-white', 'bg-' + type, 'border-0');
-            toastElement.setAttribute('role', 'alert');
-            toastElement.setAttribute('aria-live', 'assertive');
-            toastElement.setAttribute('aria-atomic', 'true');
+      document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("remarksForm").addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent normal form submission
 
-            toastElement.innerHTML = `
+            let form = this;
+            let formData = new FormData(form);
+            let submitBtn = document.getElementById("submitBtn");
+
+            // Disable button to prevent multiple submissions
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Submitting...";
+
+            fetch(form.action, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value,
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Submit";
+
+                if (data.status === "success") { //  Ensure this matches the backend response
+                    showToast("success", data.message);
+                    form.querySelector("#remarks").setAttribute("disabled", "true");
+                    submitBtn.setAttribute("disabled", "true");
+                } else {
+                    showToast("danger", data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Submit";
+                showToast("danger", "Something went wrong!");
+            });
+        });
+
+        function showToast(type, message) {
+            const toast = document.createElement("div");
+            toast.className = `toast align-items-center text-white bg-${type} border-0 position-fixed bottom-0 end-0 m-3`;
+            toast.innerHTML = `
                 <div class="d-flex">
-                    <div class="toast-body">
-                        ${message}
-                    </div>
+                    <div class="toast-body">${message}</div>
                     <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
             `;
 
-            const toastContainer = document.getElementById('toastContainer');
-            toastContainer.appendChild(toastElement);
+            document.body.appendChild(toast);
+            let bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
 
-            const toast = new bootstrap.Toast(toastElement);
-            toast.show();
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
         }
+    });
 
-        $(document).ready(function() {
-            $('#updateReportForm').on('submit', function(e) {
-                e.preventDefault(); // Prevent default form submission
-
-                // Change the button text to "Saving..." and disable it
-                $('#saveButton').text('Saving...').prop('disabled', true);
-
-                // Send form data via AJAX
-                $.ajax({
-                    url: $(this).attr('action'),
-                    method: 'POST',
-                    data: $(this).serialize(),
-                    success: function(response) {
-                        // Show toast with the response message and type
-                        showToast(response.message, response.status);
-
-                        // Reset the button text to "Save"
-                        $('#saveButton').text('Save').prop('disabled', false);
-                    },
-                    error: function(xhr) {
-                        // Show toast with the error message
-                        var errorMessage = xhr.responseJSON.message ||
-                            'An error occurred while saving the report.';
-                        showToast(errorMessage, 'error');
-
-                        // Reset the button text to "Save"
-                        $('#saveButton').text('Save').prop('disabled', false);
-                    }
-                });
-            });
-        });
-
-        $(document).ready(function() {
-            const inputField = $('#id_number');
-            const suggestionsContainer = $('#idNumberSuggestions');
-
-            inputField.on('input', function() {
-                const searchTerm = $(this).val();
-
-                if (searchTerm.length >= 3) { // Trigger after 3 characters
-                    $.ajax({
-                        url: '{{ route('search.idNumber') }}',
-                        method: 'GET',
-                        data: {
-                            term: searchTerm
-                        },
-                        success: function(data) {
-                            // Remove duplicates using Set
-                            const uniqueData = [...new Set(data)];
-
-                            // Clear and reposition suggestions
-                            suggestionsContainer.empty().hide();
-
-                            if (uniqueData.length > 0) {
-                                // Match width of input field
-                                suggestionsContainer.css({
-                                    width: inputField.outerWidth() + 'px',
-                                    top: inputField.outerHeight() + 'px',
-                                    left: inputField.position().left + 'px',
-                                    position: 'absolute'
-                                });
-
-                                // Append suggestions
-                                uniqueData.forEach(function(idNumber) {
-                                    suggestionsContainer.append(`
-                                    <a href="#" class="list-group-item list-group-item-action">${idNumber}</a>
-                                `);
-                                });
-
-                                // Show the dropdown
-                                suggestionsContainer.show();
-
-                                // Add click event to suggestions
-                                suggestionsContainer.find('a').on('click', function(e) {
-                                    e.preventDefault();
-                                    inputField.val($(this).text());
-                                    suggestionsContainer.empty().hide();
-                                });
-                            }
-                        }
-                    });
-                } else {
-                    suggestionsContainer.empty().hide();
-                }
-            });
-
-            // Hide suggestions if the user clicks outside the input or suggestions
-            $(document).on('click', function(e) {
-                if (!$(e.target).closest('#id_number, #idNumberSuggestions').length) {
-                    suggestionsContainer.empty().hide();
-                }
-            });
-        });
     </script>

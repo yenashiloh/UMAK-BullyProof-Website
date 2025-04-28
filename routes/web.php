@@ -13,12 +13,14 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\EmailController;
 use App\Http\Middleware\PreventBackHistory;
 
+
 Route::get('/', [AdminAuthController::class, 'showLoginForm'])->name('login');
 
 Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('admin.login.submit');
 
 Route::middleware([PreventBackHistory::class, 'discipline'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'showDisciplineDashboard'])->name('admin.dashboard');
+    Route::get('/admin/generate-report', [DashboardController::class, 'generateReport'])->name('admin.generate.report');
 
     Route::get('/profile', [ProfileController::class, 'showDisciplineProfile'])->name('admin.profile');
     Route::post('update-profile', [ProfileController::class, 'updateProfile'])->name('admin.updateProfile');
@@ -41,6 +43,7 @@ Route::middleware([PreventBackHistory::class, 'discipline'])->group(function () 
     Route::get('/appointment', [AppointmentController::class, 'showAppointmentPage'])->name('admin.appointment.appointment');
     Route::get('/appointment/summary', [AppointmentController::class, 'showAppointmentSummaryPage'])->name('admin.appointment.summary');
     Route::post('/appointments', [AppointmentController::class, 'storeAppointment'])->name('appointments.store');
+    
     Route::post('/appointments/change-status', [AppointmentController::class, 'changeStatus']);
     Route::post('/appointments/filter', [AppointmentController::class, 'filterAppointments']);
 
@@ -48,6 +51,7 @@ Route::middleware([PreventBackHistory::class, 'discipline'])->group(function () 
     Route::get('/complainees/{identifier}', [ListController::class, 'viewPerpetratorDiscipline'])
     ->name('admin.perpetrator.discipline');
 
+    Route::get('/reports/{reportId}/appointment', [AppointmentController::class, 'getAppointmentForReport']);
 
 
     Route::get('/complainees/reports/{idNumber}', [ListController::class, 'viewReportsByIdNumber'])->name('admin.reports.byIdNumber');

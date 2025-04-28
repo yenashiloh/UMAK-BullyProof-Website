@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
-use MongoDB\Client;
-use Illuminate\Http\Request;
+
 use App\Services\CyberbullyingDetectionService;
+use Illuminate\Http\Request;
+use MongoDB\Client;
 
 class ListController extends Controller
 {
@@ -464,7 +465,8 @@ class ListController extends Controller
             'fullname' => $reporter->fullname ?? '',
             'idnumber' => $reporter->idnumber ?? '',
             'type' => $reporter->type ?? '',
-            'position' => $reporter->position ?? ''
+            'position' => $reporter->position ?? '',
+            
         ];
 
         // Support types
@@ -492,8 +494,6 @@ class ListController extends Controller
             'describeActions' => $report->describeActions ?? 'N/A',
 
             'incidentEvidence' => $report->incidentEvidence,
-
-
 
             'analysisResult' => $analysisResult['analysisResult'],
             'analysisProbability' => $analysisResult['analysisProbability'],
@@ -535,6 +535,8 @@ class ListController extends Controller
         if (!empty($report->perpetratorName)) {
             $perpetratorName = trim(strtoupper($report->perpetratorName));
             $studentsCollection = $client->bullyproof->students;
+            
+            // Remove the status filter to get all students
             $allStudents = $studentsCollection->find()->toArray();
             
             foreach ($allStudents as $student) {
@@ -554,6 +556,8 @@ class ListController extends Controller
                     
                     if (empty($perpFirstNames) || $this->hasAnyNamePartMatch($perpFirstNames, $studentName)) {
                         $perpetratorSchoolId = $student->schoolId;
+                        // You can add a way to capture the status here if needed
+                        $perpetratorStatus = $student->status ?? 'No Status';
                         break;
                     }
                 }
@@ -566,6 +570,8 @@ class ListController extends Controller
                     
                     if (count($commonWords) >= 2) {
                         $perpetratorSchoolId = $student->schoolId;
+                        // You can add a way to capture the status here if needed
+                        $perpetratorStatus = $student->status ?? 'No Status';
                         break;
                     }
                 }
@@ -573,6 +579,7 @@ class ListController extends Controller
         }
         
         $reportData['perpetratorSchoolId'] = $perpetratorSchoolId;
+        $reportData['perpetratorStatus'] = $perpetratorStatus ?? 'No Status';
     
         return view('admin.list.view-report', compact(
             'firstName',

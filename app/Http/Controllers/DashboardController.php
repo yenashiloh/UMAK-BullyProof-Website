@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use MongoDB\Client;
 use Illuminate\Http\Request;
+use QuickChart\QuickChart;
 
 class DashboardController extends Controller
 {
@@ -204,160 +205,292 @@ class DashboardController extends Controller
         ));
     }
     
-    // public function showSuperAdminDashboard(Request $request)
-    // {
-    //     $adminId = session('admin_id');
-    //     if (!$adminId) {
-    //         return redirect()->route('admin.login')->with('error', 'Please login to access the dashboard');
-    //     }
-    
-    //     $client = new Client(env('MONGODB_URI'));
-    //     $userCollection = $client->bullyproof->users;
-    //     $adminCollection = $client->bullyproof->admins;
-    //     $reportsCollection = $client->bullyproof->reports;
-    
-    //     $startDate = $request->input('start_date', date('Y-m-d', strtotime('first day of january this year')));
-    //     $endDate = $request->input('end_date', date('Y-m-d'));
-    
-    //     $startDateTime = new \MongoDB\BSON\UTCDateTime(strtotime($startDate) * 1000);
-    //     $endDateTime = new \MongoDB\BSON\UTCDateTime(strtotime($endDate . ' 23:59:59') * 1000);
-    
-    //     $dateFilter = [
-    //         'reportDate' => [
-    //             '$gte' => $startDateTime,
-    //             '$lte' => $endDateTime
-    //         ]
-    //     ];
-    
-    //     $totalUsers = $userCollection->countDocuments();
-    //     $totalReports = $reportsCollection->countDocuments($dateFilter);
-    //     $toReviewCount = $reportsCollection->countDocuments(['status' => 'For Review'] + $dateFilter);
-    //     $underInvestigationCount = $reportsCollection->countDocuments(['status' => 'Under Investigation'] + $dateFilter);
-    //     $resolvedCount = $reportsCollection->countDocuments(['status' => 'Resolved'] + $dateFilter);
-    
-    //     // Cyberbullying Type Pipeline
-    //     $pipeline = [
-    //         [
-    //             '$match' => $dateFilter
-    //         ],
-    //         [
-    //             '$unwind' => '$cyberbullyingType'
-    //         ],
-    //         [
-    //             '$group' => [
-    //                 '_id' => '$cyberbullyingType',
-    //                 'count' => ['$sum' => 1]
-    //             ]
-    //         ]
-    //     ];
-    
-    //     $cyberbullyingCounts = $reportsCollection->aggregate($pipeline);
-    //     $cyberbullyingData = [];
-    //     foreach ($cyberbullyingCounts as $typeCount) {
-    //         $cyberbullyingData[(string)$typeCount->_id] = $typeCount->count;
-    //     }
-    
-    //     // Monthly Reports Pipeline
-    //     $monthPipeline = [
-    //         [
-    //             '$match' => $dateFilter
-    //         ],
-    //         [
-    //             '$group' => [
-    //                 '_id' => [
-    //                     '$dateToString' => [
-    //                         'format' => '%Y-%m',
-    //                         'date' => '$reportDate'
-    //                     ]
-    //                 ],
-    //                 'count' => ['$sum' => 1]
-    //             ]
-    //         ],
-    //         [
-    //             '$sort' => ['_id' => 1]
-    //         ]
-    //     ];
-    
-    //     $reportMonthCounts = $reportsCollection->aggregate($monthPipeline);
-    
-    //     $reportMonthData = [];
-    //     $reportCounts = [];
+    public function generateReport(Request $request)
+    {
+        // Get the date range parameters
+        $startDate = $request->input('start_date', date('Y-m-d', strtotime('first day of january this year')));
+        $endDate = $request->input('end_date', date('Y-m-d'));
         
-    //     $period = new \DatePeriod(
-    //         new \DateTime($startDate),
-    //         new \DateInterval('P1M'),
-    //         new \DateTime($endDate)
-    //     );
+        // Connect to MongoDB
+        $client = new Client(env('MONGODB_URI'));
+        $userCollection = $client->bullyproof->users;
+        $reportsCollection = $client->bullyproof->reports;
+        
+        $startDateTime = new \MongoDB\BSON\UTCDateTime(strtotime($startDate) * 1000);
+        $endDateTime = new \MongoDB\BSON\UTCDateTime(strtotime($endDate . ' 23:59:59') * 1000);
+        
+        $dateFilter = [
+            'reportDate' => [
+                '$gte' => $startDateTime,
+                '$lte' => $endDateTime
+            ]
+        ];
+        
+        // Get all the counts and statistics
+        $totalUsers = $userCollection->countDocuments();
+        $totalReports = $reportsCollection->countDocuments($dateFilter);
+        $toReviewCount = $reportsCollection->countDocuments(['status' => 'For Review'] + $dateFilter);
+        $underInvestigationCount = $reportsCollection->countDocuments(['status' => 'Under Investigation'] + $dateFilter);
+        $resolvedCount = $reportsCollection->countDocuments(['status' => 'Resolved'] + $dateFilter);
+        $dismissedCount = $reportsCollection->countDocuments(['status' => 'Dismissed'] + $dateFilter);
+        $underMediationCount = $reportsCollection->countDocuments(['status' => 'Under Mediation'] + $dateFilter);
+        $reopenedCount = $reportsCollection->countDocuments(['status' => 'Reopened'] + $dateFilter);
+        $awaitingResponseCount = $reportsCollection->countDocuments(['status' => 'Awaiting Response'] + $dateFilter);
+        $withdrawnCount = $reportsCollection->countDocuments(['status' => 'Withdrawn'] + $dateFilter);
+        
+        // Get monthly data
+        $monthPipeline = [
+            ['$match' => $dateFilter],
+            [
+                '$group' => [
+                    '_id' => [
+                        '$dateToString' => [
+                            'format' => '%Y-%m',
+                            'date' => '$reportDate'
+                        ]
+                    ],
+                    'count' => ['$sum' => 1]
+                ]
+            ],
+            ['$sort' => ['_id' => 1]]
+        ];
+        
+        $reportMonthCounts = $reportsCollection->aggregate($monthPipeline);
+        
+        $reportMonthData = [];
+        $reportCounts = [];
+        
+        $period = new \DatePeriod(
+            new \DateTime($startDate),
+            new \DateInterval('P1M'),
+            new \DateTime($endDate)
+        );
+        
+        foreach ($period as $date) {
+            $monthKey = $date->format('Y-m');
+            $reportMonthData[] = $date->format('F Y');
+            $reportCounts[$monthKey] = 0;
+        }
+        
+        foreach ($reportMonthCounts as $report) {
+            $monthKey = $report->_id;
+            if (isset($reportCounts[$monthKey])) {
+                $reportCounts[$monthKey] = $report->count;
+            }
+        }
+        
+        // Get platform data
+        $platformPipeline = [
+            ['$match' => $dateFilter],
+            ['$unwind' => '$platformUsed'],
+            [
+                '$group' => [
+                    '_id' => '$platformUsed',
+                    'count' => ['$sum' => 1]
+                ]
+            ],
+            ['$sort' => ['count' => -1]]
+        ];
+        
+        $platformCounts = $reportsCollection->aggregate($platformPipeline);
+        $platformLabels = [];
+        $platformData = [];
+        
+        foreach ($platformCounts as $platform) {
+            $platformLabels[] = $platform->_id;
+            $platformData[] = $platform->count;
+        }
+        
+        // Get cyberbullying types data
+        $cyberbullyingTypesPipeline = [
+            ['$match' => $dateFilter],
+            ['$unwind' => '$cyberbullyingTypes'],
+            [
+                '$addFields' => [
+                    'splitTypes' => ['$split' => ['$cyberbullyingTypes', ', ']]
+                ]
+            ],
+            ['$unwind' => '$splitTypes'],
+            [
+                '$group' => [
+                    '_id' => '$splitTypes',
+                    'count' => ['$sum' => 1]
+                ]
+            ],
+            ['$sort' => ['count' => -1]]
+        ];
+        
+        $cyberbullyingTypesResult = $reportsCollection->aggregate($cyberbullyingTypesPipeline);
+        $cyberbullyingTypesData = [];
+        
+        foreach ($cyberbullyingTypesResult as $type) {
+            $cyberbullyingTypesData[$type->_id] = $type->count;
+        }
+        
+        // Generate chart images as base64 strings
+        $lineChartBase64 = $this->fetchChartAsBase64(
+            $this->generateLineChartUrl($reportMonthData, array_values($reportCounts))
+        );
+        
+        $platformBarChartBase64 = $this->fetchChartAsBase64(
+            $this->generateBarChartUrl($platformLabels, $platformData)
+        );
+        
+        $cyberbullyingPieChartBase64 = $this->fetchChartAsBase64(
+            $this->generatePieChartUrl(array_keys($cyberbullyingTypesData), array_values($cyberbullyingTypesData))
+        );
+        
+        // Create PDF using Dompdf
+        $pdf = \PDF::loadView('admin.reports.pdf', [
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'totalUsers' => $totalUsers,
+            'totalReports' => $totalReports,
+            'toReviewCount' => $toReviewCount,
+            'underInvestigationCount' => $underInvestigationCount,
+            'resolvedCount' => $resolvedCount,
+            'dismissedCount' => $dismissedCount,
+            'underMediationCount' => $underMediationCount,
+            'reopenedCount' => $reopenedCount,
+            'awaitingResponseCount' => $awaitingResponseCount,
+            'withdrawnCount' => $withdrawnCount,
+            'lineChartImage' => $lineChartBase64,
+            'platformBarChartImage' => $platformBarChartBase64, 
+            'cyberbullyingPieChartImage' => $cyberbullyingPieChartBase64,
+            'reportDate' => date('Y-m-d H:i:s')
+        ]);
+        
+        // Set paper size and orientation
+        $pdf->setPaper('a4', 'portrait');
+        
+        // Download the PDF with a specific filename
+        return $pdf->download('cyberbullying-report-' . date('Y-m-d') . '.pdf');
+    }
     
-    //     foreach ($period as $date) {
-    //         $monthKey = $date->format('Y-m');
-    //         $reportMonthData[] = $date->format('F Y');
-    //         $reportCounts[$monthKey] = 0;
-    //     }
+    // Helper method to fetch chart as base64
+    private function fetchChartAsBase64($url)
+    {
+        try {
+            $imageData = file_get_contents($url);
+            if ($imageData) {
+                return 'data:image/png;base64,' . base64_encode($imageData);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error fetching chart: ' . $e->getMessage());
+        }
+        
+        // Return a placeholder image if chart couldn't be fetched
+        return 'data:image/png;base64,' . base64_encode($this->getPlaceholderImage());
+    }
     
-    //     foreach ($reportMonthCounts as $report) {
-    //         $monthKey = $report->_id;
-    //         if (isset($reportCounts[$monthKey])) {
-    //             $reportCounts[$monthKey] = $report->count;
-    //         }
-    //     }
+    // Helper method for placeholder image
+    private function getPlaceholderImage()
+    {
+        // Create a simple placeholder image
+        $image = imagecreate(600, 300);
+        $background = imagecolorallocate($image, 240, 240, 240);
+        $textColor = imagecolorallocate($image, 100, 100, 100);
+        
+        imagestring($image, 5, 150, 140, 'Chart data unavailable', $textColor);
+        
+        ob_start();
+        imagepng($image);
+        $imageData = ob_get_clean();
+        imagedestroy($image);
+        
+        return $imageData;
+    }
     
-    //     // Platform Pipeline
-    //     $platformPipeline = [
-    //         [
-    //             '$match' => $dateFilter
-    //         ],
-    //         [
-    //             '$unwind' => '$platformUsed'
-    //         ],
-    //         [
-    //             '$group' => [
-    //                 '_id' => '$platformUsed',
-    //                 'count' => ['$sum' => 1]
-    //             ]
-    //         ],
-    //         [
-    //             '$sort' => ['count' => -1]
-    //         ]
-    //     ];
+    // Helper methods to generate chart URLs
+    private function generateLineChartUrl($labels, $data)
+    {
+        // Create the Chart.js configuration
+        $config = [
+            'type' => 'line',
+            'data' => [
+                'labels' => $labels,
+                'datasets' => [
+                    [
+                        'label' => 'Number of Reports',
+                        'data' => $data,
+                        'fill' => false,
+                        'borderColor' => 'rgb(75, 192, 192)',
+                        'tension' => 0.1
+                    ]
+                ]
+            ],
+            'options' => [
+                'title' => [
+                    'display' => true,
+                    'text' => 'Number of Reports Over Time'
+                ]
+            ]
+        ];
+        
+        // Return the QuickChart URL
+        return 'https://quickchart.io/chart?c=' . urlencode(json_encode($config));
+    }
     
-    //     $platformCounts = $reportsCollection->aggregate($platformPipeline);
-    //     $platformLabels = [];
-    //     $platformData = [];
-    //     foreach ($platformCounts as $platform) {
-    //         $platformLabels[] = $platform->_id;
-    //         $platformData[] = $platform->count;
-    //     }
+    private function generateBarChartUrl($labels, $data)
+    {
+        // Generate colors for the bars
+        $colors = [];
+        for ($i = 0; $i < count($data); $i++) {
+            $colors[] = 'rgba(' . rand(0, 200) . ', ' . rand(0, 200) . ', ' . rand(0, 200) . ', 0.7)';
+        }
+        
+        $config = [
+            'type' => 'bar',
+            'data' => [
+                'labels' => $labels,
+                'datasets' => [
+                    [
+                        'label' => 'Count',
+                        'data' => $data,
+                        'backgroundColor' => $colors
+                    ]
+                ]
+            ],
+            'options' => [
+                'title' => [
+                    'display' => true,
+                    'text' => 'Cyberbullying Platforms'
+                ]
+            ]
+        ];
+        
+        return 'https://quickchart.io/chart?c=' . urlencode(json_encode($config));
+    }
     
-    
-    //     $admin = $adminCollection->findOne(['_id' => new \MongoDB\BSON\ObjectId($adminId)]);
-    //     if (!$admin) {
-    //         return redirect()->route('admin.login')->with('error', 'Admin not found');
-    //     }
-    
-    //     $firstName = $admin->first_name ?? '';
-    //     $lastName = $admin->last_name ?? '';
-    //     $email = $admin->email ?? '';
-    
-    //     return view('admin.dashboard', compact(
-    //         'totalUsers',
-    //         'totalReports',
-    //         'toReviewCount',
-    //         'underInvestigationCount',
-    //         'resolvedCount',
-    //         'firstName',
-    //         'lastName',
-    //         'email',
-    //         'cyberbullyingData',
-    //         'reportMonthData',
-    //         'reportCounts',
-    //         'platformData',
-    //         'platformLabels',
-    //         'startDate',
-    //         'endDate',
-          
-    //     ));
-    // }
+    private function generatePieChartUrl($labels, $data)
+    {
+        // Generate colors for pie segments
+        $colors = [];
+        for ($i = 0; $i < count($data); $i++) {
+            $colors[] = 'rgba(' . rand(0, 200) . ', ' . rand(0, 200) . ', ' . rand(0, 200) . ', 0.7)';
+        }
+        
+        $config = [
+            'type' => 'pie',
+            'data' => [
+                'labels' => $labels,
+                'datasets' => [
+                    [
+                        'data' => $data,
+                        'backgroundColor' => $colors
+                    ]
+                ]
+            ],
+            'options' => [
+                'title' => [
+                    'display' => true,
+                    'text' => 'Types of Cyberbullying'
+                ]
+            ]
+        ];
+        
+        return 'https://quickchart.io/chart?c=' . urlencode(json_encode($config));
+    }
 
     public function showUploadedFiles()
     {

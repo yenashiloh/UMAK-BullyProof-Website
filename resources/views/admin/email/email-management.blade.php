@@ -78,11 +78,6 @@
                                         aria-selected="false">Complainant's Department</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" id="line-contact-tab" data-bs-toggle="pill" href="#line-contact"
-                                        role="tab" aria-controls="pills-contact" aria-selected="false">Cancelled
-                                        Appointment</a>
-                                </li>
-                                <li class="nav-item">
                                     <a class="nav-link" id="line-reschedule-tab" data-bs-toggle="pill"
                                         href="#line-reschedule" role="tab" aria-controls="pills-reschedule"
                                         aria-selected="false">Reschedule
@@ -130,15 +125,6 @@
                                             </div>
                                         </div>
                                         
-                                        <!-- Cancelled Tab -->
-                                        <div class="tab-pane fade" id="line-contact" role="tabpanel"
-                                            aria-labelledby="line-contact-tab">
-                                            <div class="form-group">
-                                                <!-- Textarea for CKEditor -->
-                                                <textarea id="cancelledEmailContent" name="cancelled_email_content" class="form-control ms-3">{{ $cancelledEmailContent }}</textarea>
-                                            </div>
-                                        </div>
-
                                         <!-- Reschedule Appointment Tab -->
                                         <div class="tab-pane fade" id="line-reschedule" role="tabpanel"
                                             aria-labelledby="line-reschedule-tab">

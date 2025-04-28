@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use MongoDB\BSON\ObjectId;
 use App\Models\EmailContent;
+use App\Models\Report;
+use App\Models\User;
+use App\Models\Student;
+use App\Models\DepartmentEmail;
 
 
 class AppointmentController extends Controller
@@ -213,125 +217,326 @@ class AppointmentController extends Controller
     }
     //store appointment
     public function storeAppointment(Request $request)
-{
-    try {
-        $validator = Validator::make($request->all(), [
-            'respondent_name' => 'required|string|max:255',
-            'respondent_email' => 'required|email',
-            'complainee_department_email' => 'required|email',
-            'complainant_name' => 'required|string|max:255',
-            'complainant_email' => 'required|email',
-            'complainant_department_email' => 'required|email',
-            'appointment_date' => 'required|date',
-            'appointment_start_time' => 'required|date_format:H:i',
-            'appointment_end_time' => 'required|date_format:H:i|after:appointment_start_time',
+    {
+        // Log the incoming request details
+        Log::info('storeAppointment method called', [
+            'url' => $request->url(),
+            'method' => $request->method(),
+            'input' => $request->all(),
+            'headers' => $request->headers->all(),
         ]);
-
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
-        }
-
-        $validated = $validator->validated();
-
-        $startDateTime = Carbon::parse($validated['appointment_date'] . ' ' . $validated['appointment_start_time']);
-        $endDateTime = Carbon::parse($validated['appointment_date'] . ' ' . $validated['appointment_end_time']);
-
-        $overlappingAppointments = $this->collection->countDocuments([
-            'appointment_date' => new UTCDateTime($startDateTime->timestamp * 1000),
-            '$or' => [
-                [
-                    'appointment_start_time' => [
-                        '$lt' => $validated['appointment_end_time']
-                    ],
-                    'appointment_end_time' => [
-                        '$gt' => $validated['appointment_start_time']
-                    ]
-                ]
-            ],
-            'status' => [
-                '$nin' => ['Cancelled']
-            ]
-        ]);
-
-        if ($overlappingAppointments > 0) {
-            return response()->json([
-                'success' => false,
-                'errors' => ['appointment_date' => ['This time slot is already booked']]
-            ], 422);
-        }
-
-        $now = Carbon::now();
-        $startDateTime = Carbon::parse($validated['appointment_date'] . ' ' . $validated['appointment_start_time']);
-        $appointmentDate = new UTCDateTime($startDateTime->timestamp * 1000);
-
-        $document = [
-            'respondent_name' => $validated['respondent_name'],
-            'respondent_email' => $validated['respondent_email'],
-            'complainee_department_email' => $validated['complainee_department_email'],
-            'complainant_name' => $validated['complainant_name'],
-            'complainant_email' => $validated['complainant_email'],
-            'complainant_department_email' => $validated['complainant_department_email'],
-            'appointment_date' => $appointmentDate,
-            'appointment_start_time' => $validated['appointment_start_time'],
-            'appointment_end_time' => $validated['appointment_end_time'],
-            'status' => 'Waiting for Confirmation',
-            'created_at' => new UTCDateTime($now->timestamp * 1000),
-            'updated_at' => new UTCDateTime($now->timestamp * 1000)
-        ];
-
-        $result = $this->collection->insertOne($document);
-
-        if ($result->getInsertedCount() > 0) {
+    
+        try {
+            // Validate the request
+            $validator = Validator::make($request->all(), [
+                'report_id' => 'required|string',
+                'appointment_date' => 'required|date',
+                'appointment_start_time' => 'required|date_format:H:i',
+                'appointment_end_time' => 'required|date_format:H:i|after:appointment_start_time',
+            ]);
+            
+            if ($validator->fails()) {
+                Log::warning('Validation failed', ['errors' => $validator->errors()]);
+                return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+            }
+            
+            $validated = $validator->validated();
+            Log::info('Validation passed', ['validated_data' => $validated]);
+            
+            // Get report details
+            $report = Report::where('_id', new ObjectId($validated['report_id']))->first();
+            
+            if (!$report) {
+                Log::error('Report not found', ['report_id' => $validated['report_id']]);
+                return response()->json([
+                    'success' => false,
+                    'errors' => ['report_id' => ['Report not found']]
+                ], 404);
+            }
+            Log::info('Report found', ['report_id' => $validated['report_id']]);
+            
+            // Get complainant (victim/reporter) details from users collection
+            $complainant = User::where('_id', new ObjectId($report->reportedBy))->first();
+            
+            if (!$complainant) {
+                Log::error('Complainant not found', ['reportedBy' => $report->reportedBy]);
+                return response()->json([
+                    'success' => false,
+                    'errors' => ['complainant' => ['Complainant not found']]
+                ], 404);
+            }
+            Log::info('Complainant found', ['complainant_id' => $report->reportedBy]);
+            
+            // Get respondent (perpetrator) details from users collection using the improved name matching
+            $respondent = $this->findUserByName($report->perpetratorName);
+            
+            if (!$respondent) {
+                Log::error('Respondent not found', ['perpetratorName' => $report->perpetratorName]);
+                return response()->json([
+                    'success' => false,
+                    'errors' => ['respondent' => ['Respondent not found']]
+                ], 404);
+            }
+            Log::info('Respondent found', ['respondent_name' => $report->perpetratorName, 'matched_to' => $respondent->fullname]);
+            
+            // Get department emails
+            $complainantDepartmentObj = null;
+            if (isset($complainant->department_emails)) {
+                $complainantDepartmentObj = DepartmentEmail::where('_id', new ObjectId($complainant->department_emails))->first();
+            }
+            
+            $respondenttDepartmentObj = null;
+            if (isset($respondent->department_emails)) {
+                $respondenttDepartmentObj = DepartmentEmail::where('_id', new ObjectId($respondent->department_emails))->first();
+            }
+            
+            $complainantDeptEmail = $complainantDepartmentObj ? $complainantDepartmentObj->email : null;
+            $respondentDeptEmail = $respondenttDepartmentObj ? $respondenttDepartmentObj->email : null;
+            
+            // Search for department emails in students collection
+            // For complainant - find matching student record by name
+            $complainantStudent = Student::where('name', 'LIKE', '%' . $complainant->fullname . '%')->first();
+            if ($complainantStudent && isset($complainantStudent->department_emails)) {
+                $deptEmailId = $complainantStudent->department_emails;
+                $complainantDepartmentObj = DepartmentEmail::where('_id', new ObjectId($deptEmailId))->first();
+                $complainantDeptEmail = $complainantDepartmentObj ? $complainantDepartmentObj->email : null;
+                Log::info('Complainant department email found from students collection', [
+                    'student_name' => $complainantStudent->name,
+                    'department_email_id' => $deptEmailId,
+                    'email' => $complainantDeptEmail
+                ]);
+            } else {
+                Log::warning('No matching student record found for complainant', [
+                    'complainant_name' => $complainant->fullname
+                ]);
+            }
+            
+            // For respondent - find matching student record by name
+            $respondentStudent = Student::where('name', 'LIKE', '%' . $respondent->fullname . '%')->first();
+            if ($respondentStudent && isset($respondentStudent->department_emails)) {
+                $deptEmailId = $respondentStudent->department_emails;
+                $respondentDepartmentObj = DepartmentEmail::where('_id', new ObjectId($deptEmailId))->first();
+                $respondentDeptEmail = $respondentDepartmentObj ? $respondentDepartmentObj->email : null;
+                Log::info('Respondent department email found from students collection', [
+                    'student_name' => $respondentStudent->name,
+                    'department_email_id' => $deptEmailId,
+                    'email' => $respondentDeptEmail
+                ]);
+            } else {
+                Log::warning('No matching student record found for respondent', [
+                    'respondent_name' => $respondent->fullname
+                ]);
+            }
+            
+            Log::info('Department emails retrieved', [
+                'complainant_dept_email' => $complainantDeptEmail,
+                'respondent_dept_email' => $respondentDeptEmail
+            ]);
+            
+            // Check for overlapping appointments
+            $startDateTime = Carbon::parse($validated['appointment_date'] . ' ' . $validated['appointment_start_time']);
+            $endDateTime = Carbon::parse($validated['appointment_date'] . ' ' . $validated['appointment_end_time']);
+            
+            $overlappingAppointments = Appointment::where('appointment_date', new UTCDateTime($startDateTime->timestamp * 1000))
+                ->where(function($query) use ($validated) {
+                    $query->where(function($q) use ($validated) {
+                        $q->where('appointment_start_time', '<', $validated['appointment_end_time'])
+                          ->where('appointment_end_time', '>', $validated['appointment_start_time']);
+                    });
+                })
+                ->whereNotIn('status', ['Cancelled'])
+                ->count();
+            
+            if ($overlappingAppointments > 0) {
+                Log::warning('Overlapping appointment found', ['count' => $overlappingAppointments]);
+                return response()->json([
+                    'success' => false,
+                    'errors' => ['appointment_date' => ['This time slot is already booked']]
+                ], 422);
+            }
+            Log::info('No overlapping appointments');
+            
+            $now = Carbon::now();
+            $appointmentDate = new UTCDateTime($startDateTime->timestamp * 1000);
+            
+            // Create appointment
+            $appointment = new Appointment([
+                'respondent_name' => $respondent->fullname,
+                'respondent_email' => $respondent->email,
+                'complainee_department_email' => $respondentDeptEmail,
+                'complainant_name' => $complainant->fullname,
+                'complainant_email' => $complainant->email,
+                'complainant_department_email' => $complainantDeptEmail,
+                'appointment_date' => $appointmentDate,
+                'appointment_start_time' => $validated['appointment_start_time'],
+                'appointment_end_time' => $validated['appointment_end_time'],
+                'status' => 'Waiting for Confirmation',
+                'created_at' => new UTCDateTime($now->timestamp * 1000),
+                'updated_at' => new UTCDateTime($now->timestamp * 1000),
+                'reports_id' => new ObjectId($validated['report_id'])
+            ]);
+            
+            $appointment->save();
+            Log::info('Appointment saved', ['appointment_id' => (string)$appointment->_id]);
+            
+            // Update report status
+            $report->status = "Under Investigation";
+            $report->save();
+            Log::info('Report status updated to Under Investigation', ['report_id' => $validated['report_id']]);
+            
+            // Send emails
             try {
-                // Send email to complainant and their department
-                Mail::to($validated['complainant_email'])
-                    ->send(new AppointmentNotification($document, true));
+                $emailContent = EmailContent::first();
                 
-                Mail::to($validated['complainant_department_email'])
-                    ->send(new AppointmentNotification($document, 'complainant_department'));
-
-                // Send email to complainee and their department
-                Mail::to($validated['respondent_email'])
-                    ->send(new AppointmentNotification($document, false));
-                    
-                Mail::to($validated['complainee_department_email'])
-                    ->send(new AppointmentNotification($document, 'complainee_department'));
-
+                // Send email to complainant and their department
+                if ($complainant->email) {
+                    Mail::to($complainant->email)
+                        ->send(new AppointmentNotification($appointment, true)); // true = complainant
+                    Log::info('Email sent to complainant', ['email' => $complainant->email]);
+                }
+                
+                if ($complainantDeptEmail) {
+                    Mail::to($complainantDeptEmail)
+                        ->send(new AppointmentNotification($appointment, 'complainant_department'));
+                    Log::info('Email sent to complainant department', ['email' => $complainantDeptEmail]);
+                }
+                
+                // Send email to respondent and their department
+                if ($respondent->email) {
+                    Mail::to($respondent->email)
+                        ->send(new AppointmentNotification($appointment, false)); // false = respondent
+                    Log::info('Email sent to respondent', ['email' => $respondent->email]);
+                }
+                
+                if ($respondentDeptEmail) {
+                    Mail::to($respondentDeptEmail)
+                        ->send(new AppointmentNotification($appointment, 'complainee_department'));
+                    Log::info('Email sent to respondent department', ['email' => $respondentDeptEmail]);
+                }
+                
+                Log::info('Appointment creation successful', ['appointment_id' => (string)$appointment->_id]);
                 return response()->json([
                     'success' => true,
                     'message' => 'Appointment created successfully!',
-                    'appointment_id' => (string)$result->getInsertedId()
+                    'appointment_id' => (string)$appointment->_id
                 ], 201);
-
             } catch (\Exception $e) {
                 Log::error('Email sending failed', [
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString()
                 ]);
+                
                 return response()->json([
                     'success' => true,
                     'message' => 'Appointment created, but email notifications failed.',
-                    'appointment_id' => (string)$result->getInsertedId()
+                    'appointment_id' => (string)$appointment->_id
                 ], 201);
             }
+        } catch (\Exception $e) {
+            Log::error('Appointment creation failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create appointment: ' . $e->getMessage()
+            ], 500);
         }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Failed to create appointment'
-        ], 500);
-
-    } catch (\Exception $e) {
-        Log::error('Appointment creation failed', [
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
-        return response()->json([
-            'success' => false,
-            'message' => 'Failed to create appointment'
-        ], 500);
     }
-}
+    
+    /**
+     * Get appointment details for a report
+     */
+    public function getAppointmentForReport($reportId)
+    {
+        try {
+            $appointment = Appointment::where('reports_id', new ObjectId($reportId))->first();
+            
+            if (!$appointment) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No appointment found for this report'
+                ], 404);
+            }
+            
+            return response()->json([
+                'success' => true,
+                'appointment' => $appointment
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error retrieving appointment: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    private function findUserByName($name)
+    {
+        Log::info('Finding user by name', ['searching_for' => $name]);
+        
+        // Remove special characters and extra spaces
+        $cleanName = preg_replace('/[^\p{L}\p{N}\s]/u', ' ', $name);
+        $cleanName = trim(preg_replace('/\s+/', ' ', $cleanName));
+        
+        // Handle "Last, First" format
+        $nameParts = explode(',', $name);
+        if (count($nameParts) > 1) {
+            $lastName = trim($nameParts[0]);
+            $firstNameParts = explode(' ', trim($nameParts[1]));
+            $firstName = trim($firstNameParts[0]);
+            
+            Log::info('Parsed name parts', ['firstName' => $firstName, 'lastName' => $lastName]);
+            
+            // Try different query combinations
+            $user = User::where('fullname', 'LIKE', '%' . $firstName . '%' . $lastName . '%')
+                ->orWhere('fullname', 'LIKE', '%' . $lastName . '%' . $firstName . '%')
+                ->orWhere(function($query) use ($firstName, $lastName) {
+                    $query->where('fullname', 'LIKE', '%' . $firstName . '%')
+                          ->where('fullname', 'LIKE', '%' . $lastName . '%');
+                })
+                ->first();
+            
+            if ($user) {
+                Log::info('User found by first/last name matching', ['matched_name' => $user->fullname]);
+                return $user;
+            }
+        }
+        
+        // If no comma, try direct matches or name part matching
+        $nameParts = explode(' ', $cleanName);
+        if (count($nameParts) >= 2) {
+            $firstName = $nameParts[0];
+            $lastName = end($nameParts);
+            
+            Log::info('Trying with name parts', ['firstName' => $firstName, 'lastName' => $lastName]);
+            
+            $user = User::where('fullname', 'LIKE', '%' . $firstName . '%')
+                ->where('fullname', 'LIKE', '%' . $lastName . '%')
+                ->first();
+            
+            if ($user) {
+                Log::info('User found by name parts matching', ['matched_name' => $user->fullname]);
+                return $user;
+            }
+        }
+        
+        // Last resort: try each significant word in the name
+        foreach ($nameParts as $part) {
+            if (strlen($part) > 2) { // Only search with parts that are likely actual names
+                Log::info('Trying with individual name part', ['part' => $part]);
+                $user = User::where('fullname', 'LIKE', '%' . $part . '%')->first();
+                if ($user) {
+                    Log::info('User found by individual name part', ['part' => $part, 'matched_name' => $user->fullname]);
+                    return $user;
+                }
+            }
+        }
+        
+        Log::warning('No user found matching name', ['name' => $name]);
+        return null;
+    }
 
     //show appointment summary page
     public function showAppointmentSummaryPage()
@@ -361,7 +566,7 @@ class AppointmentController extends Controller
     {
         $validated = $request->validate([
             'appointment_id' => 'required|string',
-            'new_status' => 'required|string|in:Waiting for Confirmation,Approved,Cancelled,Missed,Done,Rescheduled',
+            'new_status' => 'required|string|in:Waiting for Confirmation,Approved,Missed,Done,Rescheduled',
         ]);
     
         try {
@@ -386,15 +591,12 @@ class AppointmentController extends Controller
             $appointment->updated_at = new UTCDateTime(now()->timestamp * 1000);
             $appointment->save();
     
-            if (in_array($validated['new_status'], ['Cancelled', 'Rescheduled'])) {
+            if ($validated['new_status'] === 'Rescheduled') {
                 try {
-                    $template = $validated['new_status'] === 'Cancelled' ? 'cancelled' : 'rescheduled';
-                    $content = $validated['new_status'] === 'Cancelled' 
-                        ? $emailContent->cancelled_email_content 
-                        : $emailContent->reschedule_email_content;
+                    $content = $emailContent->reschedule_email_content;
     
                     if (empty($content)) {
-                        throw new \Exception("Email content for '{$validated['new_status']}' is empty");
+                        throw new \Exception("Email content for 'Rescheduled' is empty");
                     }
     
                     $emailData = [
@@ -413,7 +615,7 @@ class AppointmentController extends Controller
                         $recipient = $appointment->$emailField;
     
                         if ($recipient) {
-                            Mail::send("emails.{$template}", $emailData, function ($message) use ($recipient, $appointment) {
+                            Mail::send("emails.rescheduled", $emailData, function ($message) use ($recipient, $appointment) {
                                 $message->to($recipient)
                                     ->subject("Appointment {$appointment->status}");
                             });
@@ -425,7 +627,6 @@ class AppointmentController extends Controller
                 } catch (\Exception $e) {
                     Log::error('Failed to send status change email notification', [
                         'error' => $e->getMessage(),
-                        'template' => $template ?? null,
                         'trace' => $e->getTraceAsString(),
                     ]);
     

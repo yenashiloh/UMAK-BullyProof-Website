@@ -28,7 +28,6 @@ class EmailController extends Controller
         $complainantDepartmentEmailContent = $latestEmailContent['complainant_department_email_content'] ?? '';
         $complaineeEmailContent = $latestEmailContent['complainee_email_content'] ?? '';
         $complaineeDepartmentEmailContent = $latestEmailContent['complainee_department_email_content'] ?? '';
-        $cancelledEmailContent = $latestEmailContent['cancelled_email_content'] ?? '';
         $rescheduleEmailContent = $latestEmailContent['reschedule_email_content'] ?? '';
     
         return view('admin.email.email-management', compact(
@@ -39,7 +38,6 @@ class EmailController extends Controller
             'complainantDepartmentEmailContent',
             'complaineeDepartmentEmailContent',
             'complaineeEmailContent',
-            'cancelledEmailContent',
             'rescheduleEmailContent'
         ));
     }
@@ -54,7 +52,6 @@ class EmailController extends Controller
         $complainantDepartmentEmailContent = $request->input('complainant_department_email_content');
         $complaineeEmailContent = $request->input('complainee_email_content');
         $complaineeDepartmentEmailContent = $request->input('complainee_department_email_content');
-        $cancelledEmailContent = $request->input('cancelled_email_content');
         $rescheduleEmailContent = $request->input('reschedule_email_content');
         
         $result = $emailContentCollection->insertOne([
@@ -62,7 +59,6 @@ class EmailController extends Controller
             'complainant_department_email_content' => $complainantDepartmentEmailContent,
             'complainee_email_content' => $complaineeEmailContent,
             'complainee_department_email_content' => $complaineeDepartmentEmailContent,
-            'cancelled_email_content' => $cancelledEmailContent,
             'reschedule_email_content' => $rescheduleEmailContent,
             'created_at' => new \MongoDB\BSON\UTCDateTime(),  
         ]);

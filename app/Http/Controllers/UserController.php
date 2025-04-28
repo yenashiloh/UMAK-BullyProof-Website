@@ -58,8 +58,13 @@ class UserController extends Controller
             ],
             ['$sort' => ['timestamp' => -1]] 
         ])->toArray();
-        
+    
         foreach ($auditTrails as &$log) {
+            // Change the action text for "Login" to "Logged in"
+            if (isset($log['action']) && $log['action'] === 'Login') {
+                $log['action'] = 'Logged in';
+            }
+    
             if (isset($log['timestamp'])) {
                 if ($log['timestamp'] instanceof \MongoDB\BSON\UTCDateTime) {
                     $dateTime = $log['timestamp']->toDateTime();
@@ -82,6 +87,7 @@ class UserController extends Controller
             'auditTrails'
         ));
     }
+    
 
     //show users table
     public function showUsers()

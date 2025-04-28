@@ -132,11 +132,9 @@
                                                             <ul class="dropdown-menu" aria-labelledby="statusDropdown{{ $appointment['id'] }}">
                                                                 @if ($appointment['status'] == 'Waiting for Confirmation')
                                                                     <li><a class="dropdown-item" href="#" onclick="changeStatus('{{ $appointment['id'] }}', 'Approved')">Mark as Approved</a></li>
-                                                                    <li><a class="dropdown-item" href="#" onclick="changeStatus('{{ $appointment['id'] }}', 'Cancelled')">Mark as Cancelled</a></li>
                                                                     <li><a class="dropdown-item" href="#" onclick="changeStatus('{{ $appointment['id'] }}', 'Rescheduled')">Mark as Rescheduled</a></li>
                                                                 @elseif ($appointment['status'] == 'Approved')
                                                                    
-                                                                    <li><a class="dropdown-item" href="#" onclick="changeStatus('{{ $appointment['id'] }}', 'Cancelled')">Mark as Cancelled</a></li>
                                                                     <li><a class="dropdown-item" href="#" onclick="changeStatus('{{ $appointment['id'] }}', 'Missed')">Mark as Missed</a></li>
                                                                     <li><a class="dropdown-item" href="#" onclick="changeStatus('{{ $appointment['id'] }}', 'Rescheduled')">Mark as Rescheduled</a></li>
                                                                     <li><a class="dropdown-item" href="#" onclick="changeStatus('{{ $appointment['id'] }}', 'Done')">Mark as Done</a></li>

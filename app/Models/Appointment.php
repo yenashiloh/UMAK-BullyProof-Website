@@ -20,6 +20,8 @@ class Appointment extends Model
         'appointment_date',
         'appointment_start_time',
         'appointment_end_time',
+        'complainant_department_email',
+        'complainee_department_email',
         'created_at',
         'updated_at'
     ];

@@ -58,8 +58,9 @@
                                             <tr>
                                                 <td>{{ $log['formatted_date'] }}</td>
                                                 <td>{{ $log['full_name'] ?? 'Unknown User' }}</td>
-                                                <td>{{ ucfirst(Str::lower(preg_replace('/[^A-Za-z0-9]+/', ' ', $log['action']))) }}</td>
-
+                                                <td>
+                                                    {{ ucfirst(Str::lower(preg_replace('/[^A-Za-z0-9]+/', ' ', $log['action']))) === 'Login' ? 'Logged in' : ucfirst(Str::lower(preg_replace('/[^A-Za-z0-9]+/', ' ', $log['action']))) }}
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
