@@ -55,6 +55,12 @@
                             <p>Complainees</p>
                         </a>
                     </li>   
+                    <li class="nav-item {{ Route::currentRouteName() === 'admin.content.content-management' ? 'active' : '' }}">
+                        <a href="{{ route('admin.content.content-management') }}">
+                            <i class="fas fa-file"></i>
+                            <p>Content</p>
+                        </a>
+                    </li>
                     <li class="nav-section">
                         <span class="sidebar-mini-icon">
                             <i class="fa fa-ellipsis-h"></i>

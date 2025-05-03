@@ -12,7 +12,7 @@ use App\Http\Controllers\ListComplaineeController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\EmailController;
 use App\Http\Middleware\PreventBackHistory;
-
+use App\Http\Controllers\ContentController;
 
 Route::get('/', [AdminAuthController::class, 'showLoginForm'])->name('login');
 
@@ -71,4 +71,28 @@ Route::middleware([PreventBackHistory::class, 'discipline'])->group(function () 
 
     Route::post('/admin/reports/get-print-content', [ReportsController::class, 'getPrintContent'])->name('admin.reports.get-print-content');
 
+ 
+    // Main content management page
+    Route::get('/content-management', [ContentController::class, 'showContentPage'])->name('admin.content.content-management');
+    
+    // Form Builder API Routes
+    Route::post('/form-builders', [ContentController::class, 'createFormBuilder'])->name('form-builders.create');
+    Route::get('/form-builders/{id}', [ContentController::class, 'getFormBuilder'])->name('form-builders.get');
+    
+    // Steps
+    Route::post('/form-builders/{formId}/steps', [ContentController::class, 'addStep'])->name('form-builders.steps.add');
+    
+    // Elements
+    Route::post('/form-elements', [ContentController::class, 'addElement'])->name('form-elements.add');
+    Route::put('/form-elements/{id}', [ContentController::class, 'updateElement'])->name('form-elements.update');
+    Route::delete('/form-elements/{id}', [ContentController::class, 'deleteElement'])->name('form-elements.delete');
+    Route::post('/form-elements/{id}/duplicate', [ContentController::class, 'duplicateElement'])->name('form-elements.duplicate');
+    
+    // Element Options
+    Route::put('/form-elements/{id}/options', [ContentController::class, 'updateElementOptions'])->name('form-elements.options.update');
+    
+    // File Upload Settings
+    Route::put('/form-elements/{id}/file-settings', [ContentController::class, 'updateFileUploadSettings'])->name('form-elements.file-settings.update');
+    Route::get('/form-submissions', [ContentController::class, 'listFormSubmissions'])->name('form-submissions.list');
+Route::get('/form-submissions/{id}', [ContentController::class, 'viewFormSubmission'])->name('form-submissions.view');
 });
