@@ -94,4 +94,9 @@ Route::middleware([PreventBackHistory::class, 'discipline'])->group(function () 
     Route::put('/form-elements/{id}/file-settings', [ContentController::class, 'updateFileUploadSettings'])->name('form-elements.file-settings.update');
     Route::get('/form-elements/{formId}/{stepId}', [ContentController::class, 'getElementsByStep'])
     ->name('form-elements.get-by-step');
+
+    Route::put('/form-builders/{id}', [ContentController::class, 'updateFormBuilder'])->name('form-builders.update');
+
+    Route::delete('form-builders/{formId}/steps/{stepId}', [ContentController::class, 'deleteStep'])->name('form-builders.steps.delete');
+
 });

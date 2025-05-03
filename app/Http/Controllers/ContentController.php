@@ -52,6 +52,7 @@ class ContentController extends Controller
             'formBuilderData'
         ));
     }
+
     /**
      * Create a new form builder
      */
@@ -102,16 +103,47 @@ class ContentController extends Controller
     }
     
     /**
+     * Update a form builder
+     */
+    public function updateFormBuilder(Request $request, $id)
+    {
+        $formBuilder = FormBuilder::findOrFail($id);
+    
+        $request->validate([
+            'title' => 'nullable|string|max:255',
+            'steps' => 'nullable|array',
+            'steps.*.id' => 'required|string',
+            'steps.*.title' => 'nullable|string|max:255'
+        ]);
+    
+        $data = $formBuilder->toArray(); // Get existing data
+        if ($request->has('title')) {
+            $data['title'] = $request->title;
+        }
+        if ($request->has('steps')) {
+            $data['steps'] = $request->steps; // Replace or update steps array
+        }
+    
+        $formBuilder->update($data);
+        $formBuilder->refresh(); // Refresh to get the updated data
+    
+        return response()->json([
+            'success' => true,
+            'form' => $formBuilder
+        ]);
+    }
+
+    /**
      * Add a new step to a form builder
      */
-    public function addStep($formId)
+    public function addStep(Request $request, $formId)
     {
         $formBuilder = FormBuilder::findOrFail($formId);
         $steps = $formBuilder->steps ?? [];
         
         $newStep = [
             'id' => 'step-' . uniqid(),
-            'title' => 'Step ' . (count($steps) + 1)
+            'title' => $request->input('title', 'Step ' . (count($steps) + 1))
         ];
         
         $steps[] = $newStep;
@@ -123,6 +155,54 @@ class ContentController extends Controller
             'step' => $newStep
         ]);
     }
+
+    /**
+     * Delete a step from a form builder
+     */
+  /**
+ * Delete a step from a form builder
+ */
+public function deleteStep(Request $request, $formId, $stepId)
+{
+    try {
+        $formBuilder = FormBuilder::findOrFail($formId);
+        $steps = $formBuilder->steps ?? [];
+
+        // Prevent deletion if only one step exists
+        if (count($steps) <= 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cannot delete the only step.'
+            ], 400);
+        }
+
+        // Filter out the step with the matching stepId
+        $steps = array_filter($steps, function ($step) use ($stepId) {
+            return $step['id'] !== $stepId;
+        });
+
+        // Reindex the array to avoid gaps
+        $steps = array_values($steps);
+
+        // Delete associated elements
+        FormElement::where('form_builder_id', $formId)
+            ->where('step_id', $stepId)
+            ->delete();
+
+        // Update the form builder
+        $formBuilder->update(['steps' => $steps]);
+
+        return response()->json([
+            'success' => true,
+            'steps' => $steps
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to delete step: ' . $e->getMessage()
+        ], 500);
+    }
+}
     
     /**
      * Add a new element to a form
@@ -264,6 +344,33 @@ class ContentController extends Controller
     }
     
     /**
+     * Get elements for a specific step in a form builder
+     */
+    public function getElementsByStep($formId, $stepId)
+    {
+        try {
+            // Find the form builder
+            $formBuilder = FormBuilder::findOrFail($formId);
+
+            // Get elements for the specified step
+            $elements = FormElement::where('form_builder_id', $formId)
+                ->where('step_id', $stepId)
+                ->orderBy('position', 'asc')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'elements' => $elements
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve elements: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
      * Get default title for element type
      */
     private function getDefaultTitle($elementType)
@@ -285,31 +392,4 @@ class ContentController extends Controller
                 return 'Question';
         }
     }
-
-    /**
- * Get elements for a specific step in a form builder
- */
-public function getElementsByStep($formId, $stepId)
-{
-    try {
-        // Find the form builder
-        $formBuilder = FormBuilder::findOrFail($formId);
-
-        // Get elements for the specified step
-        $elements = FormElement::where('form_builder_id', $formId)
-            ->where('step_id', $stepId)
-            ->orderBy('position', 'asc')
-            ->get();
-
-        return response()->json([
-            'success' => true,
-            'elements' => $elements
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Failed to retrieve elements: ' . $e->getMessage()
-        ], 500);
-    }
-}
 }
