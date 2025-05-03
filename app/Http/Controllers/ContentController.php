@@ -23,17 +23,35 @@ class ContentController extends Controller
     
         $firstName = $admin->first_name ?? '';
         $lastName = $admin->last_name ?? '';
-        
-        // Get all form builders
-        $formBuilders = FormBuilder::where('created_by', $adminId)->get();
+    
+        // Get the most recent form builder for the admin
+        $formBuilder = FormBuilder::where('created_by', $adminId)
+            ->orderBy('created_at', 'desc')
+            ->first();
+    
+        $formBuilderData = null;
+        if ($formBuilder) {
+            // Get all elements for the form builder, grouped by step
+            $elements = FormElement::where('form_builder_id', $formBuilder->id)
+                ->orderBy('position', 'asc')
+                ->get()
+                ->groupBy('step_id');
+    
+            $formBuilderData = [
+                'id' => $formBuilder->id,
+                'title' => $formBuilder->title,
+                'description' => $formBuilder->description,
+                'steps' => $formBuilder->steps,
+                'elements' => $elements->toArray()
+            ];
+        }
     
         return view('admin.content.content-management', compact(
-            'firstName', 
+            'firstName',
             'lastName',
-            'formBuilders'
-        )); 
+            'formBuilderData'
+        ));
     }
-    
     /**
      * Create a new form builder
      */
@@ -267,4 +285,31 @@ class ContentController extends Controller
                 return 'Question';
         }
     }
+
+    /**
+ * Get elements for a specific step in a form builder
+ */
+public function getElementsByStep($formId, $stepId)
+{
+    try {
+        // Find the form builder
+        $formBuilder = FormBuilder::findOrFail($formId);
+
+        // Get elements for the specified step
+        $elements = FormElement::where('form_builder_id', $formId)
+            ->where('step_id', $stepId)
+            ->orderBy('position', 'asc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'elements' => $elements
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to retrieve elements: ' . $e->getMessage()
+        ], 500);
+    }
+}
 }

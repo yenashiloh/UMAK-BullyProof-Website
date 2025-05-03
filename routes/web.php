@@ -81,7 +81,6 @@ Route::middleware([PreventBackHistory::class, 'discipline'])->group(function () 
     
     // Steps
     Route::post('/form-builders/{formId}/steps', [ContentController::class, 'addStep'])->name('form-builders.steps.add');
-    
     // Elements
     Route::post('/form-elements', [ContentController::class, 'addElement'])->name('form-elements.add');
     Route::put('/form-elements/{id}', [ContentController::class, 'updateElement'])->name('form-elements.update');
@@ -93,6 +92,6 @@ Route::middleware([PreventBackHistory::class, 'discipline'])->group(function () 
     
     // File Upload Settings
     Route::put('/form-elements/{id}/file-settings', [ContentController::class, 'updateFileUploadSettings'])->name('form-elements.file-settings.update');
-    Route::get('/form-submissions', [ContentController::class, 'listFormSubmissions'])->name('form-submissions.list');
-Route::get('/form-submissions/{id}', [ContentController::class, 'viewFormSubmission'])->name('form-submissions.view');
+    Route::get('/form-elements/{formId}/{stepId}', [ContentController::class, 'getElementsByStep'])
+    ->name('form-elements.get-by-step');
 });
