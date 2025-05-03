@@ -98,5 +98,7 @@ Route::middleware([PreventBackHistory::class, 'discipline'])->group(function () 
     Route::put('/form-builders/{id}', [ContentController::class, 'updateFormBuilder'])->name('form-builders.update');
 
     Route::delete('form-builders/{formId}/steps/{stepId}', [ContentController::class, 'deleteStep'])->name('form-builders.steps.delete');
-
+    Route::get('/cards', [ContentController::class, 'indexCards'])->name('cards.index');
+    Route::post('/cards', [ContentController::class, 'createCard'])->name('cards.create');
+    Route::put('cards/{id}', [ContentController::class, 'updateCard'])->name('cards.update');
 });

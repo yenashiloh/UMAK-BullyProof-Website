@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Card;
 use App\Models\FormBuilder;
 use App\Models\FormElement;
 use MongoDB\Client;
@@ -24,32 +25,44 @@ class ContentController extends Controller
         $firstName = $admin->first_name ?? '';
         $lastName = $admin->last_name ?? '';
     
-        // Get the most recent form builder for the admin
-        $formBuilder = FormBuilder::where('created_by', $adminId)
-            ->orderBy('created_at', 'desc')
-            ->first();
+        // Fetch all cards for the admin
+        $cards = Card::where('created_by', $adminId)->get();
     
-        $formBuilderData = null;
-        if ($formBuilder) {
-            // Get all elements for the form builder, grouped by step
-            $elements = FormElement::where('form_builder_id', $formBuilder->id)
-                ->orderBy('position', 'asc')
-                ->get()
-                ->groupBy('step_id');
+        // Fetch form builders and elements for each card
+        $cardData = [];
+        foreach ($cards as $card) {
+            $formBuilder = FormBuilder::where('card_id', $card->id)
+                ->orderBy('created_at', 'desc')
+                ->first();
     
-            $formBuilderData = [
-                'id' => $formBuilder->id,
-                'title' => $formBuilder->title,
-                'description' => $formBuilder->description,
-                'steps' => $formBuilder->steps,
-                'elements' => $elements->toArray()
+            $formBuilderData = null;
+            if ($formBuilder) {
+                $elements = FormElement::where('form_builder_id', $formBuilder->id)
+                    ->where('card_id', $card->id)
+                    ->orderBy('position', 'asc')
+                    ->get()
+                    ->groupBy('step_id');
+    
+                $formBuilderData = [
+                    'id' => $formBuilder->id,
+                    'title' => $formBuilder->title,
+                    'description' => $formBuilder->description,
+                    'steps' => $formBuilder->steps,
+                    'elements' => $elements->toArray(),
+                    'card_id' => $card->id,
+                ];
+            }
+    
+            $cardData[] = [
+                'card' => $card,
+                'formBuilderData' => $formBuilderData,
             ];
         }
     
         return view('admin.content.content-management', compact(
             'firstName',
             'lastName',
-            'formBuilderData'
+            'cardData'
         ));
     }
 
@@ -60,17 +73,18 @@ class ContentController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string'
+            'description' => 'nullable|string',
+            'card_id' => 'required|string', // Added
         ]);
         
         $adminId = session('admin_id');
         
-        // Create a new form builder with default first step
         $formBuilder = FormBuilder::create([
             'title' => $request->title,
             'description' => $request->description,
             'created_by' => $adminId,
             'status' => 'draft',
+            'card_id' => $request->card_id, // Added
             'steps' => [
                 [
                     'id' => 'step-' . uniqid(),
@@ -99,6 +113,40 @@ class ContentController extends Controller
             'success' => true,
             'form' => $formBuilder,
             'elements' => $elements
+        ]);
+    }
+
+    /**
+     * Update a card
+     */
+    public function updateCard(Request $request, $id)
+    {
+        $card = Card::findOrFail($id);
+
+        $request->validate([
+            'title' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+            'buttons' => 'nullable|array',
+            'buttons.*.label' => 'required|string',
+            'buttons.*.action' => 'required|string',
+        ]);
+
+        $data = $card->toArray();
+        if ($request->has('title')) {
+            $data['title'] = $request->title;
+        }
+        if ($request->has('description')) {
+            $data['description'] = $request->description;
+        }
+        if ($request->has('buttons')) {
+            $data['buttons'] = $request->buttons;
+        }
+
+        $card->update($data);
+
+        return response()->json([
+            'success' => true,
+            'card' => $card
         ]);
     }
     
@@ -213,10 +261,10 @@ public function deleteStep(Request $request, $formId, $stepId)
             'form_builder_id' => 'required|string',
             'step_id' => 'required|string',
             'element_type' => 'required|string|in:section,paragraph,multiple_choice,checkbox,dropdown,file_upload',
-            'position' => 'required|integer'
+            'position' => 'required|integer',
+            'card_id' => 'required|string', // Added
         ]);
         
-        // Default settings for each element type
         $settings = [];
         $options = [];
         
@@ -225,7 +273,7 @@ public function deleteStep(Request $request, $formId, $stepId)
                 'allow_specific_types' => true,
                 'file_types' => ['pdf', 'image'],
                 'max_files' => 1,
-                'max_file_size' => 10 // MB
+                'max_file_size' => 10
             ];
         }
         
@@ -245,7 +293,8 @@ public function deleteStep(Request $request, $formId, $stepId)
             'position' => $request->position,
             'settings' => $settings,
             'options' => $options,
-            'is_required' => false
+            'is_required' => false,
+            'card_id' => $request->card_id, // Added
         ]);
         
         return response()->json([
@@ -349,12 +398,10 @@ public function deleteStep(Request $request, $formId, $stepId)
     public function getElementsByStep($formId, $stepId)
     {
         try {
-            // Find the form builder
             $formBuilder = FormBuilder::findOrFail($formId);
-
-            // Get elements for the specified step
             $elements = FormElement::where('form_builder_id', $formId)
                 ->where('step_id', $stepId)
+                ->where('card_id', $formBuilder->card_id)
                 ->orderBy('position', 'asc')
                 ->get();
 
@@ -392,4 +439,40 @@ public function deleteStep(Request $request, $formId, $stepId)
                 return 'Question';
         }
     }
+
+    /**
+     * Create a new card
+     */
+    public function createCard(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'buttons' => 'nullable|array',
+            'buttons.*.label' => 'required|string',
+            'buttons.*.action' => 'required|string',
+        ]);
+
+        $adminId = session('admin_id');
+
+        $card = Card::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'buttons' => $request->buttons ?? [],
+            'created_by' => $adminId,
+            'status' => 'active',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'card' => $card
+        ]);
+    }
+
+    public function indexCards()
+{
+    $adminId = session('admin_id');
+    $cards = Card::where('created_by', $adminId)->get();
+    return response()->json(['success' => true, 'cards' => $cards]);
+}
 }

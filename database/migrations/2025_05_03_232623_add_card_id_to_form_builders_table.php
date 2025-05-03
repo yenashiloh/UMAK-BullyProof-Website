@@ -1,0 +1,25 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up()
+    {
+        Schema::connection('mongodb')->table('form_builders', function (Blueprint $collection) {
+            $collection->string('card_id')->nullable();
+        });
+    }
+
+    public function down()
+    {
+        Schema::connection('mongodb')->table('form_builders', function (Blueprint $collection) {
+            $collection->dropColumn('card_id');
+        });
+    }
+};

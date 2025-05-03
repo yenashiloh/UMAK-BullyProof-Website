@@ -21,6 +21,7 @@ class FormElement extends Model
         'settings',
         'options',
         'is_required',
+        'card_id',
     ];
     
     protected $casts = [
