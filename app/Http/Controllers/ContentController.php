@@ -475,4 +475,36 @@ public function deleteStep(Request $request, $formId, $stepId)
     $cards = Card::where('created_by', $adminId)->get();
     return response()->json(['success' => true, 'cards' => $cards]);
 }
+
+public function getFormBuilderByCard($cardId)
+{
+    $formBuilder = FormBuilder::where('card_id', $cardId)
+        ->orderBy('created_at', 'desc')
+        ->first();
+
+    if ($formBuilder) {
+        $elements = FormElement::where('form_builder_id', $formBuilder->id)
+            ->where('card_id', $cardId)
+            ->orderBy('position', 'asc')
+            ->get()
+            ->groupBy('step_id');
+
+        return response()->json([
+            'success' => true,
+            'formBuilder' => [
+                'id' => $formBuilder->id,
+                'title' => $formBuilder->title,
+                'description' => $formBuilder->description,
+                'steps' => $formBuilder->steps,
+                'elements' => $elements->toArray(),
+                'card_id' => $cardId,
+            ]
+        ]);
+    }
+
+    return response()->json([
+        'success' => false,
+        'message' => 'No form builder found for this card.'
+    ], 404);
+}
 }

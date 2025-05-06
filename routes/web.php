@@ -13,6 +13,7 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\EmailController;
 use App\Http\Middleware\PreventBackHistory;
 use App\Http\Controllers\ContentController;
+use App\Http\Controllers\OtherReportController;
 
 Route::get('/', [AdminAuthController::class, 'showLoginForm'])->name('login');
 
@@ -101,4 +102,9 @@ Route::middleware([PreventBackHistory::class, 'discipline'])->group(function () 
     Route::get('/cards', [ContentController::class, 'indexCards'])->name('cards.index');
     Route::post('/cards', [ContentController::class, 'createCard'])->name('cards.create');
     Route::put('cards/{id}', [ContentController::class, 'updateCard'])->name('cards.update');
+    Route::get('/form-builders/card/{cardId}', [ContentController::class, 'getFormBuilderByCard'])->name('form-builders.get-by-card');
+
+    Route::get('/admin/reports/other-reports', [OtherReportController::class, 'showOtherReport'])->name('admin.reports.other-reports');
+    Route::get('/admin/reports/get-other-reports', [OtherReportController::class, 'getOtherReports'])->name('admin.reports.get-other-reports');
+    Route::get('/admin/reports/view/{id}', [OtherReportController::class, 'viewReport'])->name('admin.reports.view-other-report');
 });

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>Content Management</title>
@@ -19,6 +20,7 @@
             align-items: center;
             z-index: 9999;
         }
+
         .spinner {
             border: 4px solid #f3f3f3;
             border-top: 4px solid #3498db;
@@ -27,10 +29,17 @@
             height: 40px;
             animation: spin 1s linear infinite;
         }
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
+
         .step-card {
             border: 1px solid #ddd;
             border-radius: 8px;
@@ -38,6 +47,7 @@
             background: #fff;
             margin-bottom: 20px;
         }
+
         .element-card {
             border: none;
             border-bottom: 1px solid #e0e0e0;
@@ -45,23 +55,28 @@
             margin-bottom: 10px;
             background: transparent;
         }
+
         .element-card .form-control {
             border: none;
             border-bottom: 1px solid #ccc;
             border-radius: 0;
             box-shadow: none;
         }
+
         .add-element-modal .list-group-item {
             cursor: pointer;
         }
+
         .add-element-modal .list-group-item:hover {
             background: #f0f0f0;
         }
+
         .step-header {
             display: flex;
             align-items: center;
             margin-bottom: 10px;
         }
+
         .step-title-input {
             flex-grow: 1;
             margin-left: 10px;
@@ -70,6 +85,7 @@
             border-radius: 0;
             box-shadow: none;
         }
+
         .step-counter {
             white-space: nowrap;
             display: inline-flex;
@@ -81,6 +97,7 @@
             font-size: 0.9rem;
             margin-bottom: 0.5rem;
         }
+
         .card-container {
             border: 1px solid #ddd;
             border-radius: 8px;
@@ -89,24 +106,30 @@
             margin-bottom: 20px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .card-buttons {
             margin-top: 10px;
         }
+
         .nav-tabs .nav-link {
             border-radius: 0;
         }
+
         .tab-content {
             padding: 20px;
             border: 1px solid #ddd;
             border-top: none;
             border-radius: 0 0 8px 8px;
         }
-        .card-title-input, .card-description-input {
+
+        .card-title-input,
+        .card-description-input {
             width: 100%;
             border: none;
             border-bottom: 1px solid #ccc;
             margin-bottom: 10px;
         }
+
         .button-label-input {
             width: auto;
             border: none;
@@ -115,6 +138,7 @@
         }
     </style>
 </head>
+
 <body>
     <div id="loading-overlay" style="display: none;">
         <img id="loading-logo" src="{{ asset('assets/img/logo-4.png') }}" alt="Loading Logo">
@@ -153,17 +177,22 @@
                             <!-- Tabs Navigation -->
                             <ul class="nav nav-tabs" id="contentTabs" role="tablist">
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link active" id="cards-tab" data-bs-toggle="tab" data-bs-target="#cards" type="button" role="tab" aria-controls="cards" aria-selected="true">Cards</button>
+                                    <button class="nav-link active" id="cards-tab" data-bs-toggle="tab"
+                                        data-bs-target="#cards" type="button" role="tab" aria-controls="cards"
+                                        aria-selected="true">Cards</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="form-builder-tab" data-bs-toggle="tab" data-bs-target="#form-builder" type="button" role="tab" aria-controls="form-builder" aria-selected="false">Form Builder</button>
+                                    <button class="nav-link" id="form-builder-tab" data-bs-toggle="tab"
+                                        data-bs-target="#form-builder" type="button" role="tab"
+                                        aria-controls="form-builder" aria-selected="false">Form Builder</button>
                                 </li>
                             </ul>
 
                             <!-- Tabs Content -->
                             <div class="tab-content" id="contentTabsContent">
                                 <!-- Cards Tab -->
-                                <div class="tab-pane fade show active" id="cards" role="tabpanel" aria-labelledby="cards-tab">
+                                <div class="tab-pane fade show active" id="cards" role="tabpanel"
+                                    aria-labelledby="cards-tab">
                                     <div id="cards-container"></div>
                                     <button class="btn btn-secondary mt-3" id="add-card-btn">
                                         <i class="fas fa-plus"></i> Add Card
@@ -171,7 +200,8 @@
                                 </div>
 
                                 <!-- Form Builder Tab -->
-                                <div class="tab-pane fade" id="form-builder" role="tabpanel" aria-labelledby="form-builder-tab">
+                                <div class="tab-pane fade" id="form-builder" role="tabpanel"
+                                    aria-labelledby="form-builder-tab">
                                     <div id="steps-container"></div>
                                     <button class="btn btn-secondary mt-3" id="add-step-btn">
                                         <i class="fas fa-plus"></i> Add Step
@@ -186,7 +216,8 @@
     </div>
 
     <!-- Add Element Modal -->
-    <div class="modal fade" id="addElementModal" tabindex="-1" aria-labelledby="addElementModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addElementModal" tabindex="-1" aria-labelledby="addElementModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -195,11 +226,16 @@
                 </div>
                 <div class="modal-body">
                     <div class="list-group add-element-modal">
-                        <a href="#" class="list-group-item list-group-item-action" data-type="paragraph"><i class="fas fa-align-left me-2"></i>Paragraph</a>
-                        <a href="#" class="list-group-item list-group-item-action" data-type="multiple_choice"><i class="fas fa-list-ul me-2"></i>Multiple Choice</a>
-                        <a href="#" class="list-group-item list-group-item-action" data-type="checkbox"><i class="fas fa-check-square me-2"></i>Checkbox</a>
-                        <a href="#" class="list-group-item list-group-item-action" data-type="dropdown"><i class="fas fa-caret-down me-2"></i>Dropdown</a>
-                        <a href="#" class="list-group-item list-group-item-action" data-type="file_upload"><i class="fas fa-upload me-2"></i>File Upload</a>
+                        <a href="#" class="list-group-item list-group-item-action" data-type="paragraph"><i
+                                class="fas fa-align-left me-2"></i>Paragraph</a>
+                        <a href="#" class="list-group-item list-group-item-action" data-type="multiple_choice"><i
+                                class="fas fa-list-ul me-2"></i>Multiple Choice</a>
+                        <a href="#" class="list-group-item list-group-item-action" data-type="checkbox"><i
+                                class="fas fa-check-square me-2"></i>Checkbox</a>
+                        <a href="#" class="list-group-item list-group-item-action" data-type="dropdown"><i
+                                class="fas fa-caret-down me-2"></i>Dropdown</a>
+                        <a href="#" class="list-group-item list-group-item-action" data-type="file_upload"><i
+                                class="fas fa-upload me-2"></i>File Upload</a>
                     </div>
                 </div>
             </div>
@@ -207,7 +243,8 @@
     </div>
 
     <!-- Edit Card Modal -->
-    <div class="modal fade" id="editCardModal" tabindex="-1" aria-labelledby="editCardModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editCardModal" tabindex="-1" aria-labelledby="editCardModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -229,9 +266,9 @@
                         <div id="edit-card-buttons">
                             <!-- Buttons will be dynamically added here -->
                         </div>
-                        <button class="btn btn-outline-secondary btn-sm mt-2" id="add-button-btn">
+                        {{-- <button class="btn btn-outline-secondary btn-sm mt-2" id="add-button-btn">
                             <i class="fas fa-plus"></i> Add Button
-                        </button>
+                        </button> --}}
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -278,7 +315,8 @@
                         }
                     },
                     error: function(xhr) {
-                        toastr.error('Failed to load cards: ' + (xhr.responseJSON?.message || 'Unknown error.'));
+                        toastr.error('Failed to load cards: ' + (xhr.responseJSON?.message ||
+                            'Unknown error.'));
                         console.error('Cards error:', xhr);
                     },
                     complete: function() {
@@ -303,13 +341,13 @@
                             <textarea class="card-description-input" data-card-id="${card.id}">${card.description || ''}</textarea>
                             <div class="card-buttons">
                                 ${card.buttons.map(btn => `
-                                    <div class="d-inline-flex align-items-center">
-                                        <input type="text" class="button-label-input" value="${btn.label}" data-card-id="${card.id}" data-action="${btn.action}">
-                                        <button class="btn btn-warning btn-sm action-btn" data-action="${btn.action}" data-card-id="${card.id}">
-                                            ${btn.label}
-                                        </button>
-                                    </div>
-                                `).join('')}
+                                            <div class="d-inline-flex align-items-center">
+                                                <input type="text" class="button-label-input" value="${btn.label}" data-card-id="${card.id}" data-action="${btn.action}">
+                                                <button class="btn btn-warning btn-sm action-btn" data-action="${btn.action}" data-card-id="${card.id}">
+                                                    ${btn.label}
+                                                </button>
+                                            </div>
+                                        `).join('')}
                             </div>
                         </div>
                     `;
@@ -344,7 +382,8 @@
                         }
                     },
                     error: function(xhr) {
-                        toastr.error('Failed to update card: ' + (xhr.responseJSON?.message || 'Unknown error.'));
+                        toastr.error('Failed to update card: ' + (xhr.responseJSON?.message ||
+                            'Unknown error.'));
                     }
                 });
             });
@@ -365,7 +404,9 @@
                 $.ajax({
                     url: '{{ route('cards.update', ':id') }}'.replace(':id', cardId),
                     method: 'PUT',
-                    data: { buttons: card.buttons },
+                    data: {
+                        buttons: card.buttons
+                    },
                     success: function(response) {
                         if (response.success) {
                             renderCards();
@@ -375,7 +416,8 @@
                         }
                     },
                     error: function(xhr) {
-                        toastr.error('Failed to update button label: ' + (xhr.responseJSON?.message || 'Unknown error.'));
+                        toastr.error('Failed to update button label: ' + (xhr.responseJSON
+                            ?.message || 'Unknown error.'));
                     }
                 });
             });
@@ -394,17 +436,13 @@
                 $buttonsContainer.empty();
                 card.buttons.forEach(btn => {
                     $buttonsContainer.append(`
-                        <div class="mb-2 d-flex align-items-center">
-                            <input type="text" class="form-control button-label-input" value="${btn.label}" data-action="${btn.action}">
-                            <select class="form-select ms-2 action-select" data-action="${btn.action}">
-                                <option value="show_form" ${btn.action === 'show_form' ? 'selected' : ''}>Show Form</option>
-                                <option value="build" ${btn.action === 'build' ? 'selected' : ''}>Build</option>
-                            </select>
-                            <button class="btn btn-outline-danger btn-sm ms-2 delete-button-btn">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    `);
+            <div class="mb-2 d-flex align-items-center">
+                <input type="text" class="form-control button-label-input" value="${btn.label}" data-action="${btn.action}">
+                <button class="btn btn-outline-danger btn-sm ms-2 delete-button-btn">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `);
                 });
 
                 $('#editCardModal').modal('show');
@@ -413,17 +451,13 @@
             // Add Button in Edit Modal
             $('#add-button-btn').click(function() {
                 $('#edit-card-buttons').append(`
-                    <div class="mb-2 d-flex align-items-center">
-                        <input type="text" class="form-control button-label-input" value="New Button">
-                        <select class="form-select ms-2 action-select">
-                            <option value="show_form">Show Form</option>
-                            <option value="build">Build</option>
-                        </select>
-                        <button class="btn btn-outline-danger btn-sm ms-2 delete-button-btn">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                `);
+        <div class="mb-2 d-flex align-items-center">
+            <input type="text" class="form-control button-label-input" value="New Button" data-action="show_form"> <!-- Default action -->
+            <button class="btn btn-outline-danger btn-sm ms-2 delete-button-btn">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    `);
             });
 
             // Delete Button in Edit Modal
@@ -464,7 +498,8 @@
                         }
                     },
                     error: function(xhr) {
-                        toastr.error('Failed to update card: ' + (xhr.responseJSON?.message || 'Unknown error.'));
+                        toastr.error('Failed to update card: ' + (xhr.responseJSON?.message ||
+                            'Unknown error.'));
                     }
                 });
             });
@@ -477,9 +512,11 @@
                     data: {
                         title: 'New Card',
                         description: 'Card description',
-                        buttons: [
-                            { label: 'Add Elements', action: 'show_form' },
-                            { label: 'Build', action: 'build' }
+                        buttons: [{
+                                label: 'Add Elements',
+                                action: 'show_form'
+                            },
+
                         ]
                     },
                     beforeSend: function() {
@@ -496,7 +533,8 @@
                         }
                     },
                     error: function(xhr) {
-                        toastr.error('Failed to add card: ' + (xhr.responseJSON?.message || 'Unknown error.'));
+                        toastr.error('Failed to add card: ' + (xhr.responseJSON?.message ||
+                            'Unknown error.'));
                         console.error('Add card error:', xhr);
                     },
                     complete: function() {
@@ -512,37 +550,31 @@
 
                 if (action === 'show_form' || action === 'build') {
                     $('#form-builder-tab').tab('show');
-                    initFormBuilder(currentCardId);
+                    initFormBuilder(currentCardId); // Pass cardId to fetch related form data
                 }
             });
 
-            // Initialize Form Builder
+            // Initialize Form Builder with Card ID
             function initFormBuilder(cardId) {
                 $('#loading-overlay').show();
                 $.ajax({
-                    url: '{{ route('form-builders.create') }}',
-                    method: 'POST',
-                    data: {
-                        title: 'New Form',
-                        description: 'Form created on {{ now()->format('Y-m-d') }}',
-                        card_id: cardId
-                    },
-                    beforeSend: function() {
-                        $('#loading-overlay').show();
-                    },
+                    url: '{{ route('form-builders.get-by-card', ':cardId') }}'.replace(':cardId',
+                        cardId), // New route to fetch by card_id
+                    method: 'GET',
                     success: function(response) {
-                        if (response.success && response.form && response.form.id) {
-                            formBuilderId = response.form.id;
-                            steps = response.form.steps || [];
+                        if (response.success && response.formBuilder) {
+                            formBuilderId = response.formBuilder.id;
+                            steps = response.formBuilder.steps || [];
                             renderSteps();
                             steps.forEach(step => loadElements(step.id));
                         } else {
-                            toastr.error('Failed to initialize form builder.');
+                            toastr.error('No form builder found for this card.');
                             console.error('Invalid response:', response);
                         }
                     },
                     error: function(xhr) {
-                        toastr.error('Failed to create form: ' + (xhr.responseJSON?.message || 'Unknown error.'));
+                        toastr.error('Failed to load form builder: ' + (xhr.responseJSON?.message ||
+                            'Unknown error.'));
                         console.error('Init error:', xhr);
                     },
                     complete: function() {
@@ -591,7 +623,8 @@
                             </div>
                         `;
                         $stepCard = $(stepHtml);
-                        loadElements(step.id, $stepCard.find(`.elements-container[data-step-id="${step.id}"]`));
+                        loadElements(step.id, $stepCard.find(
+                            `.elements-container[data-step-id="${step.id}"]`));
                     }
                     $stepsContainer.append($stepCard);
                 });
@@ -622,7 +655,8 @@
                         }
                     },
                     error: function(xhr) {
-                        toastr.error('Failed to load elements: ' + (xhr.responseJSON?.message || 'Unknown error.'));
+                        toastr.error('Failed to load elements: ' + (xhr.responseJSON?.message ||
+                            'Unknown error.'));
                         console.error('Load elements error:', xhr);
                     }
                 });
@@ -670,11 +704,11 @@
                                         </div>
                                         <div class="options-container">
                                             ${element.options?.map((opt, idx) => `
-                                                <div class="form-check mb-2 d-flex align-items-center">
-                                                    <input class="form-check-input me-2" type="checkbox" disabled>
-                                                    <input type="text" class="form-control form-control-sm option-input" data-option-id="${opt.id}" value="${opt.text}">
-                                                </div>
-                                            `).join('') || ''}
+                                                        <div class="form-check mb-2 d-flex align-items-center">
+                                                            <input class="form-check-input me-2" type="checkbox" disabled>
+                                                            <input type="text" class="form-control form-control-sm option-input" data-option-id="${opt.id}" value="${opt.text}">
+                                                        </div>
+                                                    `).join('') || ''}
                                             <button type="button" class="btn btn-outline-secondary btn-sm add-option" style="margin-left: 0.8rem;">
                                                 <i class="fas fa-plus"></i> Add Option
                                             </button>
@@ -705,11 +739,11 @@
                                         </div>
                                         <div class="options-container">
                                             ${element.options?.map((opt, idx) => `
-                                                <div class="form-check mb-2 d-flex align-items-center">
-                                                    <input class="form-check-input me-2" type="checkbox" disabled>
-                                                    <input type="text" class="form-control form-control-sm option-input" data-option-id="${opt.id}" value="${opt.text}">
-                                                </div>
-                                            `).join('') || ''}
+                                                        <div class="form-check mb-2 d-flex align-items-center">
+                                                            <input class="form-check-input me-2" type="checkbox" disabled>
+                                                            <input type="text" class="form-control form-control-sm option-input" data-option-id="${opt.id}" value="${opt.text}">
+                                                        </div>
+                                                    `).join('') || ''}
                                             <button type="button" class="btn btn-outline-secondary btn-sm add-option" style="margin-left: 0.8rem;">
                                                 <i class="fas fa-plus"></i> Add Option
                                             </button>
@@ -740,11 +774,11 @@
                                         </div>
                                         <div class="options-container">
                                             ${element.options?.map((opt, idx) => `
-                                                <div class="d-flex align-items-center mb-1">
-                                                    <span class="me-2">${idx + 1}.</span>
-                                                    <input type="text" class="form-control form-control-sm option-input" data-option-id="${opt.id}" value="${opt.text}">
-                                                </div>
-                                            `).join('') || ''}
+                                                        <div class="d-flex align-items-center mb-1">
+                                                            <span class="me-2">${idx + 1}.</span>
+                                                            <input type="text" class="form-control form-control-sm option-input" data-option-id="${opt.id}" value="${opt.text}">
+                                                        </div>
+                                                    `).join('') || ''}
                                             <button type="button" class="btn btn-outline-secondary btn-sm add-option mt-2" style="margin-left: 0.8rem;">
                                                 <i class="fas fa-plus"></i> Add Option
                                             </button>
@@ -850,10 +884,15 @@
                     return;
                 }
                 $.ajax({
-                    url: '{{ route('form-builders.steps.add', ':formId') }}'.replace(':formId', formBuilderId),
+                    url: '{{ route('form-builders.steps.add', ':formId') }}'.replace(':formId',
+                        formBuilderId),
                     method: 'POST',
-                    data: { title: 'Untitled Step' },
-                    beforeSend: function() { $('#loading-overlay').show(); },
+                    data: {
+                        title: 'Untitled Step'
+                    },
+                    beforeSend: function() {
+                        $('#loading-overlay').show();
+                    },
                     success: function(response) {
                         if (response.success && response.step) {
                             steps.push(response.step);
@@ -876,7 +915,8 @@
                             `;
                             $('#steps-container').append(stepHtml);
                             $('#steps-container .step-card').each(function(index) {
-                                $(this).find('.step-counter span').text(`Step ${index + 1} of ${steps.length}`);
+                                $(this).find('.step-counter span').text(
+                                    `Step ${index + 1} of ${steps.length}`);
                                 if (index === 0) {
                                     $(this).find('.delete-step-btn').hide();
                                 } else {
@@ -890,10 +930,13 @@
                         }
                     },
                     error: function(xhr) {
-                        toastr.error('Failed to add step: ' + (xhr.responseJSON?.message || 'Unknown error.'));
+                        toastr.error('Failed to add step: ' + (xhr.responseJSON?.message ||
+                            'Unknown error.'));
                         console.error('Add step error:', xhr);
                     },
-                    complete: function() { $('#loading-overlay').hide(); }
+                    complete: function() {
+                        $('#loading-overlay').hide();
+                    }
                 });
             });
 
@@ -909,13 +952,16 @@
                         .replace(':formId', formBuilderId)
                         .replace(':stepId', encodeURIComponent(stepId)),
                     method: 'DELETE',
-                    beforeSend: function() { $('#loading-overlay').show(); },
+                    beforeSend: function() {
+                        $('#loading-overlay').show();
+                    },
                     success: function(response) {
                         if (response.success) {
                             steps = response.steps || steps.filter(step => step.id !== stepId);
                             $(`.step-card[data-step-id="${stepId}"]`).remove();
                             $('#steps-container .step-card').each(function(index) {
-                                $(this).find('.step-counter span').text(`Step ${index + 1} of ${steps.length}`);
+                                $(this).find('.step-counter span').text(
+                                    `Step ${index + 1} of ${steps.length}`);
                                 if (index === 0) {
                                     $(this).find('.delete-step-btn').hide();
                                 } else {
@@ -924,15 +970,19 @@
                             });
                             toastr.success('Step deleted successfully.');
                         } else {
-                            toastr.error('Failed to delete step: ' + (response.message || 'Unknown error.'));
+                            toastr.error('Failed to delete step: ' + (response.message ||
+                                'Unknown error.'));
                             console.error('Delete step response:', response);
                         }
                     },
                     error: function(xhr) {
-                        toastr.error('Failed to delete step: ' + (xhr.responseJSON?.message || 'Unknown error.'));
+                        toastr.error('Failed to delete step: ' + (xhr.responseJSON?.message ||
+                            'Unknown error.'));
                         console.error('Delete step error:', xhr);
                     },
-                    complete: function() { $('#loading-overlay').hide(); }
+                    complete: function() {
+                        $('#loading-overlay').hide();
+                    }
                 });
             });
 
@@ -945,7 +995,8 @@
                 const stepId = $(this).data('step-id');
                 const title = $(this).val();
                 $.ajax({
-                    url: '{{ route('form-builders.update', ':id') }}'.replace(':id', formBuilderId),
+                    url: '{{ route('form-builders.update', ':id') }}'.replace(':id',
+                        formBuilderId),
                     method: 'PUT',
                     data: {
                         steps: steps.map(step => ({
@@ -963,7 +1014,8 @@
                         }
                     },
                     error: function(xhr) {
-                        toastr.error('Failed to update step title: ' + (xhr.responseJSON?.message || 'Unknown error.'));
+                        toastr.error('Failed to update step title: ' + (xhr.responseJSON
+                            ?.message || 'Unknown error.'));
                         console.error('Update step title error:', xhr);
                     }
                 });
@@ -984,7 +1036,8 @@
                 }
                 const stepId = $('#addElementModal').data('step-id');
                 const elementType = $(this).data('type');
-                const position = $(`.elements-container[data-step-id="${stepId}"] .element-card`).length + 1;
+                const position = $(`.elements-container[data-step-id="${stepId}"] .element-card`).length +
+                    1;
 
                 $.ajax({
                     url: '{{ route('form-elements.add') }}',
@@ -997,7 +1050,9 @@
                         title: `Untitled ${elementType.replace('_', ' ')}`,
                         card_id: currentCardId
                     },
-                    beforeSend: function() { $('#loading-overlay').show(); },
+                    beforeSend: function() {
+                        $('#loading-overlay').show();
+                    },
                     success: function(response) {
                         if (response.success) {
                             loadElements(stepId);
@@ -1009,10 +1064,13 @@
                         }
                     },
                     error: function(xhr) {
-                        toastr.error('Failed to add element: ' + (xhr.responseJSON?.message || 'Unknown error.'));
+                        toastr.error('Failed to add element: ' + (xhr.responseJSON?.message ||
+                            'Unknown error.'));
                         console.error('Add element error:', xhr);
                     },
-                    complete: function() { $('#loading-overlay').hide(); }
+                    complete: function() {
+                        $('#loading-overlay').hide();
+                    }
                 });
             });
 
@@ -1043,7 +1101,8 @@
                         }
                     },
                     error: function(xhr) {
-                        toastr.error('Failed to update element: ' + (xhr.responseJSON?.message || 'Unknown error.'));
+                        toastr.error('Failed to update element: ' + (xhr.responseJSON
+                            ?.message || 'Unknown error.'));
                         console.error('Update element error:', xhr);
                     }
                 });
@@ -1060,7 +1119,9 @@
                 $.ajax({
                     url: '{{ route('form-elements.update', ':id') }}'.replace(':id', elementId),
                     method: 'PUT',
-                    data: { is_required: $(this).is(':checked') },
+                    data: {
+                        is_required: $(this).is(':checked')
+                    },
                     success: function(response) {
                         if (response.success) {
                             toastr.success('Required status updated.');
@@ -1070,7 +1131,8 @@
                         }
                     },
                     error: function(xhr) {
-                        toastr.error('Failed to update required status: ' + (xhr.responseJSON?.message || 'Unknown error.'));
+                        toastr.error('Failed to update required status: ' + (xhr.responseJSON
+                            ?.message || 'Unknown error.'));
                         console.error('Update required error:', xhr);
                     }
                 });
@@ -1088,7 +1150,9 @@
                 $.ajax({
                     url: '{{ route('form-elements.delete', ':id') }}'.replace(':id', elementId),
                     method: 'DELETE',
-                    beforeSend: function() { $('#loading-overlay').show(); },
+                    beforeSend: function() {
+                        $('#loading-overlay').show();
+                    },
                     success: function(response) {
                         if (response.success) {
                             $card.remove();
@@ -1099,10 +1163,13 @@
                         }
                     },
                     error: function(xhr) {
-                        toastr.error('Failed to delete element: ' + (xhr.responseJSON?.message || 'Unknown error.'));
+                        toastr.error('Failed to delete element: ' + (xhr.responseJSON
+                            ?.message || 'Unknown error.'));
                         console.error('Delete element error:', xhr);
                     },
-                    complete: function() { $('#loading-overlay').hide(); }
+                    complete: function() {
+                        $('#loading-overlay').hide();
+                    }
                 });
             });
 
@@ -1118,7 +1185,9 @@
                 $.ajax({
                     url: '{{ route('form-elements.duplicate', ':id') }}'.replace(':id', elementId),
                     method: 'POST',
-                    beforeSend: function() { $('#loading-overlay').show(); },
+                    beforeSend: function() {
+                        $('#loading-overlay').show();
+                    },
                     success: function(response) {
                         if (response.success && response.element) {
                             loadElements(stepId);
@@ -1129,10 +1198,13 @@
                         }
                     },
                     error: function(xhr) {
-                        toastr.error('Failed to duplicate element: ' + (xhr.responseJSON?.message || 'Unknown error.'));
+                        toastr.error('Failed to duplicate element: ' + (xhr.responseJSON
+                            ?.message || 'Unknown error.'));
                         console.error('Duplicate element error:', xhr);
                     },
-                    complete: function() { $('#loading-overlay').hide(); }
+                    complete: function() {
+                        $('#loading-overlay').hide();
+                    }
                 });
             });
 
@@ -1147,13 +1219,22 @@
                 const stepId = $card.closest('.step-card').data('step-id');
                 const $optionsContainer = $card.find('.options-container');
                 const options = $optionsContainer.find('.option-input').map(function() {
-                    return { id: $(this).data('option-id'), text: $(this).val() };
+                    return {
+                        id: $(this).data('option-id'),
+                        text: $(this).val()
+                    };
                 }).get();
-                options.push({ id: 'opt-' + Math.random().toString(36).substr(2, 9), text: 'New Option' });
+                options.push({
+                    id: 'opt-' + Math.random().toString(36).substr(2, 9),
+                    text: 'New Option'
+                });
                 $.ajax({
-                    url: '{{ route('form-elements.options.update', ':id') }}'.replace(':id', elementId),
+                    url: '{{ route('form-elements.options.update', ':id') }}'.replace(':id',
+                        elementId),
                     method: 'PUT',
-                    data: { options: options },
+                    data: {
+                        options: options
+                    },
                     success: function(response) {
                         if (response.success) {
                             loadElements(stepId);
@@ -1164,7 +1245,8 @@
                         }
                     },
                     error: function(xhr) {
-                        toastr.error('Failed to add option: ' + (xhr.responseJSON?.message || 'Unknown error.'));
+                        toastr.error('Failed to add option: ' + (xhr.responseJSON?.message ||
+                            'Unknown error.'));
                         console.error('Add option error:', xhr);
                     }
                 });
@@ -1180,12 +1262,18 @@
                 const elementId = $card.data('element-id');
                 const $optionsContainer = $card.find('.options-container');
                 const options = $optionsContainer.find('.option-input').map(function() {
-                    return { id: $(this).data('option-id'), text: $(this).val() };
+                    return {
+                        id: $(this).data('option-id'),
+                        text: $(this).val()
+                    };
                 }).get();
                 $.ajax({
-                    url: '{{ route('form-elements.options.update', ':id') }}'.replace(':id', elementId),
+                    url: '{{ route('form-elements.options.update', ':id') }}'.replace(':id',
+                        elementId),
                     method: 'PUT',
-                    data: { options: options },
+                    data: {
+                        options: options
+                    },
                     success: function(response) {
                         if (response.success) {
                             toastr.success('Option updated.');
@@ -1195,7 +1283,8 @@
                         }
                     },
                     error: function(xhr) {
-                        toastr.error('Failed to update option: ' + (xhr.responseJSON?.message || 'Unknown error.'));
+                        toastr.error('Failed to update option: ' + (xhr.responseJSON?.message ||
+                            'Unknown error.'));
                         console.error('Update option error:', xhr);
                     }
                 });
@@ -1211,13 +1300,18 @@
                 const elementId = $card.data('element-id');
                 const settings = {
                     allow_specific_types: $card.find(`#allow-specific-${elementId}`).is(':checked'),
-                    file_types: $card.find(`#pdf-${elementId}, #image-${elementId}, #video-${elementId}, #audio-${elementId}`)
-                        .filter(':checked').map(function() { return this.id.split('-')[0]; }).get(),
+                    file_types: $card.find(
+                            `#pdf-${elementId}, #image-${elementId}, #video-${elementId}, #audio-${elementId}`
+                        )
+                        .filter(':checked').map(function() {
+                            return this.id.split('-')[0];
+                        }).get(),
                     max_files: $card.find(`#max-files-${elementId}`).val(),
                     max_file_size: parseInt($card.find(`#max-file-size-${elementId}`).val())
                 };
                 $.ajax({
-                    url: '{{ route('form-elements.file-settings.update', ':id') }}'.replace(':id', elementId),
+                    url: '{{ route('form-elements.file-settings.update', ':id') }}'.replace(':id',
+                        elementId),
                     method: 'PUT',
                     data: settings,
                     success: function(response) {
@@ -1229,7 +1323,8 @@
                         }
                     },
                     error: function(xhr) {
-                        toastr.error('Failed to update file upload settings: ' + (xhr.responseJSON?.message || 'Unknown error.'));
+                        toastr.error('Failed to update file upload settings: ' + (xhr
+                            .responseJSON?.message || 'Unknown error.'));
                         console.error('Update file settings error:', xhr);
                     }
                 });
@@ -1240,4 +1335,5 @@
         });
     </script>
 </body>
+
 </html>

@@ -49,6 +49,12 @@
                             <p>Incidents Report</p>
                         </a>
                     </li>
+                    <li class="nav-item {{ Route::currentRouteName() === 'admin.reports.other-reports' ? 'active' : '' }}">
+                        <a href="{{ route('admin.reports.other-reports') }}">
+                            <i class="fas fa-file"></i>
+                            <p>Other Incidents Report</p>
+                        </a>
+                    </li>
                     <li class="nav-item  {{ in_array(Route::currentRouteName(), ['admin.list.list-perpetrators', 'admin.reports.byIdNumber', 'admin.list.view-report', 'admin.perpetrator.discipline']) ? 'active' : '' }}">
                         <a href="{{ route('admin.list.list-perpetrators') }}">
                             <i class="fas fa-users"></i>
