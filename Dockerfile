@@ -20,24 +20,19 @@ RUN docker-php-ext-install pdo zip curl
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Set working directory
-WORKDIR /var/www
+WORKDIR /var/www/html
 
-# Copy composer files first for better caching
-COPY composer.json composer.lock* ./
+# Copy ALL application code first
+COPY . .
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
-# Copy application code
-COPY . .
-
-# Create storage and cache directories
-RUN mkdir -p storage/logs storage/framework/sessions storage/framework/views storage/framework/cache
-RUN mkdir -p bootstrap/cache
+# Create storage and cache directories if they don't exist
+RUN mkdir -p storage/logs storage/framework/sessions storage/framework/views storage/framework/cache bootstrap/cache
 
 # Set permissions
 RUN chmod -R 755 storage bootstrap/cache
-RUN chown -R www-data:www-data storage bootstrap/cache
 
 # Expose port
 EXPOSE 8000
