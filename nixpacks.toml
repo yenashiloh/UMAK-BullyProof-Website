@@ -1,8 +1,11 @@
+[providers]
+php = "8.2"
+
 [phases.setup]
-nixPkgs = ['php82', 'php82Extensions.mongodb', 'php82Extensions.openssl', 'php82Extensions.mbstring', 'php82Extensions.pdo', 'php82Extensions.curl']
+nixPkgs = ["php82Extensions.mongodb", "php82Extensions.pdo", "php82Extensions.mbstring", "php82Extensions.openssl", "php82Extensions.curl", "php82Extensions.zip"]
 
 [phases.build]
-cmds = ['composer install --no-dev --optimize-autoloader']
+cmds = ["composer install --no-dev --optimize-autoloader"]
 
-[phases.start]
-cmd = 'php artisan serve --host=0.0.0.0 --port=$PORT'
+[start]
+cmd = "php artisan serve --host=0.0.0.0 --port=$PORT"
