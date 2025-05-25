@@ -17,25 +17,22 @@ RUN pecl install mongodb && docker-php-ext-enable mongodb
 RUN docker-php-ext-install pdo zip curl
 
 # Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy ALL application code first
+# Copy everything
 COPY . .
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
-
-# Create storage and cache directories if they don't exist
-RUN mkdir -p storage/logs storage/framework/sessions storage/framework/views storage/framework/cache bootstrap/cache
+# Install dependencies
+RUN composer install --no-dev --optimize-autoloader
 
 # Set permissions
 RUN chmod -R 755 storage bootstrap/cache
 
-# Expose port
-EXPOSE 8000
+# Railway provides the PORT environment variable
+EXPOSE $PORT
 
-# Start the application
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# Start Laravel on Railway's provided port
+CMD php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
