@@ -2,6 +2,9 @@ FROM php:8.2-cli
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
     libssl-dev \
     libcurl4-openssl-dev \
     pkg-config \
@@ -10,29 +13,22 @@ RUN apt-get update && apt-get install -y \
     git \
     curl
 
-# Install MongoDB extension
-RUN pecl install mongodb && docker-php-ext-enable mongodb
+# Configure and install GD extension
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg
+RUN docker-php-ext-install -j$(nproc) gd pdo zip curl
 
-# Install other PHP extensions
-RUN docker-php-ext-install pdo zip curl
+# Install MongoDB extension (specific version to match requirements)
+RUN pecl install mongodb-1.18.1 && docker-php-ext-enable mongodb
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Set working directory
 WORKDIR /var/www/html
-
-# Copy everything
 COPY . .
 
-# Install dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Install with platform requirements ignored for version conflicts
+RUN composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-mongodb
 
-# Set permissions
 RUN chmod -R 755 storage bootstrap/cache
 
-# Railway provides the PORT environment variable
-EXPOSE $PORT
-
-# Start Laravel on Railway's provided port
 CMD php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
