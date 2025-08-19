@@ -173,11 +173,11 @@ bullyproof-web/
 </ul>
 
 
-<h2>🖥️ <strong>USAGE</strong></h2>
-<br>
+<h2>🖥️ USAGE</h2>
 
 <ol>
-    <li><strong>Administrator Login</strong>
+    <li>
+        <h3>Administrator Login</h3>
         <ul>
             <li>Access the web application through your browser</li>
             <li>Login using your administrative credentials</li>
@@ -185,7 +185,8 @@ bullyproof-web/
         </ul>
     </li>
     
-    <li><strong>Managing Incidents</strong>
+    <li>
+        <h3>Managing Incidents</h3>
         <ul>
             <li>Review incident reports with ML-generated cyberbullying percentages</li>
             <li>Investigate cases using provided evidence and analysis</li>
@@ -193,7 +194,8 @@ bullyproof-web/
         </ul>
     </li>
     
-    <li><strong>Scheduling Appointments</strong>
+    <li>
+        <h3>Scheduling Appointments</h3>
         <ul>
             <li>Create meetings between involved parties</li>
             <li>Set appropriate time slots and participant notifications</li>
@@ -201,7 +203,8 @@ bullyproof-web/
         </ul>
     </li>
     
-    <li><strong>User Oversight</strong>
+    <li>
+        <h3>User Oversight</h3>
         <ul>
             <li>Monitor user activities and account status</li>
             <li>Take action on accounts showing misuse patterns</li>
@@ -209,6 +212,15 @@ bullyproof-web/
         </ul>
     </li>
 </ol>
+
+<h2>🎯 TARGET USERS</h2>
+
+<ul>
+    <li>Administrators</li>
+    <li>Faculty Members</li>
+    <li>Students</li>
+</ul>
+
 
 <h2>🎯 <strong>TARGET USERS</strong></h2>
 <br>
