@@ -172,48 +172,6 @@ bullyproof-web/
     <li>Web server (Apache/Nginx) or Laravel development server</li>
 </ul>
 
-
-<h2>🖥️ USAGE</h2>
-
-<ol>
-    <li>
-        <strong>Administrator Login</strong>
-        <ul>
-            <li>Access the web application through your browser</li>
-            <li>Login using your administrative credentials</li>
-            <li>Navigate to the dashboard for system overview</li>
-        </ul>
-    </li>
-    
-    <li>
-        <strong>Managing Incidents</strong>
-        <ul>
-            <li>Review incident reports with ML-generated cyberbullying percentages</li>
-            <li>Investigate cases using provided evidence and analysis</li>
-            <li>Update case status and assign follow-up actions</li>
-        </ul>
-    </li>
-    
-    <li>
-        <strong>Scheduling Appointments</strong>
-        <ul>
-            <li>Create meetings between involved parties</li>
-            <li>Set appropriate time slots and participant notifications</li>
-            <li>Monitor appointment status and outcomes</li>
-        </ul>
-    </li>
-    
-    <li>
-        <strong>User Oversight</strong>
-        <ul>
-            <li>Monitor user activities and account status</li>
-            <li>Take action on accounts showing misuse patterns</li>
-            <li>Generate user activity reports</li>
-        </ul>
-    </li>
-</ol>
-
-
 <h2>🎯 TARGET USERS</h2>
 
 <ul>
