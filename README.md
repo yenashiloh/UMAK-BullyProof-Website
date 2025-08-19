@@ -172,15 +172,6 @@ bullyproof-web/
     <li>Web server (Apache/Nginx) or Laravel development server</li>
 </ul>
 
-<h2>🎯 TARGET USERS</h2>
-
-<ul>
-    <li>Administrators</li>
-    <li>Faculty Members</li>
-    <li>Students</li>
-</ul>
-
-
 <h2>🎯 <strong>TARGET USERS</strong></h2>
 <br>
 
