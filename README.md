@@ -6,6 +6,13 @@
 
 <p>This comprehensive web application was developed as the administrative counterpart to the BullyProof mobile app, designed primarily for admin and director-level management of cyberbullying prevention and response operations. The platform integrates machine learning analysis using a <strong>Logistic Regression Algorithm</strong> to automatically assess and categorize incident reports, providing administrators with intelligent insights and percentage-based cyberbullying classifications for enhanced decision-making.</p>
 
+<div align="center">
+  <img src="https://github.com/yenashiloh/UMAK-BullyProof-Website/blob/main/public/assets/bullyproof-website-1.png" alt="Hero Section" width="800">
+  <img src="https://github.com/yenashiloh/UMAK-BullyProof-Website/blob/main/public/assets/bullyproof-website-2.png" alt="Hero Section" width="800">
+  <img src="https://github.com/yenashiloh/UMAK-BullyProof-Website/blob/main/public/assets/bullyproof-website-3.png" alt="Hero Section" width="800">
+  <br><br>
+</div>
+
 <h2>🖥️ <strong>PROJECT OVERVIEW</strong></h2>
 <br>
 
