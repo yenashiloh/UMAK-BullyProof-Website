@@ -177,7 +177,7 @@ bullyproof-web/
 
 <ol>
     <li>
-        <h3>Administrator Login</h3>
+        <strong>Administrator Login</strong>
         <ul>
             <li>Access the web application through your browser</li>
             <li>Login using your administrative credentials</li>
@@ -186,7 +186,7 @@ bullyproof-web/
     </li>
     
     <li>
-        <h3>Managing Incidents</h3>
+        <strong>Managing Incidents</strong>
         <ul>
             <li>Review incident reports with ML-generated cyberbullying percentages</li>
             <li>Investigate cases using provided evidence and analysis</li>
@@ -195,7 +195,7 @@ bullyproof-web/
     </li>
     
     <li>
-        <h3>Scheduling Appointments</h3>
+        <strong>Scheduling Appointments</strong>
         <ul>
             <li>Create meetings between involved parties</li>
             <li>Set appropriate time slots and participant notifications</li>
@@ -204,7 +204,7 @@ bullyproof-web/
     </li>
     
     <li>
-        <h3>User Oversight</h3>
+        <strong>User Oversight</strong>
         <ul>
             <li>Monitor user activities and account status</li>
             <li>Take action on accounts showing misuse patterns</li>
@@ -212,6 +212,7 @@ bullyproof-web/
         </ul>
     </li>
 </ol>
+
 
 <h2>🎯 TARGET USERS</h2>
 
@@ -228,8 +229,6 @@ bullyproof-web/
 <ul>
     <li><strong>University Directors</strong> - High-level oversight and policy decisions</li>
     <li><strong>Administrative Staff</strong> - Daily case management and operations</li>
-    <li><strong>IT Administrators</strong> - System maintenance and user management</li>
-    <li><strong>Department Heads</strong> - Departmental incident oversight</li>
 </ul>
 
 <h2>🔒 <strong>SECURITY & PRIVACY</strong></h2>
