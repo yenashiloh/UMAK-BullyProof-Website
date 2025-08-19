@@ -111,6 +111,7 @@
 <ul>
     <li><strong>HTML5</strong> - Semantic markup and structure</li>
     <li><strong>CSS3</strong> - Custom styling and responsive design</li>
+    <li><strong>SCSS</strong> - CSS preprocessor for enhanced styling capabilities</li>
     <li><strong>Bootstrap</strong> - Responsive UI framework and components</li>
     <li><strong>JavaScript</strong> - Interactive functionality and client-side logic</li>
 </ul>
@@ -123,7 +124,7 @@
 
 <h3>Additional Technologies</h3>
 <ul>
-    <li><strong>MySQL/PostgreSQL</strong> - Database management</li>
+    <li><strong>MongoDB</strong> - Database management</li>
     <li><strong>Chart.js/D3.js</strong> - Data visualization and analytics</li>
     <li><strong>SMTP</strong> - Email delivery system</li>
 </ul>
