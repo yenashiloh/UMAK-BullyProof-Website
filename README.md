@@ -172,43 +172,6 @@ bullyproof-web/
     <li>Web server (Apache/Nginx) or Laravel development server</li>
 </ul>
 
-<h2>🚀 <strong>INSTALLATION & SETUP</strong></h2>
-<br>
-
-<ol>
-    <li><strong>Clone the repository</strong>
-        <pre><code>git clone https://github.com/your-username/bullyproof-web.git
-        cd bullyproof-web</code></pre>
-    </li>
-    
-    <li><strong>Install PHP dependencies</strong>
-        <pre><code>composer install</code></pre>
-    </li>
-    
-    <li><strong>Install Node.js dependencies</strong>
-        <pre><code>npm install</code></pre>
-    </li>
-    
-    <li><strong>Environment configuration</strong>
-        <pre><code>cp .env.example .env php artisan key:generate</code></pre>
-    </li>
-    
-    <li><strong>Database setup</strong>
-        <pre><code>php artisan migrate php artisan db:seed</code></pre>
-    </li>
-    
-    <li><strong>Install Python dependencies</strong>
-        <pre><code>pip install -r requirements.txt</code></pre>
-    </li>
-    
-    <li><strong>Compile frontend assets</strong>
-        <pre><code>npm run dev</code></pre>
-    </li>
-    
-    <li><strong>Start the application</strong>
-        <pre><code>php artisan serve</code></pre>
-    </li>
-</ol>
 
 <h2>🖥️ <strong>USAGE</strong></h2>
 <br>
