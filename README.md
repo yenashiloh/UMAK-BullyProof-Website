@@ -26,7 +26,7 @@
 <h2>✨ <strong>KEY FEATURES</strong></h2>
 <br>
 
-<h3>📊 1. Administrative Dashboard</h3>
+<h3>1. Administrative Dashboard</h3>
 <ul>
     <li>Comprehensive statistics overview including:
         <ul>
@@ -42,7 +42,7 @@
     <li>Real-time data visualization and analytics</li>
 </ul>
 
-<h3>📧 2. Email Content Management</h3>
+<h3>2. Email Content Management</h3>
 <ul>
     <li>Custom email template creation for different stakeholders:
         <ul>
@@ -62,7 +62,7 @@
     <li>Template customization with dynamic content insertion</li>
 </ul>
 
-<h3>📅 3. Appointment Management</h3>
+<h3>3. Appointment Management</h3>
 <ul>
     <li>Comprehensive scheduling system allowing:
         <ul>
@@ -77,7 +77,7 @@
     <li>Calendar integration and conflict detection</li>
 </ul>
 
-<h3>👥 4. User Management</h3>
+<h3> 4. User Management</h3>
 <ul>
     <li>Complete user account oversight including:
         <ul>
